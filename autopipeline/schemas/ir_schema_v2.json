@@ -1,0 +1,108 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "IR (Intermediate Representation) Schema",
+  "description": "Schema for IR - MUST NOT contain implementation details (forbidden tokens checked separately)",
+  "type": "object",
+  "required": ["components", "links"],
+  "properties": {
+    "components": {
+      "type": "array",
+      "description": "Logical components (renamed from 'entities' for clarity)",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "type"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Component identifier (logical, not physical)"
+          },
+          "type": {
+            "type": "string",
+            "description": "Component type (e.g., data_source, processor, storage)"
+          },
+          "capabilities": {
+            "type": "array",
+            "description": "Abstract capabilities",
+            "items": {
+              "type": "string"
+            }
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Optional metadata",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "links": {
+      "type": "array",
+      "description": "Data flows between components",
+      "items": {
+        "type": "object",
+        "required": ["id", "from", "to"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Link identifier"
+          },
+          "from": {
+            "type": "string",
+            "description": "Source component ID"
+          },
+          "to": {
+            "type": "string",
+            "description": "Target component ID"
+          },
+          "data_type": {
+            "type": "string",
+            "description": "Logical data type (e.g., sensor_reading, command)"
+          },
+          "contract": {
+            "type": "object",
+            "description": "Optional data contract/schema",
+            "properties": {
+              "format": {
+                "type": "string",
+                "description": "Data format (e.g., json, binary)"
+              },
+              "schema": {
+                "type": "object",
+                "description": "Schema definition",
+                "additionalProperties": true
+              }
+            }
+          },
+          "frequency": {
+            "type": "string",
+            "description": "Data flow frequency (e.g., real-time, periodic)"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "logic": {
+      "type": "object",
+      "description": "Optional high-level logic/rules",
+      "additionalProperties": true
+    },
+    "metadata": {
+      "type": "object",
+      "description": "IR metadata",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

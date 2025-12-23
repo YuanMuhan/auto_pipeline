@@ -1,0 +1,82 @@
+{
+  "devices": [
+    {
+      "id": "temp_sensor_01",
+      "name": "Temperature Sensor Device",
+      "layer": "device",
+      "type": "sensor",
+      "capabilities": ["temperature_sensing", "data_collection"],
+      "interfaces": {
+        "endpoints": [
+          {
+            "name": "sensor_data_output",
+            "address": "device://temp_sensor_01/data",
+            "protocol": "MQTT",
+            "description": "Temperature sensor data output"
+          }
+        ]
+      },
+      "resources": {
+        "cpu": "low",
+        "memory": "minimal",
+        "power": "battery"
+      }
+    },
+    {
+      "id": "edge_gateway_01",
+      "name": "Edge Gateway",
+      "layer": "edge",
+      "type": "gateway",
+      "capabilities": ["data_processing", "filtering", "aggregation", "local_storage"],
+      "interfaces": {
+        "endpoints": [
+          {
+            "name": "sensor_data_input",
+            "address": "edge://gateway_01/input",
+            "protocol": "MQTT",
+            "description": "Receives data from sensors"
+          },
+          {
+            "name": "processed_data_output",
+            "address": "edge://gateway_01/output",
+            "protocol": "HTTP",
+            "description": "Sends processed data to cloud"
+          }
+        ]
+      },
+      "resources": {
+        "cpu": "medium",
+        "memory": "moderate",
+        "power": "mains"
+      }
+    },
+    {
+      "id": "cloud_server_01",
+      "name": "Cloud Analytics Server",
+      "layer": "cloud",
+      "type": "server",
+      "capabilities": ["data_storage", "analytics", "visualization", "alerting"],
+      "interfaces": {
+        "endpoints": [
+          {
+            "name": "data_ingestion",
+            "address": "cloud://analytics/ingest",
+            "protocol": "HTTP",
+            "description": "Data ingestion endpoint"
+          },
+          {
+            "name": "api_service",
+            "address": "cloud://analytics/api",
+            "protocol": "HTTP",
+            "description": "REST API for queries"
+          }
+        ]
+      },
+      "resources": {
+        "cpu": "high",
+        "memory": "high",
+        "storage": "scalable"
+      }
+    }
+  ]
+}

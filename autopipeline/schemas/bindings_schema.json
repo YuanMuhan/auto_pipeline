@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["placements", "transports", "endpoints"],
+  "properties": {
+    "placements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["component_id", "layer", "device_ref"],
+        "properties": {
+          "component_id": {
+            "type": "string"
+          },
+          "layer": {
+            "type": "string",
+            "enum": ["cloud", "edge", "device"]
+          },
+          "device_ref": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "transports": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["link_id", "protocol"],
+        "properties": {
+          "link_id": {
+            "type": "string"
+          },
+          "protocol": {
+            "type": "string"
+          },
+          "qos": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "endpoints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["link_id", "from_endpoint", "to_endpoint"],
+        "properties": {
+          "link_id": {
+            "type": "string"
+          },
+          "from_endpoint": {
+            "type": "string"
+          },
+          "to_endpoint": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "deployment": {
+      "type": "object"
+    }
+  }
+}

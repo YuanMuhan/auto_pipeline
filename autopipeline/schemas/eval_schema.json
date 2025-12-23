@@ -1,0 +1,89 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Evaluation Result Schema",
+  "description": "Schema for pipeline evaluation results",
+  "type": "object",
+  "required": ["case_id", "timestamp", "checks", "metrics", "overall_status"],
+  "properties": {
+    "case_id": {
+      "type": "string",
+      "description": "Case identifier"
+    },
+    "timestamp": {
+      "type": "string",
+      "description": "Evaluation timestamp (ISO 8601)",
+      "format": "date-time"
+    },
+    "checks": {
+      "type": "object",
+      "description": "Validation check results",
+      "patternProperties": {
+        "^[a-z_]+$": {
+          "type": "object",
+          "required": ["status", "message"],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": ["PASS", "FAIL", "SKIP"]
+            },
+            "message": {
+              "type": "string"
+            },
+            "details": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        }
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "description": "Quantitative metrics",
+      "properties": {
+        "num_components": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "num_links": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "num_placements": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "num_layers": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "coverage_ratio": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "additionalProperties": true
+    },
+    "overall_status": {
+      "type": "string",
+      "description": "Overall evaluation status",
+      "enum": ["PASS", "FAIL", "PARTIAL"]
+    },
+    "failed_checks": {
+      "type": "array",
+      "description": "List of failed check names (if any)",
+      "items": {
+        "type": "string"
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "description": "Non-critical warnings",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false
+}

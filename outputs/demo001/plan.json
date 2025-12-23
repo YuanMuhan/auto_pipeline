@@ -1,0 +1,51 @@
+{
+  "components": [
+    {
+      "id": "sensor_collector",
+      "type": "data_source",
+      "capabilities": [
+        "sense",
+        "collect"
+      ]
+    },
+    {
+      "id": "data_processor",
+      "type": "processor",
+      "capabilities": [
+        "filter",
+        "aggregate",
+        "analyze"
+      ]
+    },
+    {
+      "id": "storage_service",
+      "type": "storage",
+      "capabilities": [
+        "store",
+        "query"
+      ]
+    }
+  ],
+  "links": [
+    {
+      "id": "link_sensor_to_processor",
+      "from": "sensor_collector",
+      "to": "data_processor",
+      "data_type": "sensor_reading",
+      "frequency": "real-time"
+    },
+    {
+      "id": "link_processor_to_storage",
+      "from": "data_processor",
+      "to": "storage_service",
+      "data_type": "processed_data",
+      "frequency": "periodic"
+    }
+  ],
+  "logic": {},
+  "metadata": {
+    "description": "Smart home temperature monitoring system with cloud analytics",
+    "created_at": "2025-12-22T16:49:09.510171",
+    "version": "1.0"
+  }
+}

@@ -1,0 +1,16 @@
+[2025-12-23T14:37:21.914928] [INFO] Starting pipeline for case: DEMO-MONITORING
+[2025-12-23T14:37:21.915380] [INFO] Step 1: Loading user problem and device info
+[2025-12-23T14:37:21.931836] [INFO] Successfully loaded input files
+[2025-12-23T14:37:21.931854] [INFO] Step 2: Generating IR (Planner Agent)
+[2025-12-23T14:37:21.931864] [INFO] IR generation attempt 1/3
+[2025-12-23T14:37:21.945025] [INFO] IR validation passed
+[2025-12-23T14:37:21.945676] [INFO] Saved IR to .\outputs\DEMO-MONITORING\plan.json
+[2025-12-23T14:37:21.945682] [INFO] Step 3: Generating Bindings (Bindings Agent)
+[2025-12-23T14:37:21.945687] [INFO] Bindings generation attempt 1/3
+[2025-12-23T14:37:21.960158] [INFO] Bindings validation passed
+[2025-12-23T14:37:21.961656] [INFO] Saved Bindings to .\outputs\DEMO-MONITORING\bindings.yaml
+[2025-12-23T14:37:21.961664] [INFO] Step 4: Generating code skeletons (CodeGen)
+[2025-12-23T14:37:21.963066] [INFO] Step 5: Generating docker-compose.yml (Deploy)
+[2025-12-23T14:37:21.963377] [INFO] Step 6: Running evaluation
+[2025-12-23T14:37:21.966577] [INFO] Saved evaluation to .\outputs\DEMO-MONITORING\eval.json
+[2025-12-23T14:37:21.966585] [INFO] Step 7: Saving run log

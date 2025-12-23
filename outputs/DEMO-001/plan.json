@@ -1,0 +1,97 @@
+{
+  "components": [
+    {
+      "id": "door_monitor",
+      "type": "data_source",
+      "capabilities": [
+        "detect_state_change",
+        "binary_sensing"
+      ]
+    },
+    {
+      "id": "motion_detector",
+      "type": "sensor",
+      "capabilities": [
+        "detect_motion",
+        "presence_sensing"
+      ]
+    },
+    {
+      "id": "lighting_controller",
+      "type": "actuator",
+      "capabilities": [
+        "control_light",
+        "dimming"
+      ]
+    },
+    {
+      "id": "automation_engine",
+      "type": "processor",
+      "capabilities": [
+        "rule_eval",
+        "event_routing",
+        "mode_management"
+      ]
+    },
+    {
+      "id": "notification_service",
+      "type": "notification",
+      "capabilities": [
+        "push_alert",
+        "message_delivery"
+      ]
+    },
+    {
+      "id": "data_recorder",
+      "type": "storage",
+      "capabilities": [
+        "store",
+        "query",
+        "time_series"
+      ]
+    }
+  ],
+  "links": [
+    {
+      "id": "link_door_to_engine",
+      "from": "door_monitor",
+      "to": "automation_engine",
+      "data_type": "state_event",
+      "frequency": "event-driven"
+    },
+    {
+      "id": "link_motion_to_engine",
+      "from": "motion_detector",
+      "to": "automation_engine",
+      "data_type": "motion_event",
+      "frequency": "event-driven"
+    },
+    {
+      "id": "link_engine_to_light",
+      "from": "automation_engine",
+      "to": "lighting_controller",
+      "data_type": "control_command",
+      "frequency": "on-demand"
+    },
+    {
+      "id": "link_engine_to_notify",
+      "from": "automation_engine",
+      "to": "notification_service",
+      "data_type": "alert",
+      "frequency": "event-driven"
+    },
+    {
+      "id": "link_engine_to_storage",
+      "from": "automation_engine",
+      "to": "data_recorder",
+      "data_type": "event_log",
+      "frequency": "periodic"
+    }
+  ],
+  "logic": {},
+  "metadata": {
+    "description": "智能家居安防自动化系统：门磁和人体传感器联动夜间照明，异常情况实时通知，支持离家模式和安防策略",
+    "created_at": "2025-12-22T16:52:52.050888",
+    "version": "1.0"
+  }
+}

@@ -1,0 +1,120 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Device Info Schema",
+  "description": "Schema for device information with mandatory interfaces.endpoints",
+  "type": "object",
+  "required": ["devices"],
+  "properties": {
+    "devices": {
+      "type": "array",
+      "description": "List of available devices",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "layer", "interfaces"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique device identifier"
+          },
+          "name": {
+            "type": "string",
+            "description": "Human-readable device name"
+          },
+          "layer": {
+            "type": "string",
+            "description": "Deployment layer",
+            "enum": ["cloud", "edge", "device"]
+          },
+          "type": {
+            "type": "string",
+            "description": "Device type (sensor, gateway, server, etc.)"
+          },
+          "capabilities": {
+            "type": "array",
+            "description": "Device capabilities",
+            "items": {
+              "type": "string"
+            }
+          },
+          "interfaces": {
+            "type": "object",
+            "required": ["endpoints"],
+            "properties": {
+              "endpoints": {
+                "type": "array",
+                "description": "Communication endpoints (MUST be defined)",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "required": ["address"],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Optional endpoint ID"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Endpoint name"
+                    },
+                    "kind": {
+                      "type": "string",
+                      "description": "Endpoint kind (input, output, bidirectional)",
+                      "enum": ["input", "output", "bidirectional"]
+                    },
+                    "address": {
+                      "type": "string",
+                      "description": "Endpoint address (REQUIRED, can be referenced by bindings)",
+                      "minLength": 1
+                    },
+                    "protocol": {
+                      "type": "string",
+                      "description": "Underlying protocol hint"
+                    },
+                    "ops": {
+                      "type": "array",
+                      "description": "Supported operations",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "schema": {
+                      "type": "object",
+                      "description": "Optional data schema",
+                      "additionalProperties": true
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "Endpoint description"
+                    }
+                  }
+                }
+              }
+            },
+            "additionalProperties": false
+          },
+          "resources": {
+            "type": "object",
+            "description": "Resource constraints",
+            "properties": {
+              "cpu": {
+                "type": "string"
+              },
+              "memory": {
+                "type": "string"
+              },
+              "storage": {
+                "type": "string"
+              },
+              "power": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": false
+}

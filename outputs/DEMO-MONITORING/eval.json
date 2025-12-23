@@ -1,0 +1,38 @@
+{
+  "case_id": "DEMO-MONITORING",
+  "timestamp": "2025-12-23T14:37:21.963385",
+  "checks": {
+    "ir_schema": {
+      "status": "PASS",
+      "message": "IR schema validation passed"
+    },
+    "ir_boundary": {
+      "status": "PASS",
+      "message": "IR boundary check passed"
+    },
+    "bindings_schema": {
+      "status": "PASS",
+      "message": "Bindings schema validation passed"
+    },
+    "coverage": {
+      "status": "PASS",
+      "message": "Coverage check passed: all 2 IR links are mapped in bindings"
+    },
+    "code_generated": {
+      "status": "PASS",
+      "message": "Generated code for 3 layers"
+    },
+    "deploy_generated": {
+      "status": "PASS",
+      "message": "docker-compose.yml at .\\outputs\\DEMO-MONITORING\\docker-compose.yml"
+    }
+  },
+  "metrics": {
+    "num_components": 3,
+    "num_entities": 3,
+    "num_links": 2,
+    "num_placements": 3,
+    "num_layers": 3
+  },
+  "overall_status": "PASS"
+}

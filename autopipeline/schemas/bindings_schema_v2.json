@@ -1,0 +1,111 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Bindings Schema",
+  "description": "Schema for bindings - maps IR to physical deployment, endpoints MUST reference device_info addresses",
+  "type": "object",
+  "required": ["placements", "transports", "endpoints"],
+  "properties": {
+    "placements": {
+      "type": "array",
+      "description": "Component-to-layer assignments",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["component_id", "layer", "device_ref"],
+        "properties": {
+          "component_id": {
+            "type": "string",
+            "description": "Component ID from IR (renamed from entity_id)"
+          },
+          "layer": {
+            "type": "string",
+            "description": "Deployment layer",
+            "enum": ["cloud", "edge", "device"]
+          },
+          "device_ref": {
+            "type": "string",
+            "description": "Device ID from device_info"
+          },
+          "replicas": {
+            "type": "integer",
+            "description": "Number of replicas (optional)",
+            "minimum": 1
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "transports": {
+      "type": "array",
+      "description": "Link-to-protocol mappings (MUST reference link_id from IR)",
+      "items": {
+        "type": "object",
+        "required": ["link_id", "protocol"],
+        "properties": {
+          "link_id": {
+            "type": "string",
+            "description": "Link ID from IR (REQUIRED)"
+          },
+          "protocol": {
+            "type": "string",
+            "description": "Transport protocol (e.g., MQTT, HTTP, gRPC)"
+          },
+          "qos": {
+            "type": "string",
+            "description": "Quality of Service level"
+          },
+          "config": {
+            "type": "object",
+            "description": "Protocol-specific configuration",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "endpoints": {
+      "type": "array",
+      "description": "Link-to-endpoint mappings (addresses MUST exist in device_info)",
+      "items": {
+        "type": "object",
+        "required": ["link_id", "from_endpoint", "to_endpoint"],
+        "properties": {
+          "link_id": {
+            "type": "string",
+            "description": "Link ID from IR (REQUIRED)"
+          },
+          "from_endpoint": {
+            "type": "string",
+            "description": "Source endpoint address (MUST be from device_info.interfaces.endpoints)"
+          },
+          "to_endpoint": {
+            "type": "string",
+            "description": "Target endpoint address (MUST be from device_info.interfaces.endpoints)"
+          },
+          "mapping": {
+            "type": "object",
+            "description": "Optional data mapping/transformation",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "deployment": {
+      "type": "object",
+      "description": "Deployment-specific configuration",
+      "properties": {
+        "orchestrator": {
+          "type": "string",
+          "description": "Orchestration tool (docker-compose, k8s, etc.)"
+        },
+        "config": {
+          "type": "object",
+          "description": "Orchestrator-specific config",
+          "additionalProperties": true
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

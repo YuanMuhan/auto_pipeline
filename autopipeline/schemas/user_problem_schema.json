@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "User Problem Schema",
+  "description": "Schema for user problem description (natural language focused, no endpoints)",
+  "type": "object",
+  "required": ["type", "description"],
+  "properties": {
+    "type": {
+      "type": "string",
+      "description": "Problem category",
+      "enum": ["monitoring", "control", "analytics", "automation", "custom"]
+    },
+    "description": {
+      "type": "string",
+      "description": "Natural language description of the problem",
+      "minLength": 10
+    },
+    "requirements": {
+      "type": "array",
+      "description": "List of functional requirements",
+      "items": {
+        "type": "string"
+      }
+    },
+    "constraints": {
+      "type": "object",
+      "description": "Non-functional constraints",
+      "properties": {
+        "latency": {
+          "type": "string",
+          "description": "Latency requirements"
+        },
+        "data_volume": {
+          "type": "string",
+          "description": "Expected data volume"
+        },
+        "reliability": {
+          "type": "string",
+          "description": "Reliability requirements"
+        },
+        "security": {
+          "type": "string",
+          "description": "Security requirements"
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional metadata",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}
