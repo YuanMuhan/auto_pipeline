@@ -217,6 +217,16 @@ Agent 代码通过 `PromptTemplate` 类加载和填充模板。
 4. **运行时支持**: 实际的 Docker 镜像构建和部署
 5. **可视化界面**: IR 和 Bindings 的图形化展示
 
+## LLM 调用点设计（v0.1）
+
+- 范围：v0.1 仅 4 处调用 LLM：`generate_ir`、`generate_bindings`、`repair_ir`、`repair_bindings`。Planner/CodeGen/Deploy 暂不调用 LLM，原因：优先把 IR+Bindings 的合规率与 repair loop 指标跑通，再扩展其他阶段。
+- 输入输出契约：
+  - 输入必须包含：`rules_hash`（IR_rules.md+bindings_rules.md）、`schema_versions`/schema_hashes、`prompt_template_hash`、`case_id`、`inputs_hash`（user_problem/device_info/ir_draft/bindings_draft/verifier_errors 的稳定 hash）、`verifier_errors`（修复时）、LLM 参数（默认 temperature=0，可 CLI 覆盖）。
+  - 输出：纯 YAML/JSON 字符串，不得包含 markdown code fence。
+- LLM 参数默认：`temperature=0`；支持通过 CLI 覆盖 temperature/model/max_tokens。
+- 缓存 key 组成：`stage` + `provider_name` + `model` + `temperature/max_tokens/top_p` + `prompt_template_text_hash` + `rendered_prompt_hash` + `rules_hash` + `schema_versions` + `inputs_hash`。
+- 缓存默认开启，路径 `.cache/llm/`；可通过 CLI 设置 `--no-cache`/`--cache-dir`。
+
 ## 运行示例
 
 ### 快速开始

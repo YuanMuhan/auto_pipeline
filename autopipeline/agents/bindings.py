@@ -1,29 +1,34 @@
 """Bindings Agent - maps IR to physical deployment (placements, transports, endpoints)"""
 
 from typing import Dict, Any, List
-from autopipeline.agents.prompt_utils import PromptTemplate
+import yaml
+from autopipeline.llm.llm_client import LLMClient
 
 
 class BindingsAgent:
     """Generate bindings from IR and device info"""
 
-    def __init__(self):
-        self.prompt_template = PromptTemplate()
+    def __init__(self, llm_client: LLMClient):
+        self.llm = llm_client
 
-    def generate_bindings(self, ir_data: Dict[str, Any], device_info: Dict[str, Any]) -> Dict[str, Any]:
+    def generate_bindings(self, ir_data: Dict[str, Any], device_info: Dict[str, Any],
+                          rules_ctx: Dict[str, Any], schema_versions: Dict[str, Any]) -> Dict[str, Any]:
         """
         Generate bindings (placements, transports, endpoints) from IR
 
-        This is a prompt-only simulation - in real implementation, this would call LLM
+        Uses LLM client (mock or real).
         """
 
-        # Build prompt using template
-        prompt = self.prompt_template.get_binding_prompt(ir_data, device_info)
-
-        # Simulate bindings generation
-        bindings = self._simulate_bindings_generation(ir_data, device_info)
-
-        return bindings
+        ir_yaml = yaml.safe_dump(ir_data, sort_keys=False, allow_unicode=True)
+        bindings_yaml = self.llm.generate_bindings(
+            case_id=rules_ctx.get("case_id", ""),
+            ir_yaml=ir_yaml,
+            device_info=device_info,
+            rules_ctx=rules_ctx,
+            schema_versions=schema_versions,
+            prompt_name="binding_agent"
+        )
+        return yaml.safe_load(bindings_yaml)
 
     def _simulate_bindings_generation(self, ir_data: Dict[str, Any], device_info: Dict[str, Any]) -> Dict[str, Any]:
         """Simulate bindings generation (placeholder for LLM output)"""

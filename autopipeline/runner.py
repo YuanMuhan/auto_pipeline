@@ -5,7 +5,7 @@ import time
 from datetime import datetime
 from typing import Dict, Any, Tuple, List
 
-from autopipeline.utils import load_json, save_json, save_yaml, ensure_dir
+from autopipeline.utils import load_json, save_json, save_yaml, ensure_dir, sha256_of_file
 from autopipeline.agents.planner import PlannerAgent
 from autopipeline.agents.ir_agent import IRAgent
 from autopipeline.agents.bindings import BindingsAgent
@@ -18,23 +18,31 @@ from autopipeline.verifier.boundary_checker import BoundaryChecker
 from autopipeline.verifier.coverage_checker import CoverageChecker
 from autopipeline.verifier.endpoint_checker import EndpointChecker
 from autopipeline.verifier.generation_checker import GenerationConsistencyChecker
-from autopipeline.utils import sha256_of_file
+from autopipeline.llm import LLMClient
+from autopipeline.llm.types import LLMConfig
+from autopipeline.llm.hash_utils import stable_hash
 
 
 class PipelineRunner:
     """Orchestrates the entire AutoPipeline workflow"""
 
-    def __init__(self, case_id: str, base_dir: str = "."):
+    def __init__(self, case_id: str, base_dir: str = ".", llm_config: LLMConfig = None):
         self.case_id = case_id
         self.base_dir = base_dir
         self.case_dir = os.path.join(base_dir, "cases", case_id)
         self.output_dir = os.path.join(base_dir, "outputs", case_id)
+        self.llm_config = llm_config or LLMConfig()
+
+        # Logs and stage tracking
+        self.logs: List[str] = []
+        self.stages_passed: List[str] = []
 
         # Initialize agents
         self.planner = PlannerAgent()
-        self.ir_agent = IRAgent()
-        self.bindings_agent = BindingsAgent()
-        self.repair_agent = RepairAgent()
+        self.llm_client = LLMClient(base_dir=base_dir, config=self.llm_config, logger=self.log)
+        self.ir_agent = IRAgent(self.llm_client)
+        self.bindings_agent = BindingsAgent(self.llm_client)
+        self.repair_agent = RepairAgent(self.llm_client)
         self.codegen = CodeGenAgent()
         self.deploy = DeployAgent()
 
@@ -55,9 +63,20 @@ class PipelineRunner:
         self.coverage_checker = CoverageChecker()
         self.endpoint_checker = EndpointChecker()
 
-        # Logs and stage tracking
-        self.logs: List[str] = []
-        self.stages_passed: List[str] = []
+        combined_rules_hash = stable_hash({
+            "ir": self.rules_bundle["ir"]["hash"],
+            "bindings": self.rules_bundle["bindings"]["hash"]
+        })
+        self.rules_ctx = {
+            "rules_hash": combined_rules_hash,
+            "case_id": self.case_id
+        }
+        schemas_dir = os.path.join(base_dir, "autopipeline", "schemas")
+        self.schema_versions = {
+            "plan_schema": sha256_of_file(os.path.join(schemas_dir, "plan_schema.json")),
+            "ir_schema": sha256_of_file(os.path.join(schemas_dir, "ir_schema.json")),
+            "bindings_schema": sha256_of_file(os.path.join(schemas_dir, "bindings_schema.json")),
+        }
 
     def log(self, message: str, level: str = "INFO"):
         """Log a message"""
@@ -155,10 +174,12 @@ class PipelineRunner:
 
             # Generate IR
             if attempt == 1:
-                ir_data = self.ir_agent.generate_ir(plan_data, user_problem, device_info)
+                ir_data = self.ir_agent.generate_ir(plan_data, user_problem, device_info,
+                                                    self.rules_ctx, self.schema_versions)
             else:
                 # Repair from previous attempt
-                ir_data = self.repair_agent.repair_ir(ir_data, last_error, device_info)
+                ir_data = self.repair_agent.repair_ir(ir_data, last_error, device_info,
+                                                      self.rules_ctx, self.schema_versions)
 
             # Validate schema
             valid, msg = self.schema_checker.validate_ir(ir_data)
@@ -201,11 +222,13 @@ class PipelineRunner:
 
             # Generate Bindings
             if attempt == 1:
-                bindings_data = self.bindings_agent.generate_bindings(ir_data, device_info)
+                bindings_data = self.bindings_agent.generate_bindings(ir_data, device_info,
+                                                                      self.rules_ctx, self.schema_versions)
             else:
                 # Repair from previous attempt
                 bindings_data = self.repair_agent.repair_bindings(bindings_data, last_error,
-                                                                  ir_data, device_info)
+                                                                  ir_data, device_info,
+                                                                  self.rules_ctx, self.schema_versions)
 
             # Validate schema
             valid, msg = self.schema_checker.validate_bindings(bindings_data)
@@ -265,7 +288,22 @@ class PipelineRunner:
             "overall_status": "PASS",
             "stages_passed": (self.stages_passed + ["eval"]),
             "rules_version": rules_version,
-            "bindings_hash": bindings_hash
+            "bindings_hash": bindings_hash,
+            "llm": {
+                "provider": self.llm_config.provider,
+                "model": self.llm_config.model,
+                "temperature": self.llm_config.temperature,
+                "cache_dir": self.llm_config.cache_dir,
+                "cache_enabled": self.llm_config.cache_enabled,
+                "calls_total": self.llm_client.stats["calls_total"],
+                "calls_by_stage": self.llm_client.stats["calls_by_stage"],
+                "cache_hits": self.llm_client.stats["cache_hits"],
+                "cache_misses": self.llm_client.stats["cache_misses"],
+                "usage_tokens_total": self.llm_client.stats["usage_tokens_total"],
+                "prompt_template_hashes": self.llm_client.stats["prompt_template_hashes"],
+                "rules_hash": rules_version["ir_rules_hash"] + rules_version["bindings_rules_hash"],
+                "schema_hashes": self.schema_versions,
+            }
         }
 
         # Check 0: Plan validity

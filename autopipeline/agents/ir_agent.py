@@ -2,25 +2,33 @@
 
 from typing import Dict, Any, List
 from datetime import datetime
-from autopipeline.agents.prompt_utils import PromptTemplate
+import yaml
+from autopipeline.llm.llm_client import LLMClient
 
 
 class IRAgent:
     """Generate IR (Intermediate Representation) from plan + user problem + device info"""
 
-    def __init__(self):
-        self.prompt_template = PromptTemplate()
+    def __init__(self, llm_client: LLMClient):
+        self.llm = llm_client
 
     def generate_ir(self, plan_data: Dict[str, Any], user_problem: Dict[str, Any],
-                    device_info: Dict[str, Any]) -> Dict[str, Any]:
+                    device_info: Dict[str, Any], rules_ctx: Dict[str, Any],
+                    schema_versions: Dict[str, Any]) -> Dict[str, Any]:
         """
         Generate IR from plan and user problem.
 
-        This is deterministic; in production this would call LLM with prompts.
+        Uses LLM client; returns parsed IR dict.
         """
-        _ = self.prompt_template.get_ir_prompt(user_problem, device_info)
-        ir = self._simulate_ir_generation(plan_data, user_problem)
-        return ir
+        ir_yaml = self.llm.generate_ir(
+            case_id=rules_ctx.get("case_id", ""),
+            user_problem=user_problem,
+            device_info=device_info,
+            rules_ctx=rules_ctx,
+            schema_versions=schema_versions,
+            prompt_name="ir_agent"
+        )
+        return yaml.safe_load(ir_yaml)
 
     def _simulate_ir_generation(self, plan_data: Dict[str, Any], user_problem: Dict[str, Any]) -> Dict[str, Any]:
         """Deterministic IR generation based on plan outlines or user problem type"""

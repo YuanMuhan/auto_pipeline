@@ -1,0 +1,23 @@
+{
+  "request_meta": {
+    "stage": "generate_ir",
+    "provider": "mock",
+    "model": "mock-model",
+    "params": {
+      "temperature": 0.0,
+      "max_tokens": null
+    },
+    "prompt_template_hash": "96ebdefb68ef2ba923ff827929d077ccd00e78591478d77c261c24853e641f6a",
+    "rendered_prompt_hash": "96ebdefb68ef2ba923ff827929d077ccd00e78591478d77c261c24853e641f6a",
+    "rules_hash": "0efd038d1492aea276cbeabe81f659e0ba9364816b7b4002abf5953ace5c2cf7",
+    "schema_versions": {
+      "plan_schema": "8d8399a603d1b200692b2f75170ce1bbf742b5051503966cfee3aae1fcedcd9c",
+      "ir_schema": "d1b20ea900cec23d6966c056a65ba93f30671c40bfe3737fa7fdaaa48d330fbb",
+      "bindings_schema": "16e635d1178c71dabaf7ed996785e535b597198dbc2545cfa0372db633c0a640"
+    },
+    "inputs_hash": "1e881af259489f795369b6eac05437aab35f47386d6451dcc36456ee98e47466"
+  },
+  "response_text": "app_name: monitoring_app\ndescription: Smart home temperature monitoring system with cloud analytics\nversion: 0.1.0\nschemas: []\ncomponents:\n  - id: sensor_collector\n    type: data_source\n    capabilities: [sense, collect]\n    metadata: {}\n  - id: data_processor\n    type: processor\n    capabilities: [filter, aggregate, analyze]\n    metadata: {}\n  - id: storage_service\n    type: storage\n    capabilities: [store, query]\n    metadata: {}\nlinks:\n  - id: link_sensor_to_processor\n    from: sensor_collector\n    to: data_processor\n    data_type: sensor_reading\n    frequency: real-time\n    contract: {}\n  - id: link_processor_to_storage\n    from: data_processor\n    to: storage_service\n    data_type: processed_data\n    frequency: periodic\n    contract: {}\npolicies: []\nlogic: {}\nmetadata:\n  description: Smart home temperature monitoring system with cloud analytics\n  version: 0.1.0\n",
+  "usage": null,
+  "created_at": "2025-12-23T18:59:07.512500"
+}

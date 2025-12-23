@@ -285,3 +285,10 @@ outputs/DEMO-SMARTHOME/
 - 本次运行 `rules_version` 示例：
   - DEMO-MONITORING: ir_rules_hash=4ac6af8005e0d2c30d37bd9c621b14d957fbb46d0e2cd23d2e6633466e91d3d1, bindings_rules_hash=507a7f7bce8a858b23fb73c5ee5a3c013b50440700cc38e29c10c36123533724
   - DEMO-SMARTHOME: 同上（规则文件一致），计数 ir_required_fields=7, ir_forbidden_keywords=4, bindings_required_fields=4, bindings_forbidden_keywords=4
+
+## 2025-12-23 LLM 可插拔 + mock 验证摘要
+
+- 配置：`--llm-provider mock --temperature 0 --cache-dir .cache/llm`
+- DEMO-MONITORING（第1次）：PASS；LLM calls: 2（IR/Bindings），cache_misses=2；bindings_hash=6f087fc8...；generation_consistency: PASS。
+- DEMO-MONITORING（第2次）：PASS；LLM calls_total=2，cache_hits=2；说明缓存生效，未重复调用 provider。
+- DEMO-SMARTHOME：PASS；LLM calls_total=2，cache_misses=2；generation_consistency: PASS。

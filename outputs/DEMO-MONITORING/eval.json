@@ -1,6 +1,6 @@
 {
   "case_id": "DEMO-MONITORING",
-  "timestamp": "2025-12-23T17:16:55.729413",
+  "timestamp": "2025-12-23T18:59:35.173875",
   "checks": {
     "plan_schema": {
       "status": "PASS",
@@ -60,6 +60,31 @@
     "bindings_forbidden_keywords": 4
   },
   "bindings_hash": "6f087fc835dba5db70c9ae2adde3937a526461f72c3b73736849898c51acdc3a",
+  "llm": {
+    "provider": "mock",
+    "model": null,
+    "temperature": 0.0,
+    "cache_dir": ".cache/llm",
+    "cache_enabled": true,
+    "calls_total": 2,
+    "calls_by_stage": {
+      "generate_ir": 1,
+      "generate_bindings": 1
+    },
+    "cache_hits": 2,
+    "cache_misses": 0,
+    "usage_tokens_total": 0,
+    "prompt_template_hashes": {
+      "ir_agent": "96ebdefb68ef2ba923ff827929d077ccd00e78591478d77c261c24853e641f6a",
+      "binding_agent": "00afbe792fd1369d4e9a61e958e3d274e8a78a4e344122d1781404aac418dad7"
+    },
+    "rules_hash": "4ac6af8005e0d2c30d37bd9c621b14d957fbb46d0e2cd23d2e6633466e91d3d1507a7f7bce8a858b23fb73c5ee5a3c013b50440700cc38e29c10c36123533724",
+    "schema_hashes": {
+      "plan_schema": "8d8399a603d1b200692b2f75170ce1bbf742b5051503966cfee3aae1fcedcd9c",
+      "ir_schema": "d1b20ea900cec23d6966c056a65ba93f30671c40bfe3737fa7fdaaa48d330fbb",
+      "bindings_schema": "16e635d1178c71dabaf7ed996785e535b597198dbc2545cfa0372db633c0a640"
+    }
+  },
   "generated_manifest_present": true,
   "generation_consistency_pass": true
 }

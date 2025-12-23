@@ -1,0 +1,23 @@
+{
+  "request_meta": {
+    "stage": "generate_ir",
+    "provider": "mock",
+    "model": "mock-model",
+    "params": {
+      "temperature": 0.0,
+      "max_tokens": null
+    },
+    "prompt_template_hash": "96ebdefb68ef2ba923ff827929d077ccd00e78591478d77c261c24853e641f6a",
+    "rendered_prompt_hash": "96ebdefb68ef2ba923ff827929d077ccd00e78591478d77c261c24853e641f6a",
+    "rules_hash": "0efd038d1492aea276cbeabe81f659e0ba9364816b7b4002abf5953ace5c2cf7",
+    "schema_versions": {
+      "plan_schema": "8d8399a603d1b200692b2f75170ce1bbf742b5051503966cfee3aae1fcedcd9c",
+      "ir_schema": "d1b20ea900cec23d6966c056a65ba93f30671c40bfe3737fa7fdaaa48d330fbb",
+      "bindings_schema": "16e635d1178c71dabaf7ed996785e535b597198dbc2545cfa0372db633c0a640"
+    },
+    "inputs_hash": "11471ac48ca7094dc826fbd1012afdde54fb55eb996779be70daa40e6bd01b59"
+  },
+  "response_text": "app_name: automation_app\ndescription: 智能家居安防自动化系统：门磁和人体传感器联动夜间照明，异常情况实时通知，支持离家模式和安防策略\nversion: 0.1.0\nschemas: []\ncomponents:\n  - id: door_monitor\n    type: data_source\n    capabilities: [detect_state_change, binary_sensing]\n    metadata: {}\n  - id: motion_detector\n    type: sensor\n    capabilities: [detect_motion, presence_sensing]\n    metadata: {}\n  - id: lighting_controller\n    type: actuator\n    capabilities: [control_light, dimming]\n    metadata: {}\n  - id: automation_engine\n    type: processor\n    capabilities: [rule_eval, event_routing, mode_management]\n    metadata: {}\n  - id: notification_service\n    type: notification\n    capabilities: [push_alert, message_delivery]\n    metadata: {}\n  - id: data_recorder\n    type: storage\n    capabilities: [store, query, time_series]\n    metadata: {}\nlinks:\n  - id: link_door_to_engine\n    from: door_monitor\n    to: automation_engine\n    data_type: state_event\n    frequency: event-driven\n    contract: {}\n  - id: link_motion_to_engine\n    from: motion_detector\n    to: automation_engine\n    data_type: motion_event\n    frequency: event-driven\n    contract: {}\n  - id: link_engine_to_light\n    from: automation_engine\n    to: lighting_controller\n    data_type: control_command\n    frequency: on-demand\n    contract: {}\n  - id: link_engine_to_notify\n    from: automation_engine\n    to: notification_service\n    data_type: alert\n    frequency: event-driven\n    contract: {}\n  - id: link_engine_to_storage\n    from: automation_engine\n    to: data_recorder\n    data_type: event_log\n    frequency: periodic\n    contract: {}\npolicies: []\nlogic: {}\nmetadata:\n  description: 智能家居安防自动化系统：门磁和人体传感器联动夜间照明，异常情况实时通知，支持离家模式和安防策略\n  version: 0.1.0\n",
+  "usage": null,
+  "created_at": "2025-12-23T18:59:27.159007"
+}

@@ -1,0 +1,36 @@
+app_name: monitoring_app
+version: 0.1.0
+placements:
+  - component_id: sensor_collector
+    layer: device
+    device_ref: temp_sensor_01
+  - component_id: data_processor
+    layer: edge
+    device_ref: edge_gateway_01
+  - component_id: storage_service
+    layer: cloud
+    device_ref: cloud_server_01
+transports:
+  - link_id: link_sensor_to_processor
+    protocol: MQTT
+    qos: at_least_once
+  - link_id: link_processor_to_storage
+    protocol: HTTP
+    qos: best_effort
+endpoints:
+  - link_id: link_sensor_to_processor
+    from_endpoint: device://temp_sensor_01/data
+    to_endpoint: edge://gateway_01/input
+  - link_id: link_processor_to_storage
+    from_endpoint: device://temp_sensor_01/data
+    to_endpoint: edge://gateway_01/input
+component_bindings:
+  - component: sensor_collector
+    layer: device
+    device_ref: temp_sensor_01
+  - component: data_processor
+    layer: edge
+    device_ref: edge_gateway_01
+  - component: storage_service
+    layer: cloud
+    device_ref: cloud_server_01

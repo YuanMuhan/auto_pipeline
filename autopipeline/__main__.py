@@ -3,6 +3,7 @@
 import sys
 import click
 from autopipeline.runner import PipelineRunner
+from autopipeline.llm.types import LLMConfig
 
 
 @click.group()
@@ -13,10 +14,25 @@ def cli():
 
 @cli.command()
 @click.option('--case', required=True, help='Case ID to run (e.g., demo001)')
-def run(case: str):
+@click.option('--llm-provider', default="mock", show_default=True)
+@click.option('--model', default=None, help='LLM model name')
+@click.option('--temperature', default=0.0, type=float, show_default=True)
+@click.option('--max-tokens', default=None, type=int)
+@click.option('--cache-dir', default=".cache/llm", show_default=True)
+@click.option('--no-cache', is_flag=True, default=False, help='Disable LLM cache')
+def run(case: str, llm_provider: str, model: str, temperature: float, max_tokens: int,
+        cache_dir: str, no_cache: bool):
     """Run the pipeline for a specific case"""
     try:
-        runner = PipelineRunner(case_id=case)
+        llm_config = LLMConfig(
+            provider=llm_provider,
+            model=model,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            cache_dir=cache_dir,
+            cache_enabled=not no_cache
+        )
+        runner = PipelineRunner(case_id=case, llm_config=llm_config)
         result = runner.run()
 
         # Print summary

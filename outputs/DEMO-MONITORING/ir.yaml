@@ -35,7 +35,6 @@ links:
   to: storage_service
 logic: {}
 metadata:
-  created_at: '2025-12-23T17:16:55.714931'
   description: Smart home temperature monitoring system with cloud analytics
   version: 0.1.0
 policies: []
