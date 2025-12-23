@@ -1,0 +1,56 @@
+{
+  "case_id": "DEMO-SMARTHOME",
+  "bindings_hash": "96d9d3f123108bdd74207a1ed376f1da22d9421fbcf4c5614eee8ac0fc34206b",
+  "placements_summary": [
+    {
+      "component_id": "door_monitor",
+      "layer": "device",
+      "device_ref": "door_sensor_main"
+    },
+    {
+      "component_id": "motion_detector",
+      "layer": "edge",
+      "device_ref": "edge_gateway_ha"
+    },
+    {
+      "component_id": "lighting_controller",
+      "layer": "edge",
+      "device_ref": "edge_gateway_ha"
+    },
+    {
+      "component_id": "automation_engine",
+      "layer": "edge",
+      "device_ref": "edge_gateway_ha"
+    },
+    {
+      "component_id": "notification_service",
+      "layer": "edge",
+      "device_ref": "edge_gateway_ha"
+    },
+    {
+      "component_id": "data_recorder",
+      "layer": "cloud",
+      "device_ref": "cloud_automation_service"
+    }
+  ],
+  "endpoints_used": [
+    "ha_entity://binary_sensor.bedroom_door_contact",
+    "ha_entity://binary_sensor.bedroom_door_contact",
+    "ha_entity://binary_sensor.bedroom_door_contact",
+    "ha_entity://binary_sensor.bedroom_door_contact",
+    "ha_entity://binary_sensor.bedroom_door_contact",
+    "ha_entity://binary_sensor.living_room_motion",
+    "ha_entity://binary_sensor.living_room_motion",
+    "ha_entity://binary_sensor.living_room_motion",
+    "ha_entity://binary_sensor.living_room_motion",
+    "ha_entity://binary_sensor.living_room_motion"
+  ],
+  "components_bound": [
+    "door_monitor",
+    "motion_detector",
+    "lighting_controller",
+    "automation_engine",
+    "notification_service",
+    "data_recorder"
+  ]
+}

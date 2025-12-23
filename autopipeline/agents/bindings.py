@@ -108,10 +108,21 @@ class BindingsAgent:
                 "to_endpoint": to_ep
             })
 
+        component_bindings = []
+        for placement in placements:
+            component_bindings.append({
+                "component": placement["component_id"],
+                "layer": placement["layer"],
+                "device_ref": placement["device_ref"]
+            })
+
         return {
+            "app_name": ir_data.get("app_name", "app"),
+            "version": ir_data.get("version", ir_data.get("metadata", {}).get("version", "1.0")),
             "placements": placements,
             "transports": transports,
-            "endpoints": endpoints_mapping
+            "endpoints": endpoints_mapping,
+            "component_bindings": component_bindings
         }
 
     def _find_device_for_layer(self, layer: str, device_info: Dict[str, Any]) -> str:

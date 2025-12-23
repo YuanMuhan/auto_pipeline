@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["app_name", "description", "version", "problem_type", "components_outline", "links_outline"],
+  "properties": {
+    "app_name": { "type": "string" },
+    "description": { "type": "string" },
+    "version": { "type": "string" },
+    "problem_type": { "type": "string" },
+    "requirements": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "constraints": {
+      "type": "object"
+    },
+    "components_outline": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "type"],
+        "properties": {
+          "id": { "type": "string" },
+          "type": { "type": "string" },
+          "capabilities": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "metadata": { "type": "object" }
+        }
+      }
+    },
+    "links_outline": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "from", "to"],
+        "properties": {
+          "id": { "type": "string" },
+          "from": { "type": "string" },
+          "to": { "type": "string" },
+          "data_type": { "type": "string" },
+          "frequency": { "type": "string" },
+          "contract": { "type": "object" }
+        }
+      }
+    },
+    "notes": { "type": "string" },
+    "generated_at": { "type": "string" }
+  }
+}

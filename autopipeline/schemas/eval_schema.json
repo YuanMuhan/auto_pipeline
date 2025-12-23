@@ -83,6 +83,38 @@
       "items": {
         "type": "string"
       }
+    },
+    "stages_passed": {
+      "type": "array",
+      "description": "Pipeline stages that passed in order",
+      "items": {
+        "type": "string"
+      }
+    },
+    "rules_version": {
+      "type": "object",
+      "description": "Hashes and counts derived from rules files",
+      "properties": {
+        "ir_rules_hash": { "type": "string" },
+        "bindings_rules_hash": { "type": "string" },
+        "ir_required_fields": { "type": "integer", "minimum": 0 },
+        "ir_forbidden_keywords": { "type": "integer", "minimum": 0 },
+        "bindings_required_fields": { "type": "integer", "minimum": 0 },
+        "bindings_forbidden_keywords": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": true
+    },
+    "bindings_hash": {
+      "type": "string",
+      "description": "SHA256 of bindings.yaml"
+    },
+    "generated_manifest_present": {
+      "type": "boolean",
+      "description": "Whether generated_code/manifest.json exists"
+    },
+    "generation_consistency_pass": {
+      "type": "boolean",
+      "description": "Generation consistency check status"
     }
   },
   "additionalProperties": false

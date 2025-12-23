@@ -1,5 +1,25 @@
 {
-  "components": [
+  "app_name": "automation_app",
+  "description": "智能家居安防自动化系统：门磁和人体传感器联动夜间照明，异常情况实时通知，支持离家模式和安防策略",
+  "version": "0.1.0",
+  "problem_type": "automation",
+  "requirements": [
+    "门磁传感器检测门窗开关状态",
+    "人体传感器检测室内人员活动",
+    "夜间模式：检测到人体活动时自动开灯",
+    "离家模式：检测到门磁触发时发送告警通知",
+    "安防模式：门磁+人体双重检测触发警报",
+    "异常情况（如传感器离线）发送故障通知",
+    "支持远程查询系统状态和历史记录",
+    "容错处理：传感器故障时使用备用策略"
+  ],
+  "constraints": {
+    "latency": "传感器事件实时响应（<500ms），通知推送（<2s）",
+    "data_volume": "传感器事件流：10-50 events/min，状态查询：低频",
+    "reliability": "高可用性，支持传感器故障降级",
+    "security": "离家模式需要认证，敏感数据加密传输"
+  },
+  "components_outline": [
     {
       "id": "door_monitor",
       "type": "data_source",
@@ -51,7 +71,7 @@
       ]
     }
   ],
-  "links": [
+  "links_outline": [
     {
       "id": "link_door_to_engine",
       "from": "door_monitor",
@@ -88,10 +108,6 @@
       "frequency": "periodic"
     }
   ],
-  "logic": {},
-  "metadata": {
-    "description": "智能家居安防自动化系统：门磁和人体传感器联动夜间照明，异常情况实时通知，支持离家模式和安防策略",
-    "created_at": "2025-12-23T14:37:22.327129",
-    "version": "1.0"
-  }
+  "notes": "Deterministic planner output (pre-IR)",
+  "generated_at": "2025-12-23T17:17:05.680443"
 }

@@ -1,7 +1,11 @@
 {
   "case_id": "DEMO-SMARTHOME",
-  "timestamp": "2025-12-23T14:37:22.345245",
+  "timestamp": "2025-12-23T17:17:05.723291",
   "checks": {
+    "plan_schema": {
+      "status": "PASS",
+      "message": "Plan schema validation passed"
+    },
     "ir_schema": {
       "status": "PASS",
       "message": "IR schema validation passed"
@@ -20,11 +24,15 @@
     },
     "code_generated": {
       "status": "PASS",
-      "message": "Generated code for 3 layers"
+      "message": "Generated code for 3 layers with manifest"
     },
     "deploy_generated": {
       "status": "PASS",
       "message": "docker-compose.yml at .\\outputs\\DEMO-SMARTHOME\\docker-compose.yml"
+    },
+    "generation_consistency": {
+      "status": "PASS",
+      "message": "Generation consistency passed"
     }
   },
   "metrics": {
@@ -34,5 +42,24 @@
     "num_placements": 6,
     "num_layers": 3
   },
-  "overall_status": "PASS"
+  "overall_status": "PASS",
+  "stages_passed": [
+    "plan",
+    "ir",
+    "bindings",
+    "codegen",
+    "deploy",
+    "eval"
+  ],
+  "rules_version": {
+    "ir_rules_hash": "4ac6af8005e0d2c30d37bd9c621b14d957fbb46d0e2cd23d2e6633466e91d3d1",
+    "bindings_rules_hash": "507a7f7bce8a858b23fb73c5ee5a3c013b50440700cc38e29c10c36123533724",
+    "ir_required_fields": 7,
+    "ir_forbidden_keywords": 4,
+    "bindings_required_fields": 4,
+    "bindings_forbidden_keywords": 4
+  },
+  "bindings_hash": "96d9d3f123108bdd74207a1ed376f1da22d9421fbcf4c5614eee8ac0fc34206b",
+  "generated_manifest_present": true,
+  "generation_consistency_pass": true
 }

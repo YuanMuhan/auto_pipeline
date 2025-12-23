@@ -1,0 +1,32 @@
+{
+  "case_id": "DEMO-MONITORING",
+  "bindings_hash": "6f087fc835dba5db70c9ae2adde3937a526461f72c3b73736849898c51acdc3a",
+  "placements_summary": [
+    {
+      "component_id": "sensor_collector",
+      "layer": "device",
+      "device_ref": "temp_sensor_01"
+    },
+    {
+      "component_id": "data_processor",
+      "layer": "edge",
+      "device_ref": "edge_gateway_01"
+    },
+    {
+      "component_id": "storage_service",
+      "layer": "cloud",
+      "device_ref": "cloud_server_01"
+    }
+  ],
+  "endpoints_used": [
+    "device://temp_sensor_01/data",
+    "device://temp_sensor_01/data",
+    "edge://gateway_01/input",
+    "edge://gateway_01/input"
+  ],
+  "components_bound": [
+    "sensor_collector",
+    "data_processor",
+    "storage_service"
+  ]
+}

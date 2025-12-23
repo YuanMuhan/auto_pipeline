@@ -1,0 +1,80 @@
+app_name: automation_app
+components:
+- capabilities:
+  - detect_state_change
+  - binary_sensing
+  id: door_monitor
+  metadata: {}
+  type: data_source
+- capabilities:
+  - detect_motion
+  - presence_sensing
+  id: motion_detector
+  metadata: {}
+  type: sensor
+- capabilities:
+  - control_light
+  - dimming
+  id: lighting_controller
+  metadata: {}
+  type: actuator
+- capabilities:
+  - rule_eval
+  - event_routing
+  - mode_management
+  id: automation_engine
+  metadata: {}
+  type: processor
+- capabilities:
+  - push_alert
+  - message_delivery
+  id: notification_service
+  metadata: {}
+  type: notification
+- capabilities:
+  - store
+  - query
+  - time_series
+  id: data_recorder
+  metadata: {}
+  type: storage
+description: 智能家居安防自动化系统：门磁和人体传感器联动夜间照明，异常情况实时通知，支持离家模式和安防策略
+links:
+- contract: {}
+  data_type: state_event
+  frequency: event-driven
+  from: door_monitor
+  id: link_door_to_engine
+  to: automation_engine
+- contract: {}
+  data_type: motion_event
+  frequency: event-driven
+  from: motion_detector
+  id: link_motion_to_engine
+  to: automation_engine
+- contract: {}
+  data_type: control_command
+  frequency: on-demand
+  from: automation_engine
+  id: link_engine_to_light
+  to: lighting_controller
+- contract: {}
+  data_type: alert
+  frequency: event-driven
+  from: automation_engine
+  id: link_engine_to_notify
+  to: notification_service
+- contract: {}
+  data_type: event_log
+  frequency: periodic
+  from: automation_engine
+  id: link_engine_to_storage
+  to: data_recorder
+logic: {}
+metadata:
+  created_at: '2025-12-23T17:17:05.694510'
+  description: 智能家居安防自动化系统：门磁和人体传感器联动夜间照明，异常情况实时通知，支持离家模式和安防策略
+  version: 0.1.0
+policies: []
+schemas: []
+version: 0.1.0

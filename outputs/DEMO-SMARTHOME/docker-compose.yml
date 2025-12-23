@@ -3,52 +3,49 @@ version: '3.8'
 services:
 
   cloud_service:
-    build:
-      context: ./generated_code/cloud
-      dockerfile: Dockerfile
+    image: autopipeline/cloud:latest
     container_name: autopipeline_cloud
+    command: python ./generated_code/cloud/main.py
     environment:
       - LAYER=CLOUD
       - SERVICE_NAME=cloud_service
+      - BINDINGS_HASH=96d9d3f123108bdd74207a1ed376f1da22d9421fbcf4c5614eee8ac0fc34206b
+    labels:
+      bindings_hash: "96d9d3f123108bdd74207a1ed376f1da22d9421fbcf4c5614eee8ac0fc34206b"
     volumes:
       - ./generated_code/cloud:/app
-    # TODO: Add port mappings based on endpoints
-    # ports:
-    #   - "8080:8080"
     networks:
       - autopipeline_network
     restart: unless-stopped
 
   edge_service:
-    build:
-      context: ./generated_code/edge
-      dockerfile: Dockerfile
+    image: autopipeline/edge:latest
     container_name: autopipeline_edge
+    command: python ./generated_code/edge/main.py
     environment:
       - LAYER=EDGE
       - SERVICE_NAME=edge_service
+      - BINDINGS_HASH=96d9d3f123108bdd74207a1ed376f1da22d9421fbcf4c5614eee8ac0fc34206b
+    labels:
+      bindings_hash: "96d9d3f123108bdd74207a1ed376f1da22d9421fbcf4c5614eee8ac0fc34206b"
     volumes:
       - ./generated_code/edge:/app
-    # TODO: Add port mappings based on endpoints
-    # ports:
-    #   - "8080:8080"
     networks:
       - autopipeline_network
     restart: unless-stopped
 
   device_service:
-    build:
-      context: ./generated_code/device
-      dockerfile: Dockerfile
+    image: autopipeline/device:latest
     container_name: autopipeline_device
+    command: python ./generated_code/device/main.py
     environment:
       - LAYER=DEVICE
       - SERVICE_NAME=device_service
+      - BINDINGS_HASH=96d9d3f123108bdd74207a1ed376f1da22d9421fbcf4c5614eee8ac0fc34206b
+    labels:
+      bindings_hash: "96d9d3f123108bdd74207a1ed376f1da22d9421fbcf4c5614eee8ac0fc34206b"
     volumes:
       - ./generated_code/device:/app
-    # TODO: Add port mappings based on endpoints
-    # ports:
-    #   - "8080:8080"
     networks:
       - autopipeline_network
     restart: unless-stopped
@@ -67,3 +64,4 @@ networks:
 # - link_engine_to_light: HTTP (QoS: best_effort)
 # - link_engine_to_notify: HTTP (QoS: best_effort)
 # - link_engine_to_storage: HTTP (QoS: best_effort)
+# BINDINGS_HASH: 96d9d3f123108bdd74207a1ed376f1da22d9421fbcf4c5614eee8ac0fc34206b

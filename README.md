@@ -8,7 +8,7 @@ AutoPipeline 是一个研究原型，用于演示 **Prompt-only multi-agent pipe
 
 ### 核心特性
 
-- **完整链路打通**: UserProblem → IR → Bindings → Code → Deploy → Evaluation
+- **完整链路打通**: UserProblem → Plan → IR → Bindings → Code → Deploy → Evaluation（Code/Deploy 带 bindings_hash 追溯）
 - **强约束边界**: IR 层严格禁止实现细节（端口、URL、协议等）
 - **自动修复机制**: 验证失败后自动重试（最多3轮）
 - **确定性验证**: Schema、边界、覆盖度、端点合法性四重检查
@@ -42,9 +42,10 @@ auto_pipeline/
 │       └── device_info.json      # 设备信息
 ├── outputs/                       # 产物输出目录（自动生成）
 │   └── <CASE_ID>/
-│       ├── plan.json             # 生成的 IR
+│       ├── plan.json             # 任务分解 Plan（pre-IR）
+│       ├── ir.yaml               # 生成的 IR
 │       ├── bindings.yaml         # 生成的 Bindings
-│       ├── generated_code/       # 生成的代码骨架
+│       ├── generated_code/       # 生成的代码骨架 + manifest.json（追溯 bindings_hash）
 │       │   ├── cloud/
 │       │   ├── edge/
 │       │   └── device/
@@ -79,7 +80,8 @@ python -m autopipeline run --case DEMO-SMARTHOME
 
 运行完成后，所有产物位于 `outputs/<CASE_ID>/` 目录：
 
-- `plan.json`: 中间表示（IR），描述系统的逻辑实体和数据流
+- `plan.json`: 任务分解计划（pre-IR），描述问题类型、需求、逻辑组件/链路轮廓
+- `ir.yaml`: 中间表示（IR），描述系统的逻辑实体和数据流
 - `bindings.yaml`: 绑定配置，包含部署位置、传输协议、端点映射
 - `generated_code/`: 生成的代码骨架（cloud/edge/device 三层）
 - `docker-compose.yml`: Docker 部署配置
@@ -177,10 +179,17 @@ endpoints:
 
 ## 输出产物说明
 
-### plan.json (IR)
+### plan.json (Plan)
+
+任务分解与逻辑轮廓，包含：
+- `problem_type` / `requirements` / `constraints`
+- `components_outline`: 计划使用的逻辑组件概览（无协议/地址）
+- `links_outline`: 逻辑依赖关系（无协议/地址）
+
+### ir.yaml (IR)
 
 逻辑架构描述，包含：
-- `entities`: 系统中的逻辑组件（传感器、处理器、存储等）
+- `components`: 系统中的逻辑组件（传感器、处理器、存储等）
 - `links`: 组件间的数据流
 - `metadata`: 元信息
 

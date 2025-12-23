@@ -7,13 +7,9 @@ import re
 class BoundaryChecker:
     """Check IR for forbidden implementation details"""
 
-    # Forbidden keywords that should NOT appear in IR
-    FORBIDDEN_KEYWORDS = [
-        'entity_id', 'topic', 'url', 'port', 'mqtt', 'http', 'https',
-        'docker', 'k8s', 'kubernetes', 'container', 'host', 'ip',
-        'address', 'endpoint', 'socket', 'tcp', 'udp', 'grpc',
-        'rest', 'api', 'broker', 'registry', 'deployment'
-    ]
+    def __init__(self, forbidden_keywords: List[str]):
+        # Deduplicate and normalize
+        self.forbidden_keywords = sorted(set([kw.lower() for kw in forbidden_keywords]))
 
     def check_ir(self, ir_data: Dict[str, Any]) -> Tuple[bool, str]:
         """Check if IR contains forbidden implementation details"""
@@ -22,7 +18,7 @@ class BoundaryChecker:
         # Convert IR to string for keyword search
         ir_str = str(ir_data).lower()
 
-        for keyword in self.FORBIDDEN_KEYWORDS:
+        for keyword in self.forbidden_keywords:
             # Use word boundary to avoid false positives
             pattern = r'\b' + re.escape(keyword) + r'\b'
             if re.search(pattern, ir_str):

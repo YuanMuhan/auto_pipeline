@@ -5,6 +5,7 @@ import yaml
 import os
 from pathlib import Path
 from typing import Any, Dict
+import hashlib
 
 
 def load_json(filepath: str) -> Dict[str, Any]:
@@ -36,3 +37,21 @@ def save_yaml(data: Dict[str, Any], filepath: str) -> None:
 def ensure_dir(path: str) -> None:
     """Ensure directory exists"""
     Path(path).mkdir(parents=True, exist_ok=True)
+
+
+def sha256_of_text(text: str) -> str:
+    """Compute SHA256 hash of given text"""
+    return hashlib.sha256(text.encode('utf-8')).hexdigest()
+
+
+def sha256_of_file(filepath: str) -> str:
+    """Compute SHA256 hash of a file"""
+    with open(filepath, 'r', encoding='utf-8') as f:
+        content = f.read()
+    return sha256_of_text(content)
+
+
+def sha256_of_dict(data: Dict[str, Any]) -> str:
+    """Compute SHA256 hash of a dict by stable JSON dump"""
+    serialized = json.dumps(data, sort_keys=True, ensure_ascii=False)
+    return sha256_of_text(serialized)

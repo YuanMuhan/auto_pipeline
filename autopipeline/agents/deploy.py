@@ -10,8 +10,8 @@ class DeployAgent:
     def __init__(self):
         pass
 
-    def generate_deployment(self, bindings_data: Dict[str, Any], output_dir: str) -> str:
-        """Generate docker-compose.yml based on bindings"""
+    def generate_deployment(self, bindings_data: Dict[str, Any], output_dir: str, bindings_hash: str) -> str:
+        """Generate docker-compose.yml based on bindings with traceability"""
 
         # Group placements by layer
         layers = {'cloud': [], 'edge': [], 'device': []}
@@ -22,7 +22,7 @@ class DeployAgent:
                 layers[layer].append(placement)
 
         # Generate docker-compose content
-        compose_content = self._generate_docker_compose(layers, bindings_data)
+        compose_content = self._generate_docker_compose(layers, bindings_data, bindings_hash)
 
         # Save docker-compose.yml
         compose_file = os.path.join(output_dir, 'docker-compose.yml')
@@ -31,8 +31,9 @@ class DeployAgent:
 
         return compose_file
 
-    def _generate_docker_compose(self, layers: Dict[str, list], bindings_data: Dict[str, Any]) -> str:
-        """Generate docker-compose.yml content"""
+    def _generate_docker_compose(self, layers: Dict[str, list], bindings_data: Dict[str, Any],
+                                 bindings_hash: str) -> str:
+        """Generate docker-compose.yml content with traceability info"""
 
         content = """version: '3.8'
 
@@ -44,18 +45,17 @@ services:
             if placements:
                 content += f"""
   {layer}_service:
-    build:
-      context: ./generated_code/{layer}
-      dockerfile: Dockerfile
+    image: autopipeline/{layer}:latest
     container_name: autopipeline_{layer}
+    command: python ./generated_code/{layer}/main.py
     environment:
       - LAYER={layer.upper()}
       - SERVICE_NAME={layer}_service
+      - BINDINGS_HASH={bindings_hash}
+    labels:
+      bindings_hash: "{bindings_hash}"
     volumes:
       - ./generated_code/{layer}:/app
-    # TODO: Add port mappings based on endpoints
-    # ports:
-    #   - "8080:8080"
     networks:
       - autopipeline_network
     restart: unless-stopped
@@ -76,5 +76,6 @@ networks:
         content += "\n# Transport protocols used:\n"
         for transport in bindings_data.get('transports', []):
             content += f"# - {transport['link_id']}: {transport['protocol']} (QoS: {transport.get('qos', 'N/A')})\n"
+        content += f"# BINDINGS_HASH: {bindings_hash}\n"
 
         return content
