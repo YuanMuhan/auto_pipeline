@@ -1,0 +1,21 @@
+type_name: TemperatureSensor
+kind: sensor
+provided:
+  events:
+    - name: temperature
+      schema:
+        type: object
+        properties:
+          value: {type: number}
+          unit: {type: string, enum: [C, F]}
+          ts: {type: string}
+  properties:
+    - name: battery
+      schema: {type: number}
+  services: []
+required: []
+examples:
+  - payload:
+      value: 23.5
+      unit: C
+      ts: "2025-01-01T00:00:00Z"

@@ -1,0 +1,27 @@
+type_name: StateTracker
+kind: logic
+provided:
+  events:
+    - name: state_changed
+      schema:
+        type: object
+        properties:
+          key: {type: string}
+          value: {type: object}
+          ts: {type: string}
+  properties:
+    - name: state_snapshot
+      schema: {type: object}
+  services:
+    - name: update_state
+      schema:
+        input:
+          key: {type: string}
+          value: {type: object}
+        output: {type: string}
+required: []
+examples:
+  - payload:
+      key: "mode"
+      value: "home"
+      ts: "2025-01-01T00:00:00Z"

@@ -1,0 +1,25 @@
+type_name: Light
+kind: actuator
+provided:
+  events: []
+  properties:
+    - name: state
+      schema: {type: string, enum: [on, off]}
+    - name: brightness
+      schema: {type: integer}
+  services:
+    - name: turn_on
+      schema:
+        input:
+          brightness: {type: integer}
+        output: {type: string}
+    - name: turn_off
+      schema:
+        input: {}
+        output: {type: string}
+required:
+  - event: motion (optional)
+examples:
+  - payload:
+      state: on
+      brightness: 80

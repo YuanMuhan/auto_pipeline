@@ -108,6 +108,18 @@
       "type": "string",
       "description": "SHA256 of bindings.yaml"
     },
+    "catalog_hashes": {
+      "type": "object",
+      "properties": {
+        "components_index_hash": { "type": "string" },
+        "endpoint_types_hash": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "input_validation": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
     "generated_manifest_present": {
       "type": "boolean",
       "description": "Whether generated_code/manifest.json exists"

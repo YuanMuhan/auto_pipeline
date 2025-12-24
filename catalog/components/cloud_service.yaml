@@ -1,0 +1,18 @@
+type_name: CloudService
+kind: service
+provided:
+  events: []
+  properties:
+    - name: api
+      schema: {type: string}
+  services:
+    - name: process
+      schema:
+        input:
+          data: {type: object}
+        output: {type: string}
+required: []
+examples:
+  - payload:
+      api: "analytics"
+notes: Cloud-side logic or dashboard backend.***

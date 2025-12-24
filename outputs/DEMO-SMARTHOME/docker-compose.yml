@@ -9,9 +9,9 @@ services:
     environment:
       - LAYER=CLOUD
       - SERVICE_NAME=cloud_service
-      - BINDINGS_HASH=96d9d3f123108bdd74207a1ed376f1da22d9421fbcf4c5614eee8ac0fc34206b
+      - BINDINGS_HASH=21d5267b93e016c3828b54f0723c962c997c7a0672a5f8d1c0ba136817fad0a5
     labels:
-      bindings_hash: "96d9d3f123108bdd74207a1ed376f1da22d9421fbcf4c5614eee8ac0fc34206b"
+      bindings_hash: "21d5267b93e016c3828b54f0723c962c997c7a0672a5f8d1c0ba136817fad0a5"
     volumes:
       - ./generated_code/cloud:/app
     networks:
@@ -25,9 +25,9 @@ services:
     environment:
       - LAYER=EDGE
       - SERVICE_NAME=edge_service
-      - BINDINGS_HASH=96d9d3f123108bdd74207a1ed376f1da22d9421fbcf4c5614eee8ac0fc34206b
+      - BINDINGS_HASH=21d5267b93e016c3828b54f0723c962c997c7a0672a5f8d1c0ba136817fad0a5
     labels:
-      bindings_hash: "96d9d3f123108bdd74207a1ed376f1da22d9421fbcf4c5614eee8ac0fc34206b"
+      bindings_hash: "21d5267b93e016c3828b54f0723c962c997c7a0672a5f8d1c0ba136817fad0a5"
     volumes:
       - ./generated_code/edge:/app
     networks:
@@ -41,9 +41,9 @@ services:
     environment:
       - LAYER=DEVICE
       - SERVICE_NAME=device_service
-      - BINDINGS_HASH=96d9d3f123108bdd74207a1ed376f1da22d9421fbcf4c5614eee8ac0fc34206b
+      - BINDINGS_HASH=21d5267b93e016c3828b54f0723c962c997c7a0672a5f8d1c0ba136817fad0a5
     labels:
-      bindings_hash: "96d9d3f123108bdd74207a1ed376f1da22d9421fbcf4c5614eee8ac0fc34206b"
+      bindings_hash: "21d5267b93e016c3828b54f0723c962c997c7a0672a5f8d1c0ba136817fad0a5"
     volumes:
       - ./generated_code/device:/app
     networks:
@@ -64,4 +64,4 @@ networks:
 # - link_engine_to_light: HTTP (QoS: best_effort)
 # - link_engine_to_notify: HTTP (QoS: best_effort)
 # - link_engine_to_storage: HTTP (QoS: best_effort)
-# BINDINGS_HASH: 96d9d3f123108bdd74207a1ed376f1da22d9421fbcf4c5614eee8ac0fc34206b
+# BINDINGS_HASH: 21d5267b93e016c3828b54f0723c962c997c7a0672a5f8d1c0ba136817fad0a5

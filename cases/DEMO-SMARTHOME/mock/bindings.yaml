@@ -37,20 +37,20 @@ transports:
     qos: best_effort
 endpoints:
   - link_id: link_door_to_engine
-    from_endpoint: ha_entity://binary_sensor.bedroom_door_contact
-    to_endpoint: ha_entity://binary_sensor.living_room_motion
+    from_endpoint: ha://local
+    to_endpoint: ha://local
   - link_id: link_motion_to_engine
-    from_endpoint: ha_entity://binary_sensor.bedroom_door_contact
-    to_endpoint: ha_entity://binary_sensor.living_room_motion
+    from_endpoint: ha://local
+    to_endpoint: ha://local
   - link_id: link_engine_to_light
-    from_endpoint: ha_entity://binary_sensor.bedroom_door_contact
-    to_endpoint: ha_entity://binary_sensor.living_room_motion
+    from_endpoint: http://<SECRET_HA_HOST>:8123/api/services/light/turn_on
+    to_endpoint: http://<SECRET_HA_HOST>:8123/api/services/light/turn_on
   - link_id: link_engine_to_notify
-    from_endpoint: ha_entity://binary_sensor.bedroom_door_contact
-    to_endpoint: ha_entity://binary_sensor.living_room_motion
+    from_endpoint: https://api.pushover.net/1/messages.json?token=<SECRET_PUSHOVER_TOKEN>
+    to_endpoint: https://api.pushover.net/1/messages.json?token=<SECRET_PUSHOVER_TOKEN>
   - link_id: link_engine_to_storage
-    from_endpoint: ha_entity://binary_sensor.bedroom_door_contact
-    to_endpoint: ha_entity://binary_sensor.living_room_motion
+    from_endpoint: https://<SECRET_CLOUD_DB>/write?db=smarthome&precision=s
+    to_endpoint: https://<SECRET_CLOUD_DB>/write?db=smarthome&precision=s
 component_bindings:
   - component: door_monitor
     layer: device

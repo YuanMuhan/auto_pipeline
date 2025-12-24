@@ -1,0 +1,22 @@
+type_name: TimeScheduler
+kind: service
+provided:
+  events:
+    - name: tick
+      schema:
+        type: object
+        properties:
+          cron: {type: string}
+          ts: {type: string}
+  properties: []
+  services:
+    - name: schedule
+      schema:
+        input:
+          cron: {type: string}
+        output: {type: string}
+required: []
+examples:
+  - payload:
+      cron: "0 22 * * *"
+      ts: "2025-01-01T22:00:00Z"

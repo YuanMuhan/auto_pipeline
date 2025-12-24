@@ -10,6 +10,7 @@ from autopipeline.llm.hash_utils import stable_hash, text_hash
 from autopipeline.llm.prompt_loader import PromptLoader
 from autopipeline.llm.types import LLMConfig, LLMResponse
 from autopipeline.llm import providers as provider_module
+from autopipeline.catalog.render import load_component_profiles, load_endpoint_types, component_types_summary, endpoint_types_summary
 
 
 class LLMClient:
@@ -21,6 +22,12 @@ class LLMClient:
         self.logger = logger
         self.cache = LLMDiskCache(config.cache_dir, enabled=config.cache_enabled)
         self.prompt_loader = PromptLoader(Path(base_dir) / "prompts")
+        comp = load_component_profiles(base_dir)
+        ep = load_endpoint_types(base_dir)
+        self.catalog_summary = {
+            "components": component_types_summary(comp["profiles"]),
+            "endpoint_types": endpoint_types_summary(ep["data"]),
+        }
         self.stats = {
             "provider": config.provider,
             "model": config.model,
@@ -67,7 +74,8 @@ class LLMClient:
         return stable_hash(key_obj)
 
     def _render_prompt(self, prompt_name: str, context: Dict[str, Any]) -> Dict[str, str]:
-        rendered = self.prompt_loader.render(prompt_name, context)
+        extras = f"Component types:\n{self.catalog_summary['components']}\n\nEndpoint types:\n{self.catalog_summary['endpoint_types']}"
+        rendered = self.prompt_loader.render(prompt_name, context, extras=extras)
         # Track template hashes
         self.stats["prompt_template_hashes"][prompt_name] = rendered["template_hash"]
         return rendered

@@ -1,6 +1,6 @@
 {
   "case_id": "DEMO-SMARTHOME",
-  "timestamp": "2025-12-23T18:59:27.190147",
+  "timestamp": "2025-12-24T20:21:08.198951",
   "checks": {
     "plan_schema": {
       "status": "PASS",
@@ -59,7 +59,11 @@
     "bindings_required_fields": 4,
     "bindings_forbidden_keywords": 4
   },
-  "bindings_hash": "96d9d3f123108bdd74207a1ed376f1da22d9421fbcf4c5614eee8ac0fc34206b",
+  "bindings_hash": "21d5267b93e016c3828b54f0723c962c997c7a0672a5f8d1c0ba136817fad0a5",
+  "catalog_hashes": {
+    "components_index_hash": "ba26c264fb48b9445d957bac399bb436826407143176f3fb0fad1dffd876fe78",
+    "endpoint_types_hash": "5f566bd637fe54bc64c37b48c279b10e38490d8ce2a4b152cb5cfb68594be6e2"
+  },
   "llm": {
     "provider": "mock",
     "model": null,
@@ -86,5 +90,10 @@
     }
   },
   "generated_manifest_present": true,
-  "generation_consistency_pass": true
+  "generation_consistency_pass": true,
+  "input_validation": [
+    "UserProblem: UserProblem soft-missing fields: id, title, target",
+    "DeviceInfo: DeviceInfo schema validation passed",
+    "DeviceInfoCatalog: DeviceInfo endpoints conform to catalog"
+  ]
 }

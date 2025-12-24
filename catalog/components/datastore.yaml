@@ -1,0 +1,22 @@
+type_name: DataStore
+kind: storage
+provided:
+  events: []
+  properties:
+    - name: retention_days
+      schema: {type: integer}
+  services:
+    - name: store
+      schema:
+        input:
+          record: {type: object}
+        output: {type: string}
+    - name: query
+      schema:
+        input:
+          filter: {type: object}
+        output: {type: array}
+required: []
+examples:
+  - payload:
+      retention_days: 30

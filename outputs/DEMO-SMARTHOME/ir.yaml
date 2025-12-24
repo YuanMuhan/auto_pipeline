@@ -5,39 +5,39 @@ components:
   - binary_sensing
   id: door_monitor
   metadata: {}
-  type: data_source
+  type: DoorContact
 - capabilities:
   - detect_motion
   - presence_sensing
   id: motion_detector
   metadata: {}
-  type: sensor
+  type: MotionSensor
 - capabilities:
   - control_light
   - dimming
   id: lighting_controller
   metadata: {}
-  type: actuator
+  type: Light
 - capabilities:
   - rule_eval
   - event_routing
   - mode_management
   id: automation_engine
   metadata: {}
-  type: processor
+  type: RuleEngine
 - capabilities:
   - push_alert
   - message_delivery
   id: notification_service
   metadata: {}
-  type: notification
+  type: Notifier
 - capabilities:
   - store
   - query
   - time_series
   id: data_recorder
   metadata: {}
-  type: storage
+  type: DataStore
 description: 智能家居安防自动化系统：门磁和人体传感器联动夜间照明，异常情况实时通知，支持离家模式和安防策略
 links:
 - contract: {}

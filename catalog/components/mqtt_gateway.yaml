@@ -1,0 +1,18 @@
+type_name: MQTTGateway
+kind: gateway
+provided:
+  events: []
+  properties:
+    - name: connected
+      schema: {type: boolean}
+  services:
+    - name: bridge
+      schema:
+        input:
+          mapping: {type: object}
+        output: {type: string}
+required: []
+examples:
+  - payload:
+      connected: true
+notes: Logical gateway; no具体 topic/url 在此定义，绑定阶段决定。***

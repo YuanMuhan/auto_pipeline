@@ -17,6 +17,9 @@ from autopipeline.verifier.schema_checker import SchemaChecker
 from autopipeline.verifier.boundary_checker import BoundaryChecker
 from autopipeline.verifier.coverage_checker import CoverageChecker
 from autopipeline.verifier.endpoint_checker import EndpointChecker
+from autopipeline.verifier.component_catalog_checker import ComponentCatalogChecker
+from autopipeline.verifier.device_info_catalog_checker import DeviceInfoCatalogChecker
+from autopipeline.catalog.render import catalog_hashes, component_types_summary, endpoint_types_summary, load_component_profiles, load_endpoint_types
 from autopipeline.verifier.generation_checker import GenerationConsistencyChecker
 from autopipeline.llm import LLMClient
 from autopipeline.llm.types import LLMConfig
@@ -36,6 +39,7 @@ class PipelineRunner:
         # Logs and stage tracking
         self.logs: List[str] = []
         self.stages_passed: List[str] = []
+        self.input_validation: List[str] = []
 
         # Initialize agents
         self.planner = PlannerAgent()
@@ -62,6 +66,8 @@ class PipelineRunner:
         )
         self.coverage_checker = CoverageChecker()
         self.endpoint_checker = EndpointChecker()
+        self.component_catalog_checker = ComponentCatalogChecker(base_dir)
+        self.device_info_catalog_checker = DeviceInfoCatalogChecker(base_dir)
 
         combined_rules_hash = stable_hash({
             "ir": self.rules_bundle["ir"]["hash"],
@@ -77,6 +83,7 @@ class PipelineRunner:
             "ir_schema": sha256_of_file(os.path.join(schemas_dir, "ir_schema.json")),
             "bindings_schema": sha256_of_file(os.path.join(schemas_dir, "bindings_schema.json")),
         }
+        self.catalog_hash = catalog_hashes(base_dir)
 
     def log(self, message: str, level: str = "INFO"):
         """Log a message"""
@@ -142,6 +149,24 @@ class PipelineRunner:
             user_problem = load_json(os.path.join(self.case_dir, "user_problem.json"))
             device_info = load_json(os.path.join(self.case_dir, "device_info.json"))
             self.log("Successfully loaded input files")
+            # Schema validation
+            up_ok, up_msg = self.schema_checker.validate_user_problem(user_problem)
+            di_ok, di_msg = self.schema_checker.validate_device_info(device_info)
+            self.input_validation = []
+            if up_ok:
+                self.input_validation.append(f"UserProblem: {up_msg}")
+            else:
+                raise ValueError(up_msg)
+            if di_ok:
+                self.input_validation.append(f"DeviceInfo: {di_msg}")
+            else:
+                raise ValueError(di_msg)
+            # Catalog validation for device_info
+            di_catalog_ok, di_catalog_msg, di_warnings = self.device_info_catalog_checker.check(device_info)
+            self.input_validation.append(f"DeviceInfoCatalog: {di_catalog_msg}")
+            self.input_validation.extend([f"warn: {w}" for w in di_warnings])
+            if not di_catalog_ok:
+                raise ValueError(di_catalog_msg)
             return user_problem, device_info
         except Exception as e:
             self.log(f"Error loading inputs: {str(e)}", "ERROR")
@@ -192,6 +217,13 @@ class PipelineRunner:
             valid, msg = self.boundary_checker.check_ir(ir_data)
             if not valid:
                 self.log(f"IR boundary check failed: {msg}", "WARNING")
+                last_error = msg
+                continue
+
+            # Catalog check
+            valid, msg = self.component_catalog_checker.check_ir(ir_data)
+            if not valid:
+                self.log(f"IR component catalog check failed: {msg}", "WARNING")
                 last_error = msg
                 continue
 
@@ -289,6 +321,7 @@ class PipelineRunner:
             "stages_passed": (self.stages_passed + ["eval"]),
             "rules_version": rules_version,
             "bindings_hash": bindings_hash,
+            "catalog_hashes": self.catalog_hash,
             "llm": {
                 "provider": self.llm_config.provider,
                 "model": self.llm_config.model,
@@ -361,6 +394,8 @@ class PipelineRunner:
         if failed_checks:
             eval_result["overall_status"] = "FAIL"
             eval_result["failed_checks"] = failed_checks
+
+        eval_result["input_validation"] = self.input_validation
 
         # Save evaluation result
         eval_file = os.path.join(self.output_dir, "eval.json")

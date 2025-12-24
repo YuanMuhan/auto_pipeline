@@ -1,0 +1,24 @@
+type_name: RuleEngine
+kind: logic
+provided:
+  events:
+    - name: action_invoked
+      schema:
+        type: object
+        properties:
+          target: {type: string}
+          ts: {type: string}
+  properties: []
+  services:
+    - name: evaluate
+      schema:
+        input:
+          event: {type: object}
+        output: {type: object}
+required:
+  - event: motion
+examples:
+  - payload:
+      event:
+        type: motion
+        detected: true

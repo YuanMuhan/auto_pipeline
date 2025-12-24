@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 import yaml
 from autopipeline.llm.hash_utils import text_hash
 
@@ -16,10 +16,11 @@ class PromptLoader:
             raise FileNotFoundError(f"Prompt template not found: {prompt_path}")
         return prompt_path.read_text(encoding="utf-8")
 
-    def render(self, prompt_name: str, context: Dict[str, Any]) -> Dict[str, str]:
+    def render(self, prompt_name: str, context: Dict[str, Any], extras: Optional[str] = None) -> Dict[str, str]:
         template = self.load(prompt_name)
         rendered_context = yaml.safe_dump(context, sort_keys=False, allow_unicode=True)
-        rendered = f"{template}\n\n# Context\n{rendered_context}"
+        extras_text = extras or ""
+        rendered = f"{template}\n\n# Catalog\n{extras_text}\n\n# Context\n{rendered_context}"
         return {
             "template": template,
             "template_hash": text_hash(template),

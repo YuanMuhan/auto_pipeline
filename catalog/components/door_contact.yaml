@@ -1,0 +1,23 @@
+type_name: DoorContact
+kind: sensor
+provided:
+  events:
+    - name: door_state
+      schema:
+        type: object
+        properties:
+          state:
+            type: string
+            enum: [open, closed]
+          ts:
+            type: string
+  properties:
+    - name: battery
+      schema: {type: number}
+  services: []
+required: []
+examples:
+  - payload:
+      state: open
+      ts: "2025-01-01T00:00:00Z"
+notes: Emits open/close events only; no network details here.

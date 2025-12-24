@@ -19,21 +19,21 @@ component_bindings:
   device_ref: cloud_automation_service
   layer: cloud
 endpoints:
-- from_endpoint: ha_entity://binary_sensor.bedroom_door_contact
+- from_endpoint: ha://local
   link_id: link_door_to_engine
-  to_endpoint: ha_entity://binary_sensor.living_room_motion
-- from_endpoint: ha_entity://binary_sensor.bedroom_door_contact
+  to_endpoint: ha://local
+- from_endpoint: ha://local
   link_id: link_motion_to_engine
-  to_endpoint: ha_entity://binary_sensor.living_room_motion
-- from_endpoint: ha_entity://binary_sensor.bedroom_door_contact
+  to_endpoint: ha://local
+- from_endpoint: http://<SECRET_HA_HOST>:8123/api/services/light/turn_on
   link_id: link_engine_to_light
-  to_endpoint: ha_entity://binary_sensor.living_room_motion
-- from_endpoint: ha_entity://binary_sensor.bedroom_door_contact
+  to_endpoint: http://<SECRET_HA_HOST>:8123/api/services/light/turn_on
+- from_endpoint: https://api.pushover.net/1/messages.json?token=<SECRET_PUSHOVER_TOKEN>
   link_id: link_engine_to_notify
-  to_endpoint: ha_entity://binary_sensor.living_room_motion
-- from_endpoint: ha_entity://binary_sensor.bedroom_door_contact
+  to_endpoint: https://api.pushover.net/1/messages.json?token=<SECRET_PUSHOVER_TOKEN>
+- from_endpoint: https://<SECRET_CLOUD_DB>/write?db=smarthome&precision=s
   link_id: link_engine_to_storage
-  to_endpoint: ha_entity://binary_sensor.living_room_motion
+  to_endpoint: https://<SECRET_CLOUD_DB>/write?db=smarthome&precision=s
 placements:
 - component_id: door_monitor
   device_ref: door_sensor_main

@@ -1,0 +1,21 @@
+type_name: Notifier
+kind: service
+provided:
+  events: []
+  properties:
+    - name: channels
+      schema:
+        type: array
+        items: {type: string}
+  services:
+    - name: push_alert
+      schema:
+        input:
+          message: {type: string}
+          severity: {type: string, enum: [info, warn, critical]}
+        output: {type: string}
+required: []
+examples:
+  - payload:
+      message: "door open"
+      severity: warn

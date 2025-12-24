@@ -5,13 +5,17 @@
       "name": "Temperature Sensor Device",
       "layer": "device",
       "type": "sensor",
-      "capabilities": ["temperature_sensing", "data_collection"],
-      "interfaces": {
-        "endpoints": [
-          {
+        "capabilities": ["temperature_sensing", "data_collection"],
+        "interfaces": {
+          "endpoints": [
+            {
+            "id": "ep_temp_pub",
             "name": "sensor_data_output",
-            "address": "device://temp_sensor_01/data",
-            "protocol": "MQTT",
+            "type": "mqtt_pub",
+            "direction": "publish",
+            "topic": "sensors/temp_sensor_01/data",
+            "payload_schema": {"type": "object", "properties": {"temperature": {"type": "number"}, "ts": {"type": "string"}}},
+            "address": "mqtt://broker/sensors/temp_sensor_01/data",
             "description": "Temperature sensor data output"
           }
         ]
@@ -27,19 +31,27 @@
       "name": "Edge Gateway",
       "layer": "edge",
       "type": "gateway",
-      "capabilities": ["data_processing", "filtering", "aggregation", "local_storage"],
-      "interfaces": {
-        "endpoints": [
-          {
+        "capabilities": ["data_processing", "filtering", "aggregation", "local_storage"],
+        "interfaces": {
+          "endpoints": [
+            {
+            "id": "ep_edge_sub",
             "name": "sensor_data_input",
-            "address": "edge://gateway_01/input",
-            "protocol": "MQTT",
+            "type": "mqtt_sub",
+            "direction": "subscribe",
+            "topic": "sensors/temp_sensor_01/data",
+            "payload_schema": {"type": "object"},
+            "address": "mqtt://broker/sensors/temp_sensor_01/data",
             "description": "Receives data from sensors"
           },
           {
+            "id": "ep_edge_to_cloud",
             "name": "processed_data_output",
-            "address": "edge://gateway_01/output",
-            "protocol": "HTTP",
+            "type": "http",
+            "direction": "call",
+            "method": "POST",
+            "address": "https://<SECRET_CLOUD_API>/ingest",
+            "payload_schema": {"type": "object"},
             "description": "Sends processed data to cloud"
           }
         ]
@@ -55,19 +67,27 @@
       "name": "Cloud Analytics Server",
       "layer": "cloud",
       "type": "server",
-      "capabilities": ["data_storage", "analytics", "visualization", "alerting"],
-      "interfaces": {
-        "endpoints": [
-          {
+        "capabilities": ["data_storage", "analytics", "visualization", "alerting"],
+        "interfaces": {
+          "endpoints": [
+            {
+            "id": "ep_cloud_ingest",
             "name": "data_ingestion",
-            "address": "cloud://analytics/ingest",
-            "protocol": "HTTP",
+            "type": "http",
+            "direction": "call",
+            "method": "POST",
+            "address": "https://<SECRET_CLOUD_API>/ingest",
+            "payload_schema": {"type": "object"},
             "description": "Data ingestion endpoint"
           },
-          {
+            {
+            "id": "ep_cloud_api",
             "name": "api_service",
-            "address": "cloud://analytics/api",
-            "protocol": "HTTP",
+            "type": "http",
+            "direction": "call",
+            "method": "POST",
+            "address": "https://<SECRET_CLOUD_API>/api",
+            "payload_schema": {"type": "object"},
             "description": "REST API for queries"
           }
         ]

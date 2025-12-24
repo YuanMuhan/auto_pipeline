@@ -1,0 +1,26 @@
+endpoint_types:
+  - name: ha_state
+    direction: read
+    required_fields: ["id", "type", "address", "entity_id"]
+    payload_schema: optional
+    auth_ref: "<SECRET_...> only in secrets, not inline"
+  - name: ha_service
+    direction: call
+    required_fields: ["id", "type", "address", "service", "method"]
+    payload_schema: optional
+    auth_ref: "<SECRET_...> only"
+  - name: mqtt_sub
+    direction: subscribe
+    required_fields: ["id", "type", "topic", "payload_schema"]
+    payload_schema: required
+    auth_ref: "<SECRET_...> only"
+  - name: mqtt_pub
+    direction: publish
+    required_fields: ["id", "type", "topic", "payload_schema"]
+    payload_schema: required
+    auth_ref: "<SECRET_...> only"
+  - name: http
+    direction: call
+    required_fields: ["id", "type", "method", "address", "payload_schema"]
+    payload_schema: required
+    auth_ref: "<SECRET_...> only in headers/auth"

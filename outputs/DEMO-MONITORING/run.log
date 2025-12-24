@@ -1,20 +1,23 @@
-[2025-12-23T18:59:35.122261] [INFO] Starting pipeline for case: DEMO-MONITORING
-[2025-12-23T18:59:35.122419] [INFO] Step 1: Loading user problem and device info
-[2025-12-23T18:59:35.122657] [INFO] Successfully loaded input files
-[2025-12-23T18:59:35.122663] [INFO] Step 2: Generating Plan (Planner Agent)
-[2025-12-23T18:59:35.128030] [INFO] Saved Plan to .\outputs\DEMO-MONITORING\plan.json
-[2025-12-23T18:59:35.128050] [INFO] Step 3: Generating IR (IR Agent)
-[2025-12-23T18:59:35.128060] [INFO] IR generation attempt 1/3
-[2025-12-23T18:59:35.142592] [INFO] [LLM] stage=generate_ir cache=HIT key=9cf2802f time=0.011s
-[2025-12-23T18:59:35.146942] [INFO] IR validation passed
-[2025-12-23T18:59:35.149007] [INFO] Saved IR to .\outputs\DEMO-MONITORING\ir.yaml
-[2025-12-23T18:59:35.149016] [INFO] Step 4: Generating Bindings (Bindings Agent)
-[2025-12-23T18:59:35.149023] [INFO] Bindings generation attempt 1/3
-[2025-12-23T18:59:35.163808] [INFO] [LLM] stage=generate_bindings cache=HIT key=0d93f6c6 time=0.011s
-[2025-12-23T18:59:35.167609] [INFO] Bindings validation passed
-[2025-12-23T18:59:35.170067] [INFO] Saved Bindings to .\outputs\DEMO-MONITORING\bindings.yaml
-[2025-12-23T18:59:35.171147] [INFO] Step 5: Generating code skeletons (CodeGen)
-[2025-12-23T18:59:35.173359] [INFO] Step 6: Generating docker-compose.yml (Deploy)
-[2025-12-23T18:59:35.173857] [INFO] Step 7: Running evaluation
-[2025-12-23T18:59:35.182986] [INFO] Saved evaluation to .\outputs\DEMO-MONITORING\eval.json
-[2025-12-23T18:59:35.183000] [INFO] Step 8: Saving run log
+[2025-12-24T20:19:39.288149] [INFO] Starting pipeline for case: DEMO-MONITORING
+[2025-12-24T20:19:39.288404] [INFO] Step 1: Loading user problem and device info
+[2025-12-24T20:19:39.288675] [INFO] Successfully loaded input files
+[2025-12-24T20:19:39.292238] [INFO] Step 2: Generating Plan (Planner Agent)
+[2025-12-24T20:19:39.297796] [INFO] Saved Plan to .\outputs\DEMO-MONITORING\plan.json
+[2025-12-24T20:19:39.297815] [INFO] Step 3: Generating IR (IR Agent)
+[2025-12-24T20:19:39.297824] [INFO] IR generation attempt 1/3
+[2025-12-24T20:19:39.313398] [INFO] [LLM] stage=generate_ir cache=HIT key=4279178a time=0.010s
+[2025-12-24T20:19:39.317094] [WARNING] IR component catalog check failed: IR component types not in catalog: data_source, processor, storage
+[2025-12-24T20:19:39.317110] [INFO] IR generation attempt 2/3
+[2025-12-24T20:19:39.320419] [INFO] [LLM] stage=repair_ir cache=MISS key=4a45804e time=0.001s
+[2025-12-24T20:19:39.323752] [INFO] IR validation passed
+[2025-12-24T20:19:39.325613] [INFO] Saved IR to .\outputs\DEMO-MONITORING\ir.yaml
+[2025-12-24T20:19:39.325621] [INFO] Step 4: Generating Bindings (Bindings Agent)
+[2025-12-24T20:19:39.325627] [INFO] Bindings generation attempt 1/3
+[2025-12-24T20:19:39.343884] [INFO] [LLM] stage=generate_bindings cache=MISS key=feab8c5a time=0.001s
+[2025-12-24T20:19:39.346920] [INFO] Bindings validation passed
+[2025-12-24T20:19:39.348995] [INFO] Saved Bindings to .\outputs\DEMO-MONITORING\bindings.yaml
+[2025-12-24T20:19:39.357884] [INFO] Step 5: Generating code skeletons (CodeGen)
+[2025-12-24T20:19:39.360169] [INFO] Step 6: Generating docker-compose.yml (Deploy)
+[2025-12-24T20:19:39.360480] [INFO] Step 7: Running evaluation
+[2025-12-24T20:19:39.415965] [INFO] Saved evaluation to .\outputs\DEMO-MONITORING\eval.json
+[2025-12-24T20:19:39.415979] [INFO] Step 8: Saving run log

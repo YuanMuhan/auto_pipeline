@@ -292,3 +292,29 @@ outputs/DEMO-SMARTHOME/
 - DEMO-MONITORING（第1次）：PASS；LLM calls: 2（IR/Bindings），cache_misses=2；bindings_hash=6f087fc8...；generation_consistency: PASS。
 - DEMO-MONITORING（第2次）：PASS；LLM calls_total=2，cache_hits=2；说明缓存生效，未重复调用 provider。
 - DEMO-SMARTHOME：PASS；LLM calls_total=2，cache_misses=2；generation_consistency: PASS。
+
+## 2025-12-24 输入受控化现状评估（v0.1 前置）
+
+- UserProblem 结构松散：`user_problem_schema.json` 仅要求 type/description/requirements/constraints，缺少 id/title/target/triggers/expected_behavior/outputs，导致可随意字段、难以校验。
+- DeviceInfo 约束不足：`device_info_schema.json` 未限制 endpoint 类型、direction、payload_schema 或敏感信息格式；现有 endpoints 缺少 direction/payload_schema，协议字符串任意。
+- Verifier 层缺少输入 catalog 校验：EndpointChecker 只校验 bindings 是否引用 device_info 的地址，不阻止 device_info 填写非法 endpoint；无组件类型合法性检查。
+- Prompts 无受控词表注入：IR/Bindings prompt 未带组件/端点类型提示，LLM 容易生成不合规结构。
+- 结论：需新增组件画像库+端点类型库，并在 schema/校验/prompt 中使用，以避免“输入随便写”。***
+
+## 2025-12-24 输入受控化落地（v0.1）
+
+- 受控词表/库结构：
+  - `catalog/components/index.yaml` + 15 个 profile（DoorContact/MotionSensor/TemperatureSensor/Light/Lock/Siren/Notifier/DataStore/TimeScheduler/RuleEngine/Aggregator/StateTracker/MQTTGateway/EdgeGateway/CloudService）。
+  - `catalog/endpoint_types.yaml` 定义 ha_state/ha_service/mqtt_sub/mqtt_pub/http。
+- 校验生效路径：
+  - Schema：`user_problem_schema.json` 增补 id/title/target 等软字段（允许缺失）；`device_info_schema.json` 补充 type/direction/payload_schema 等字段定义；`eval_schema.json` 增加 catalog_hashes/input_validation。
+  - Catalog Checker：`ComponentCatalogChecker` 校验 IR 组件类型；`DeviceInfoCatalogChecker` 校验 endpoint type/必填字段/SECRET 占位符。
+  - Runner：加载后即执行 UP/DI schema+catalog 校验；IR 生成后进行组件类型校验；eval 记录 `catalog_hashes` 与 `input_validation`。
+  - Prompt：LLMClient 注入组件/端点类型摘要到 prompt 头部（摘要渲染，未塞全量）。
+- DEMO case 调整：
+  - DeviceInfo endpoints 增补 type/direction/topic/payload_schema，敏感信息用 `<SECRET_...>`。
+  - Mock IR 组件类型与 catalog 对齐；补充 `repair_ir.yaml`。
+- 验证：
+  - `python -m autopipeline run --case DEMO-MONITORING --llm-provider mock` PASS（含一次 repair_ir，cache_miss）；`input_validation` 记录 schema+catalog 校验。
+  - `python -m autopipeline run --case DEMO-SMARTHOME --llm-provider mock` PASS；catalog 校验通过。
+  - eval.json 新增 `catalog_hashes`，`input_validation`，LLM 统计保持。

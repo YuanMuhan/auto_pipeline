@@ -11,14 +11,11 @@
           {
             "id": "ep_door_main_state",
             "name": "门磁状态输出",
-            "kind": "output",
-            "address": "ha_entity://binary_sensor.bedroom_door_contact",
-            "protocol": "home_assistant_state",
-            "ops": ["read_state", "subscribe_changes"],
-            "schema": {
-              "state": ["on", "off"],
-              "attributes": ["battery", "last_changed"]
-            },
+            "type": "ha_state",
+            "direction": "read",
+            "address": "ha://local",
+            "entity_id": "binary_sensor.bedroom_door_contact",
+            "payload_schema": {"type": "object"},
             "description": "Home Assistant 门磁实体状态"
           }
         ]
@@ -41,14 +38,11 @@
           {
             "id": "ep_motion_living_state",
             "name": "人体活动检测输出",
-            "kind": "output",
-            "address": "ha_entity://binary_sensor.living_room_motion",
-            "protocol": "home_assistant_state",
-            "ops": ["read_state", "subscribe_changes"],
-            "schema": {
-              "state": ["on", "off"],
-              "attributes": ["illuminance", "battery"]
-            },
+            "type": "ha_state",
+            "direction": "read",
+            "address": "ha://local",
+            "entity_id": "binary_sensor.living_room_motion",
+            "payload_schema": {"type": "object"},
             "description": "Home Assistant 人体传感器实体"
           }
         ]
@@ -70,17 +64,12 @@
           {
             "id": "ep_light_control",
             "name": "灯光控制接口",
-            "kind": "input",
-            "address": "ha_service://light.living_room_main",
-            "protocol": "home_assistant_service",
-            "ops": ["turn_on", "turn_off", "set_brightness", "set_color_temp"],
-            "schema": {
-              "service": ["light.turn_on", "light.turn_off"],
-              "data": {
-                "brightness": "0-255",
-                "color_temp": "153-500"
-              }
-            },
+            "type": "ha_service",
+            "direction": "call",
+            "address": "http://<SECRET_HA_HOST>:8123/api/services/light/turn_on",
+            "service": "light.turn_on",
+            "method": "POST",
+            "payload_schema": {"type": "object"},
             "description": "Home Assistant 灯光服务调用"
           }
         ]
@@ -102,28 +91,31 @@
           {
             "id": "ep_ha_mqtt_sub",
             "name": "MQTT 订阅接口",
-            "kind": "input",
+            "type": "mqtt_sub",
+            "direction": "subscribe",
+            "topic": "homeassistant/events/#",
+            "payload_schema": {"type": "object"},
             "address": "mqtt://ha_broker/homeassistant/events/#",
-            "protocol": "MQTT",
-            "ops": ["subscribe"],
             "description": "Home Assistant 内部 MQTT 事件总线（订阅）"
           },
           {
             "id": "ep_ha_mqtt_pub",
             "name": "MQTT 发布接口",
-            "kind": "output",
+            "type": "mqtt_pub",
+            "direction": "publish",
+            "topic": "homeassistant/commands",
+            "payload_schema": {"type": "object"},
             "address": "mqtt://ha_broker/homeassistant/commands",
-            "protocol": "MQTT",
-            "ops": ["publish"],
             "description": "Home Assistant MQTT 命令发布"
           },
           {
             "id": "ep_ha_webhook_in",
             "name": "Webhook 接收接口",
-            "kind": "input",
+            "type": "http",
+            "direction": "call",
+            "method": "POST",
             "address": "http://<SECRET_HA_HOST>:8123/api/webhook/<SECRET_WEBHOOK_ID>",
-            "protocol": "HTTP",
-            "ops": ["POST"],
+            "payload_schema": {"type": "object"},
             "description": "接收云端推送的配置/命令"
           }
         ]
@@ -146,24 +138,21 @@
           {
             "id": "ep_cloud_event_ingest",
             "name": "事件接收接口",
-            "kind": "input",
+            "type": "http",
+            "direction": "call",
+            "method": "POST",
             "address": "https://<SECRET_CLOUD_API>/api/v1/events",
-            "protocol": "HTTP",
-            "ops": ["POST"],
-            "schema": {
-              "event_type": "string",
-              "payload": "object",
-              "timestamp": "ISO8601"
-            },
+            "payload_schema": {"type": "object"},
             "description": "接收边缘网关上报的事件"
           },
           {
             "id": "ep_cloud_notify_out",
             "name": "通知推送接口",
-            "kind": "output",
+            "type": "http",
+            "direction": "call",
+            "method": "POST",
             "address": "https://api.pushover.net/1/messages.json?token=<SECRET_PUSHOVER_TOKEN>",
-            "protocol": "HTTP",
-            "ops": ["POST"],
+            "payload_schema": {"type": "object"},
             "description": "推送通知到移动设备（Pushover API）"
           }
         ]
@@ -186,19 +175,21 @@
           {
             "id": "ep_cloud_db_write",
             "name": "时序数据写入",
-            "kind": "input",
+            "type": "http",
+            "direction": "call",
+            "method": "POST",
             "address": "https://<SECRET_CLOUD_DB>/write?db=smarthome&precision=s",
-            "protocol": "HTTP",
-            "ops": ["POST"],
+            "payload_schema": {"type": "object"},
             "description": "InfluxDB 时序数据写入接口"
           },
           {
             "id": "ep_cloud_db_query",
             "name": "数据查询接口",
-            "kind": "bidirectional",
+            "type": "http",
+            "direction": "call",
+            "method": "POST",
             "address": "https://<SECRET_CLOUD_DB>/query?db=smarthome",
-            "protocol": "HTTP",
-            "ops": ["GET", "POST"],
+            "payload_schema": {"type": "object"},
             "description": "InfluxDB 查询接口"
           }
         ]

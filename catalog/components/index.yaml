@@ -1,0 +1,46 @@
+components:
+  - type_name: DoorContact
+    path: catalog/components/door_contact.yaml
+    summary: Binary door/window contact sensor emitting open/close events.
+  - type_name: MotionSensor
+    path: catalog/components/motion_sensor.yaml
+    summary: PIR/occupancy sensor emitting motion events.
+  - type_name: TemperatureSensor
+    path: catalog/components/temperature_sensor.yaml
+    summary: Reports temperature readings.
+  - type_name: Light
+    path: catalog/components/light.yaml
+    summary: Controllable light/relay with on/off/dimming services.
+  - type_name: Lock
+    path: catalog/components/lock.yaml
+    summary: Door lock actuator with lock/unlock.
+  - type_name: Siren
+    path: catalog/components/siren.yaml
+    summary: Audible alarm siren.
+  - type_name: Notifier
+    path: catalog/components/notifier.yaml
+    summary: Notification/alert dispatcher.
+  - type_name: DataStore
+    path: catalog/components/datastore.yaml
+    summary: Storage service for time-series or events.
+  - type_name: TimeScheduler
+    path: catalog/components/time_scheduler.yaml
+    summary: Time/cron based trigger generator.
+  - type_name: RuleEngine
+    path: catalog/components/rule_engine.yaml
+    summary: Event-condition-action processor.
+  - type_name: Aggregator
+    path: catalog/components/aggregator.yaml
+    summary: Aggregates and filters sensor data.
+  - type_name: StateTracker
+    path: catalog/components/state_tracker.yaml
+    summary: Maintains derived state, broadcasts changes.
+  - type_name: MQTTGateway
+    path: catalog/components/mqtt_gateway.yaml
+    summary: Gateway bridging MQTT topics to internal bus (logical, no topic strings).
+  - type_name: EdgeGateway
+    path: catalog/components/edge_gateway.yaml
+    summary: Edge node hosting services and bridging devices.
+  - type_name: CloudService
+    path: catalog/components/cloud_service.yaml
+    summary: Cloud-side processing or dashboard backend.

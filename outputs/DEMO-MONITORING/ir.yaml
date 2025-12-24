@@ -5,20 +5,20 @@ components:
   - collect
   id: sensor_collector
   metadata: {}
-  type: data_source
+  type: TemperatureSensor
 - capabilities:
   - filter
   - aggregate
   - analyze
   id: data_processor
   metadata: {}
-  type: processor
+  type: Aggregator
 - capabilities:
   - store
   - query
   id: storage_service
   metadata: {}
-  type: storage
+  type: DataStore
 description: Smart home temperature monitoring system with cloud analytics
 links:
 - contract: {}

@@ -1,0 +1,24 @@
+type_name: Aggregator
+kind: logic
+provided:
+  events:
+    - name: aggregated_metrics
+      schema:
+        type: object
+        properties:
+          count: {type: integer}
+          avg: {type: number}
+          ts: {type: string}
+  properties: []
+  services:
+    - name: aggregate
+      schema:
+        input:
+          window_s: {type: integer}
+        output: {type: object}
+required: []
+examples:
+  - payload:
+      count: 10
+      avg: 22.5
+      ts: "2025-01-01T00:01:00Z"

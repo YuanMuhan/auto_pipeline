@@ -1,0 +1,21 @@
+type_name: Siren
+kind: actuator
+provided:
+  events: []
+  properties:
+    - name: state
+      schema: {type: string, enum: [idle, alarming]}
+  services:
+    - name: start_alarm
+      schema:
+        input:
+          duration_s: {type: integer}
+        output: {type: string}
+    - name: stop_alarm
+      schema:
+        input: {}
+        output: {type: string}
+required: []
+examples:
+  - payload:
+      state: alarming

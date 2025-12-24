@@ -57,36 +57,15 @@
                       "type": "string",
                       "description": "Endpoint name"
                     },
-                    "kind": {
-                      "type": "string",
-                      "description": "Endpoint kind (input, output, bidirectional)",
-                      "enum": ["input", "output", "bidirectional"]
-                    },
-                    "address": {
-                      "type": "string",
-                      "description": "Endpoint address (REQUIRED, can be referenced by bindings)",
-                      "minLength": 1
-                    },
-                    "protocol": {
-                      "type": "string",
-                      "description": "Underlying protocol hint"
-                    },
-                    "ops": {
-                      "type": "array",
-                      "description": "Supported operations",
-                      "items": {
-                        "type": "string"
-                      }
-                    },
-                    "schema": {
-                      "type": "object",
-                      "description": "Optional data schema",
-                      "additionalProperties": true
-                    },
-                    "description": {
-                      "type": "string",
-                      "description": "Endpoint description"
-                    }
+                    "type": { "type": "string", "description": "Endpoint type, must match catalog endpoint_types" },
+                    "direction": { "type": "string", "description": "Direction from catalog (read/call/publish/subscribe)" },
+                    "address": { "type": "string" },
+                    "topic": { "type": "string" },
+                    "entity_id": { "type": "string" },
+                    "service": { "type": "string" },
+                    "method": { "type": "string" },
+                    "payload_schema": { "type": ["object", "string"] },
+                    "description": { "type": "string" }
                   }
                 }
               }
@@ -116,5 +95,5 @@
       }
     }
   },
-  "additionalProperties": false
+  "additionalProperties": true
 }

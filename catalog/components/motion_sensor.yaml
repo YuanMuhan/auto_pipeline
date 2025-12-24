@@ -1,0 +1,25 @@
+type_name: MotionSensor
+kind: sensor
+provided:
+  events:
+    - name: motion
+      schema:
+        type: object
+        properties:
+          detected: {type: boolean}
+          ts: {type: string}
+    - name: occupancy
+      schema:
+        type: object
+        properties:
+          occupied: {type: boolean}
+          ts: {type: string}
+  properties:
+    - name: battery
+      schema: {type: number}
+  services: []
+required: []
+examples:
+  - payload:
+      detected: true
+      ts: "2025-01-01T00:00:00Z"

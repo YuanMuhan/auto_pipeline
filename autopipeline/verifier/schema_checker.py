@@ -9,7 +9,8 @@ from typing import Dict, Any, Tuple, List
 class SchemaChecker:
     """Validate data against JSON schemas"""
 
-    def __init__(self, ir_required_fields: List[str], bindings_required_fields: List[str], plan_required_fields: List[str]):
+    def __init__(self, ir_required_fields: List[str], bindings_required_fields: List[str],
+                 plan_required_fields: List[str]):
         schema_dir = Path(__file__).parent.parent / "schemas"
         with open(schema_dir / "plan_schema.json", 'r') as f:
             self.plan_schema = json.load(f)
@@ -17,6 +18,10 @@ class SchemaChecker:
             self.ir_schema = json.load(f)
         with open(schema_dir / "bindings_schema.json", 'r') as f:
             self.bindings_schema = json.load(f)
+        with open(schema_dir / "user_problem_schema.json", 'r') as f:
+            self.user_problem_schema = json.load(f)
+        with open(schema_dir / "device_info_schema.json", 'r') as f:
+            self.device_info_schema = json.load(f)
         self.ir_required_fields = ir_required_fields
         self.bindings_required_fields = bindings_required_fields
         self.plan_required_fields = plan_required_fields
@@ -65,3 +70,27 @@ class SchemaChecker:
             return False, f"Bindings schema validation failed: {e.message}"
         except Exception as e:
             return False, f"Bindings schema validation error: {str(e)}"
+
+    def validate_user_problem(self, user_problem: Dict[str, Any]) -> Tuple[bool, str]:
+        try:
+            jsonschema.validate(instance=user_problem, schema=self.user_problem_schema)
+            missing_soft = []
+            for soft_field in ["id", "title", "target"]:
+                if soft_field not in user_problem:
+                    missing_soft.append(soft_field)
+            if missing_soft:
+                return True, f"UserProblem soft-missing fields: {', '.join(missing_soft)}"
+            return True, "UserProblem schema validation passed"
+        except jsonschema.ValidationError as e:
+            return False, f"UserProblem schema validation failed: {e.message}"
+        except Exception as e:
+            return False, f"UserProblem schema validation error: {str(e)}"
+
+    def validate_device_info(self, device_info: Dict[str, Any]) -> Tuple[bool, str]:
+        try:
+            jsonschema.validate(instance=device_info, schema=self.device_info_schema)
+            return True, "DeviceInfo schema validation passed"
+        except jsonschema.ValidationError as e:
+            return False, f"DeviceInfo schema validation failed: {e.message}"
+        except Exception as e:
+            return False, f"DeviceInfo schema validation error: {str(e)}"

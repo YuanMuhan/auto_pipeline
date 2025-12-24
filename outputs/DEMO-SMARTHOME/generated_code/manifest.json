@@ -1,6 +1,6 @@
 {
   "case_id": "DEMO-SMARTHOME",
-  "bindings_hash": "96d9d3f123108bdd74207a1ed376f1da22d9421fbcf4c5614eee8ac0fc34206b",
+  "bindings_hash": "21d5267b93e016c3828b54f0723c962c997c7a0672a5f8d1c0ba136817fad0a5",
   "placements_summary": [
     {
       "component_id": "door_monitor",
@@ -34,16 +34,16 @@
     }
   ],
   "endpoints_used": [
-    "ha_entity://binary_sensor.bedroom_door_contact",
-    "ha_entity://binary_sensor.bedroom_door_contact",
-    "ha_entity://binary_sensor.bedroom_door_contact",
-    "ha_entity://binary_sensor.bedroom_door_contact",
-    "ha_entity://binary_sensor.bedroom_door_contact",
-    "ha_entity://binary_sensor.living_room_motion",
-    "ha_entity://binary_sensor.living_room_motion",
-    "ha_entity://binary_sensor.living_room_motion",
-    "ha_entity://binary_sensor.living_room_motion",
-    "ha_entity://binary_sensor.living_room_motion"
+    "ha://local",
+    "ha://local",
+    "http://<SECRET_HA_HOST>:8123/api/services/light/turn_on",
+    "https://api.pushover.net/1/messages.json?token=<SECRET_PUSHOVER_TOKEN>",
+    "https://<SECRET_CLOUD_DB>/write?db=smarthome&precision=s",
+    "ha://local",
+    "ha://local",
+    "http://<SECRET_HA_HOST>:8123/api/services/light/turn_on",
+    "https://api.pushover.net/1/messages.json?token=<SECRET_PUSHOVER_TOKEN>",
+    "https://<SECRET_CLOUD_DB>/write?db=smarthome&precision=s"
   ],
   "components_bound": [
     "door_monitor",

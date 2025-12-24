@@ -5,6 +5,22 @@
   "type": "object",
   "required": ["type", "description"],
   "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the user problem (soft-required)"
+    },
+    "title": {
+      "type": "string",
+      "description": "Short title (soft-required)"
+    },
+    "target": {
+      "type": "string",
+      "description": "Target system or goal"
+    },
+    "context": {
+      "type": "string",
+      "description": "Context or environment description"
+    },
     "type": {
       "type": "string",
       "description": "Problem category",
@@ -22,27 +38,35 @@
         "type": "string"
       }
     },
+    "triggers": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "expected_behavior": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "outputs": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
     "constraints": {
-      "type": "object",
-      "description": "Non-functional constraints",
-      "properties": {
-        "latency": {
-          "type": "string",
-          "description": "Latency requirements"
+      "description": "Constraints (structured or list)",
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {"type": "string"}
         },
-        "data_volume": {
-          "type": "string",
-          "description": "Expected data volume"
-        },
-        "reliability": {
-          "type": "string",
-          "description": "Reliability requirements"
-        },
-        "security": {
-          "type": "string",
-          "description": "Security requirements"
+        {
+          "type": "object",
+          "properties": {
+            "latency": {"type": "string"},
+            "data_volume": {"type": "string"},
+            "reliability": {"type": "string"},
+            "security": {"type": "string"}
+          }
         }
-      }
+      ]
     },
     "metadata": {
       "type": "object",
@@ -50,5 +74,5 @@
       "additionalProperties": true
     }
   },
-  "additionalProperties": false
+  "additionalProperties": true
 }

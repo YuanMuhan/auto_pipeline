@@ -1,0 +1,28 @@
+type_name: Lock
+kind: actuator
+provided:
+  events:
+    - name: lock_state
+      schema:
+        type: object
+        properties:
+          state: {type: string, enum: [locked, unlocked]}
+          ts: {type: string}
+  properties:
+    - name: battery
+      schema: {type: number}
+  services:
+    - name: lock
+      schema:
+        input: {}
+        output: {type: string}
+    - name: unlock
+      schema:
+        input:
+          method: {type: string}
+        output: {type: string}
+required: []
+examples:
+  - payload:
+      state: locked
+      ts: "2025-01-01T00:00:00Z"
