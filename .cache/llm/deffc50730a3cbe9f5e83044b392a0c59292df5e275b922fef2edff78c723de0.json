@@ -1,0 +1,23 @@
+{
+  "request_meta": {
+    "stage": "generate_bindings",
+    "provider": "mock",
+    "model": "mock-model",
+    "params": {
+      "temperature": 0.0,
+      "max_tokens": null
+    },
+    "prompt_template_hash": "eb7bf22c71118c6197aff798182e3fdd479aaf2db13a51eb5ddf4cbf73933e65",
+    "rendered_prompt_hash": "d7a8b8ff23b9a86b65b5fbadee3cdf17f31b175e54802e4b22029b15a5a994aa",
+    "rules_hash": "0efd038d1492aea276cbeabe81f659e0ba9364816b7b4002abf5953ace5c2cf7",
+    "schema_versions": {
+      "plan_schema": "8d8399a603d1b200692b2f75170ce1bbf742b5051503966cfee3aae1fcedcd9c",
+      "ir_schema": "d1b20ea900cec23d6966c056a65ba93f30671c40bfe3737fa7fdaaa48d330fbb",
+      "bindings_schema": "16e635d1178c71dabaf7ed996785e535b597198dbc2545cfa0372db633c0a640"
+    },
+    "inputs_hash": "778ccc424b530e23ed14d79060e3fbb25a404c83cc92dba81ea49fc5e2688ffc"
+  },
+  "response_text": "app_name: automation_app\nversion: 0.1.0\nplacements:\n  - component_id: door_monitor\n    layer: device\n    device_ref: door_sensor_main\n  - component_id: motion_detector\n    layer: edge\n    device_ref: edge_gateway_ha\n  - component_id: lighting_controller\n    layer: edge\n    device_ref: edge_gateway_ha\n  - component_id: automation_engine\n    layer: edge\n    device_ref: edge_gateway_ha\n  - component_id: notification_service\n    layer: edge\n    device_ref: edge_gateway_ha\n  - component_id: data_recorder\n    layer: cloud\n    device_ref: cloud_automation_service\ntransports:\n  - link_id: link_door_to_engine\n    protocol: MQTT\n    qos: at_least_once\n  - link_id: link_motion_to_engine\n    protocol: HTTP\n    qos: best_effort\n  - link_id: link_engine_to_light\n    protocol: HTTP\n    qos: best_effort\n  - link_id: link_engine_to_notify\n    protocol: HTTP\n    qos: best_effort\n  - link_id: link_engine_to_storage\n    protocol: HTTP\n    qos: best_effort\nendpoints:\n  - link_id: link_door_to_engine\n    from_endpoint: ha://local\n    to_endpoint: ha://local\n  - link_id: link_motion_to_engine\n    from_endpoint: ha://local\n    to_endpoint: ha://local\n  - link_id: link_engine_to_light\n    from_endpoint: http://<SECRET_HA_HOST>:8123/api/services/light/turn_on\n    to_endpoint: http://<SECRET_HA_HOST>:8123/api/services/light/turn_on\n  - link_id: link_engine_to_notify\n    from_endpoint: https://api.pushover.net/1/messages.json?token=<SECRET_PUSHOVER_TOKEN>\n    to_endpoint: https://api.pushover.net/1/messages.json?token=<SECRET_PUSHOVER_TOKEN>\n  - link_id: link_engine_to_storage\n    from_endpoint: https://<SECRET_CLOUD_DB>/write?db=smarthome&precision=s\n    to_endpoint: https://<SECRET_CLOUD_DB>/write?db=smarthome&precision=s\ncomponent_bindings:\n  - component: door_monitor\n    layer: device\n    device_ref: door_sensor_main\n  - component: motion_detector\n    layer: edge\n    device_ref: edge_gateway_ha\n  - component: lighting_controller\n    layer: edge\n    device_ref: edge_gateway_ha\n  - component: automation_engine\n    layer: edge\n    device_ref: edge_gateway_ha\n  - component: notification_service\n    layer: edge\n    device_ref: edge_gateway_ha\n  - component: data_recorder\n    layer: cloud\n    device_ref: cloud_automation_service\n",
+  "usage": null,
+  "created_at": "2025-12-24T21:01:30.209244"
+}

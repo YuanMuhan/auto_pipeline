@@ -15,7 +15,7 @@
             "direction": "publish",
             "topic": "sensors/temp_sensor_01/data",
             "payload_schema": {"type": "object", "properties": {"temperature": {"type": "number"}, "ts": {"type": "string"}}},
-            "address": "mqtt://broker/sensors/temp_sensor_01/data",
+            "address": "mqtt://broker/publish/sensors/temp_sensor_01/data",
             "description": "Temperature sensor data output"
           }
         ]
@@ -41,7 +41,7 @@
             "direction": "subscribe",
             "topic": "sensors/temp_sensor_01/data",
             "payload_schema": {"type": "object"},
-            "address": "mqtt://broker/sensors/temp_sensor_01/data",
+            "address": "mqtt://broker/subscribe/sensors/temp_sensor_01/data",
             "description": "Receives data from sensors"
           },
           {

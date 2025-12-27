@@ -108,6 +108,24 @@
       "type": "string",
       "description": "SHA256 of bindings.yaml"
     },
+    "ir_interface_validation": {
+      "type": "object",
+      "properties": {
+        "errors": { "type": "array", "items": { "type": "string" } },
+        "warnings": { "type": "array", "items": { "type": "string" } },
+        "status": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "endpoint_matching_validation": {
+      "type": "object",
+      "properties": {
+        "errors": { "type": "array", "items": { "type": "string" } },
+        "warnings": { "type": "array", "items": { "type": "string" } },
+        "status": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
     "catalog_hashes": {
       "type": "object",
       "properties": {

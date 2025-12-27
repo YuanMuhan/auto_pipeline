@@ -18,6 +18,8 @@ from autopipeline.verifier.boundary_checker import BoundaryChecker
 from autopipeline.verifier.coverage_checker import CoverageChecker
 from autopipeline.verifier.endpoint_checker import EndpointChecker
 from autopipeline.verifier.component_catalog_checker import ComponentCatalogChecker
+from autopipeline.verifier.ir_interface_checker import IRInterfaceChecker
+from autopipeline.verifier.endpoint_matching_checker import EndpointMatchingChecker
 from autopipeline.verifier.device_info_catalog_checker import DeviceInfoCatalogChecker
 from autopipeline.catalog.render import catalog_hashes, component_types_summary, endpoint_types_summary, load_component_profiles, load_endpoint_types
 from autopipeline.verifier.generation_checker import GenerationConsistencyChecker
@@ -68,6 +70,8 @@ class PipelineRunner:
         self.endpoint_checker = EndpointChecker()
         self.component_catalog_checker = ComponentCatalogChecker(base_dir)
         self.device_info_catalog_checker = DeviceInfoCatalogChecker(base_dir)
+        self.ir_interface_checker = IRInterfaceChecker(self.component_catalog_checker)
+        self.endpoint_matching_checker = EndpointMatchingChecker(load_endpoint_types(base_dir)["data"])
 
         combined_rules_hash = stable_hash({
             "ir": self.rules_bundle["ir"]["hash"],
@@ -132,7 +136,7 @@ class PipelineRunner:
 
         # Step 7: Run evaluation
         self.log("Step 7: Running evaluation")
-        eval_result = self._run_evaluation(plan_data, ir_data, bindings_data, codegen_result, deploy_file, bindings_hash)
+        eval_result = self._run_evaluation(plan_data, ir_data, device_info, bindings_data, codegen_result, deploy_file, bindings_hash)
 
         # Step 8: Save run log
         self.log("Step 8: Saving run log")
@@ -221,10 +225,16 @@ class PipelineRunner:
                 continue
 
             # Catalog check
-            valid, msg = self.component_catalog_checker.check_ir(ir_data)
+            valid, msg, comp_errors, comp_warnings = self.component_catalog_checker.check_ir(ir_data)
             if not valid:
                 self.log(f"IR component catalog check failed: {msg}", "WARNING")
-                last_error = msg
+                last_error = "; ".join(comp_errors)
+                continue
+            # Interface-level check
+            iface_ok, iface_errs, iface_warns = self.ir_interface_checker.check(ir_data)
+            if not iface_ok and iface_errs:
+                self.log(f"IR interface check failed: {'; '.join(iface_errs)}", "WARNING")
+                last_error = "; ".join(iface_errs)
                 continue
 
             # All checks passed
@@ -282,6 +292,12 @@ class PipelineRunner:
                 self.log(f"Endpoint legality check failed: {msg}", "WARNING")
                 last_error = msg
                 continue
+            # Endpoint matching (type/direction/payload)
+            ep_ok, ep_errs, ep_warns = self.endpoint_matching_checker.check(bindings_data, device_info)
+            if not ep_ok:
+                self.log(f"Endpoint matching check failed: {'; '.join(ep_errs)}", "WARNING")
+                last_error = "; ".join(ep_errs)
+                continue
 
             # All checks passed
             self.log("Bindings validation passed")
@@ -299,8 +315,9 @@ class PipelineRunner:
 
         return bindings_data
 
-    def _run_evaluation(self, plan_data: Dict[str, Any], ir_data: Dict[str, Any], bindings_data: Dict[str, Any],
-                        codegen_result: Dict[str, Any], deploy_file: str, bindings_hash: str) -> Dict[str, Any]:
+    def _run_evaluation(self, plan_data: Dict[str, Any], ir_data: Dict[str, Any], device_info: Dict[str, Any],
+                        bindings_data: Dict[str, Any], codegen_result: Dict[str, Any],
+                        deploy_file: str, bindings_hash: str) -> Dict[str, Any]:
         """Run deterministic evaluation"""
 
         rules_version = {
@@ -312,6 +329,9 @@ class PipelineRunner:
             "bindings_forbidden_keywords": len(self.rules_bundle["bindings"]["forbidden_keywords"])
         }
 
+        ir_iface_ok, ir_iface_errs, ir_iface_warns = self.ir_interface_checker.check(ir_data)
+        ep_match_ok, ep_match_errs, ep_match_warns = self.endpoint_matching_checker.check(bindings_data, device_info)
+
         eval_result = {
             "case_id": self.case_id,
             "timestamp": datetime.now().isoformat(),
@@ -322,6 +342,16 @@ class PipelineRunner:
             "rules_version": rules_version,
             "bindings_hash": bindings_hash,
             "catalog_hashes": self.catalog_hash,
+            "ir_interface_validation": {
+                "errors": ir_iface_errs,
+                "warnings": ir_iface_warns,
+                "status": "PASS" if ir_iface_ok else "FAIL"
+            },
+            "endpoint_matching_validation": {
+                "errors": ep_match_errs,
+                "warnings": ep_match_warns,
+                "status": "PASS" if ep_match_ok else "FAIL"
+            },
             "llm": {
                 "provider": self.llm_config.provider,
                 "model": self.llm_config.model,

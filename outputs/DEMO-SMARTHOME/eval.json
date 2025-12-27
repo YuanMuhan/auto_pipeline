@@ -1,6 +1,6 @@
 {
   "case_id": "DEMO-SMARTHOME",
-  "timestamp": "2025-12-24T20:21:08.198951",
+  "timestamp": "2025-12-28T03:04:10.135906",
   "checks": {
     "plan_schema": {
       "status": "PASS",
@@ -64,6 +64,32 @@
     "components_index_hash": "ba26c264fb48b9445d957bac399bb436826407143176f3fb0fad1dffd876fe78",
     "endpoint_types_hash": "5f566bd637fe54bc64c37b48c279b10e38490d8ce2a4b152cb5cfb68594be6e2"
   },
+  "ir_interface_validation": {
+    "errors": [],
+    "warnings": [
+      "component door_monitor has no explicit ports; skipping port validation",
+      "component motion_detector has no explicit ports; skipping port validation",
+      "component lighting_controller has no explicit ports; skipping port validation",
+      "component automation_engine has no explicit ports; skipping port validation",
+      "component notification_service has no explicit ports; skipping port validation",
+      "component data_recorder has no explicit ports; skipping port validation",
+      "link link_door_to_engine missing explicit ports; skipping port validation",
+      "link link_motion_to_engine missing explicit ports; skipping port validation",
+      "link link_engine_to_light missing explicit ports; skipping port validation",
+      "link link_engine_to_notify missing explicit ports; skipping port validation",
+      "link link_engine_to_storage missing explicit ports; skipping port validation"
+    ],
+    "status": "PASS"
+  },
+  "endpoint_matching_validation": {
+    "errors": [],
+    "warnings": [
+      "link link_door_to_engine: endpoint ha://local type 'ha_state' uncommon as source",
+      "link link_motion_to_engine: endpoint ha://local type 'ha_state' uncommon as source",
+      "link link_engine_to_light: endpoint http://<SECRET_HA_HOST>:8123/api/services/light/turn_on type 'ha_service' uncommon as sink"
+    ],
+    "status": "PASS"
+  },
   "llm": {
     "provider": "mock",
     "model": null,
@@ -75,12 +101,12 @@
       "generate_ir": 1,
       "generate_bindings": 1
     },
-    "cache_hits": 0,
-    "cache_misses": 2,
+    "cache_hits": 2,
+    "cache_misses": 0,
     "usage_tokens_total": 0,
     "prompt_template_hashes": {
-      "ir_agent": "96ebdefb68ef2ba923ff827929d077ccd00e78591478d77c261c24853e641f6a",
-      "binding_agent": "00afbe792fd1369d4e9a61e958e3d274e8a78a4e344122d1781404aac418dad7"
+      "ir_agent": "3b139c640d31d720bf2f7bb0d8b90fdd86a204c2e47586907d82349103f1816a",
+      "binding_agent": "eb7bf22c71118c6197aff798182e3fdd479aaf2db13a51eb5ddf4cbf73933e65"
     },
     "rules_hash": "4ac6af8005e0d2c30d37bd9c621b14d957fbb46d0e2cd23d2e6633466e91d3d1507a7f7bce8a858b23fb73c5ee5a3c013b50440700cc38e29c10c36123533724",
     "schema_hashes": {

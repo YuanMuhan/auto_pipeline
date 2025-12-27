@@ -11,19 +11,19 @@ placements:
     layer: cloud
     device_ref: cloud_server_01
 transports:
-- link_id: link_sensor_to_processor
-  protocol: MQTT
-  qos: at_least_once
-- link_id: link_processor_to_storage
-  protocol: HTTP
-  qos: best_effort
+  - link_id: link_sensor_to_processor
+    protocol: MQTT
+    qos: at_least_once
+  - link_id: link_processor_to_storage
+    protocol: HTTP
+    qos: best_effort
 endpoints:
-- link_id: link_sensor_to_processor
-  from_endpoint: mqtt://broker/publish/sensors/temp_sensor_01/data
-  to_endpoint: mqtt://broker/subscribe/sensors/temp_sensor_01/data
-- link_id: link_processor_to_storage
-  from_endpoint: https://<SECRET_CLOUD_API>/ingest
-  to_endpoint: https://<SECRET_CLOUD_API>/ingest
+  - link_id: link_sensor_to_processor
+    from_endpoint: mqtt://broker/publish/sensors/temp_sensor_01/data
+    to_endpoint: mqtt://broker/subscribe/sensors/temp_sensor_01/data
+  - link_id: link_processor_to_storage
+    from_endpoint: https://<SECRET_CLOUD_API>/ingest
+    to_endpoint: https://<SECRET_CLOUD_API>/ingest
 component_bindings:
   - component: sensor_collector
     layer: device

@@ -10,9 +10,9 @@ component_bindings:
   device_ref: cloud_server_01
   layer: cloud
 endpoints:
-- from_endpoint: mqtt://broker/sensors/temp_sensor_01/data
+- from_endpoint: mqtt://broker/publish/sensors/temp_sensor_01/data
   link_id: link_sensor_to_processor
-  to_endpoint: mqtt://broker/sensors/temp_sensor_01/data
+  to_endpoint: mqtt://broker/subscribe/sensors/temp_sensor_01/data
 - from_endpoint: https://<SECRET_CLOUD_API>/ingest
   link_id: link_processor_to_storage
   to_endpoint: https://<SECRET_CLOUD_API>/ingest

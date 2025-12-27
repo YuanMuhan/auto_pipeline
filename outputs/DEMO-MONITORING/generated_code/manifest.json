@@ -1,6 +1,6 @@
 {
   "case_id": "DEMO-MONITORING",
-  "bindings_hash": "ef35cc8bb62aacb7bbefc730f6e72918d3a5f4cd4495dc0ed84ea1ba0c32776b",
+  "bindings_hash": "24cf8ac31fb38b36fecf3db00051fa631509c3438ff84b8b54b61e32d012bee9",
   "placements_summary": [
     {
       "component_id": "sensor_collector",
@@ -19,9 +19,9 @@
     }
   ],
   "endpoints_used": [
-    "mqtt://broker/sensors/temp_sensor_01/data",
+    "mqtt://broker/publish/sensors/temp_sensor_01/data",
     "https://<SECRET_CLOUD_API>/ingest",
-    "mqtt://broker/sensors/temp_sensor_01/data",
+    "mqtt://broker/subscribe/sensors/temp_sensor_01/data",
     "https://<SECRET_CLOUD_API>/ingest"
   ],
   "components_bound": [

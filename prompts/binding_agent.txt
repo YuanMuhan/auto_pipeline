@@ -13,6 +13,7 @@ STRICT CONSTRAINTS:
 3. You MUST NOT fabricate or invent endpoint addresses
 4. component_id in placements MUST match IR component IDs
 5. link_id in transports/endpoints MUST match IR link IDs
+6. Endpoint type/direction must match the required operation (publish/subscribe/call). Mismatches will be rejected by EndpointMatchingChecker.
 
 BINDINGS MUST CONTAIN:
 1. placements[] - Assign each IR component to a layer:
