@@ -22,7 +22,10 @@ class RepairAgent:
             schema_versions=schema_versions,
             prompt_name="repair_agent"
         )
-        return yaml.safe_load(repaired_yaml)
+        repaired = yaml.safe_load(repaired_yaml)
+        if not isinstance(repaired, dict):
+            raise ValueError("RepairAgent expected YAML mapping for IR, got non-dict content")
+        return repaired
 
     def repair_bindings(self, bindings_data: Dict[str, Any], error_message: str,
                        ir_data: Dict[str, Any], device_info: Dict[str, Any],
@@ -35,4 +38,7 @@ class RepairAgent:
             schema_versions=schema_versions,
             prompt_name="repair_agent"
         )
-        return yaml.safe_load(repaired_yaml)
+        repaired = yaml.safe_load(repaired_yaml)
+        if not isinstance(repaired, dict):
+            raise ValueError("RepairAgent expected YAML mapping for bindings, got non-dict content")
+        return repaired

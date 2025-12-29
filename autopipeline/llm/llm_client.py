@@ -55,6 +55,8 @@ class LLMClient:
             return provider_module.MockProvider(self.base_dir)
         if name == "anthropic":
             return provider_module.AnthropicProvider()
+        if name == "deepseek":
+            return provider_module.DeepseekProvider()
         raise ValueError(f"Unsupported provider: {name}")
 
     def _compute_cache_key(self, stage: str, provider_name: str, model: str, params: Dict[str, Any],

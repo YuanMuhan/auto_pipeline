@@ -138,6 +138,18 @@ class PipelineRunner:
             "metrics": {}
         })
 
+    @staticmethod
+    def _failure_message(res: Dict[str, Any]) -> str:
+        fails = res.get("failures", [])
+        if not fails:
+            return ""
+        f = fails[0]
+        if isinstance(f, FailureRecord):
+            return f.message
+        if isinstance(f, dict):
+            return f.get("message", "")
+        return str(f)
+
     def _runtime_compose_check(self, deploy_file: str):
         cmd = ["docker", "compose", "-f", deploy_file, "config"]
         try:
@@ -308,14 +320,14 @@ class PipelineRunner:
             schema_res = self.schema_checker.validate_ir(ir_data)
             self._record_validator("ir_schema", schema_res)
             if not schema_res["pass"]:
-                last_error = schema_res["failures"][0]["message"] if schema_res["failures"] else "IR schema failed"
+                last_error = self._failure_message(schema_res) or "IR schema failed"
                 self.log(f"IR schema validation failed: {last_error}", "WARNING")
                 continue
 
             boundary_res = self.boundary_checker.check_ir(ir_data)
             self._record_validator("ir_boundary", boundary_res)
             if not boundary_res["pass"]:
-                last_error = boundary_res["failures"][0]["message"] if boundary_res["failures"] else "IR boundary failed"
+                last_error = self._failure_message(boundary_res) or "IR boundary failed"
                 self.log(f"IR boundary check failed: {last_error}", "WARNING")
                 continue
 
@@ -323,14 +335,14 @@ class PipelineRunner:
                 comp_res = self.component_catalog_checker.check_ir(ir_data)
                 self._record_validator("ir_component_catalog", comp_res)
                 if not comp_res["pass"]:
-                    last_error = comp_res["failures"][0]["message"] if comp_res["failures"] else "IR catalog failed"
+                    last_error = self._failure_message(comp_res) or "IR catalog failed"
                     self.log(f"IR component catalog check failed: {last_error}", "WARNING")
                     continue
 
                 iface_res = self.ir_interface_checker.check(ir_data)
                 self._record_validator("ir_interface", iface_res)
                 if not iface_res["pass"]:
-                    last_error = iface_res["failures"][0]["message"] if iface_res["failures"] else "IR interface failed"
+                    last_error = self._failure_message(iface_res) or "IR interface failed"
                     self.log(f"IR interface check failed: {last_error}", "WARNING")
                     continue
             else:
@@ -374,21 +386,21 @@ class PipelineRunner:
             schema_res = self.schema_checker.validate_bindings(bindings_data)
             self._record_validator("bindings_schema", schema_res)
             if not schema_res["pass"]:
-                last_error = schema_res["failures"][0]["message"] if schema_res["failures"] else "Bindings schema failed"
+                last_error = self._failure_message(schema_res) or "Bindings schema failed"
                 self.log(f"Bindings schema validation failed: {last_error}", "WARNING")
                 continue
 
             coverage_res = self.coverage_checker.check_coverage(ir_data, bindings_data)
             self._record_validator("coverage", coverage_res)
             if not coverage_res["pass"]:
-                last_error = coverage_res["failures"][0]["message"] if coverage_res["failures"] else "Coverage failed"
+                last_error = self._failure_message(coverage_res) or "Coverage failed"
                 self.log(f"Coverage check failed: {last_error}", "WARNING")
                 continue
 
             endpoint_res = self.endpoint_checker.check_endpoints(bindings_data, device_info)
             self._record_validator("endpoint_legality", endpoint_res)
             if not endpoint_res["pass"]:
-                last_error = endpoint_res["failures"][0]["message"] if endpoint_res["failures"] else "Endpoint legality failed"
+                last_error = self._failure_message(endpoint_res) or "Endpoint legality failed"
                 self.log(f"Endpoint legality check failed: {last_error}", "WARNING")
                 continue
 
@@ -396,7 +408,7 @@ class PipelineRunner:
                 ep_match_res = self.endpoint_matching_checker.check(bindings_data, device_info)
                 self._record_validator("endpoint_matching", ep_match_res)
                 if not ep_match_res["pass"]:
-                    last_error = ep_match_res["failures"][0]["message"] if ep_match_res["failures"] else "Endpoint matching failed"
+                    last_error = self._failure_message(ep_match_res) or "Endpoint matching failed"
                     self.log(f"Endpoint matching check failed: {last_error}", "WARNING")
                     continue
             else:

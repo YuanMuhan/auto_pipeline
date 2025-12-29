@@ -28,7 +28,10 @@ class IRAgent:
             schema_versions=schema_versions,
             prompt_name="ir_agent"
         )
-        return yaml.safe_load(ir_yaml)
+        ir_obj = yaml.safe_load(ir_yaml)
+        if not isinstance(ir_obj, dict):
+            raise ValueError("IRAgent expected YAML mapping, got non-dict content")
+        return ir_obj
 
     def _simulate_ir_generation(self, plan_data: Dict[str, Any], user_problem: Dict[str, Any]) -> Dict[str, Any]:
         """Deterministic IR generation based on plan outlines or user problem type"""

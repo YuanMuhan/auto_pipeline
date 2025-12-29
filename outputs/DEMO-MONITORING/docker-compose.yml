@@ -9,9 +9,9 @@ services:
     environment:
       - LAYER=CLOUD
       - SERVICE_NAME=cloud_service
-      - BINDINGS_HASH=24cf8ac31fb38b36fecf3db00051fa631509c3438ff84b8b54b61e32d012bee9
+      - BINDINGS_HASH=fa6295966ef427dcdcc7f80dad59c837646a7b6d37be726e5216b335b58695ef
     labels:
-      bindings_hash: "24cf8ac31fb38b36fecf3db00051fa631509c3438ff84b8b54b61e32d012bee9"
+      bindings_hash: "fa6295966ef427dcdcc7f80dad59c837646a7b6d37be726e5216b335b58695ef"
     volumes:
       - ./generated_code/cloud:/app
     networks:
@@ -25,9 +25,9 @@ services:
     environment:
       - LAYER=EDGE
       - SERVICE_NAME=edge_service
-      - BINDINGS_HASH=24cf8ac31fb38b36fecf3db00051fa631509c3438ff84b8b54b61e32d012bee9
+      - BINDINGS_HASH=fa6295966ef427dcdcc7f80dad59c837646a7b6d37be726e5216b335b58695ef
     labels:
-      bindings_hash: "24cf8ac31fb38b36fecf3db00051fa631509c3438ff84b8b54b61e32d012bee9"
+      bindings_hash: "fa6295966ef427dcdcc7f80dad59c837646a7b6d37be726e5216b335b58695ef"
     volumes:
       - ./generated_code/edge:/app
     networks:
@@ -41,9 +41,9 @@ services:
     environment:
       - LAYER=DEVICE
       - SERVICE_NAME=device_service
-      - BINDINGS_HASH=24cf8ac31fb38b36fecf3db00051fa631509c3438ff84b8b54b61e32d012bee9
+      - BINDINGS_HASH=fa6295966ef427dcdcc7f80dad59c837646a7b6d37be726e5216b335b58695ef
     labels:
-      bindings_hash: "24cf8ac31fb38b36fecf3db00051fa631509c3438ff84b8b54b61e32d012bee9"
+      bindings_hash: "fa6295966ef427dcdcc7f80dad59c837646a7b6d37be726e5216b335b58695ef"
     volumes:
       - ./generated_code/device:/app
     networks:
@@ -59,6 +59,9 @@ networks:
 #   data_volume:
 
 # Transport protocols used:
-# - link_sensor_to_processor: MQTT (QoS: at_least_once)
-# - link_processor_to_storage: HTTP (QoS: best_effort)
-# BINDINGS_HASH: 24cf8ac31fb38b36fecf3db00051fa631509c3438ff84b8b54b61e32d012bee9
+# - sensor_to_edge: MQTT (QoS: at_least_once)
+# - edge_to_cloud: HTTP (QoS: best_effort)
+# - cloud_to_alert: HTTP (QoS: best_effort)
+# - cloud_to_controller: HTTP (QoS: best_effort)
+# - controller_to_cloud: HTTP (QoS: best_effort)
+# BINDINGS_HASH: fa6295966ef427dcdcc7f80dad59c837646a7b6d37be726e5216b335b58695ef
