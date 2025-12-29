@@ -1,83 +1,42 @@
-app_name: SmartHomeTemperatureMonitoring
+app_name: monitoring_app
 components:
 - capabilities:
   - sense
   - collect
-  id: temp_sensor_01
-  metadata:
-    data_type: temperature_reading
-    layer: device
+  id: sensor_collector
+  metadata: {}
   type: TemperatureSensor
 - capabilities:
   - filter
   - aggregate
-  - process
-  id: edge_gateway_01
-  metadata:
-    layer: edge
-  type: RuleEngine
+  - analyze
+  id: data_processor
+  metadata: {}
+  type: Aggregator
 - capabilities:
   - store
-  - analyze
-  - alert
-  id: cloud_server_01
-  metadata:
-    layer: cloud
+  - query
+  id: storage_service
+  metadata: {}
   type: DataStore
-- capabilities:
-  - notify
-  id: alert_service
-  metadata:
-    purpose: alert_generation
-  type: Notifier
-- capabilities:
-  - decide
-  - monitor
-  id: monitoring_controller
-  metadata:
-    logic_engine: rule_based
-  type: RuleEngine
 description: Smart home temperature monitoring system with cloud analytics
 links:
-- contract:
-    schema_type: temperature_object
+- contract: {}
   data_type: sensor_reading
   frequency: real-time
-  from: temp_sensor_01
-  id: sensor_to_edge
-  to: edge_gateway_01
-- contract:
-    schema_type: aggregated_temperature_object
-  data_type: aggregated_data
+  from: sensor_collector
+  id: link_sensor_to_processor
+  to: data_processor
+- contract: {}
+  data_type: processed_data
   frequency: periodic
-  from: edge_gateway_01
-  id: edge_to_cloud
-  to: cloud_server_01
-- contract:
-    condition: threshold_violation
-  data_type: alert_event
-  frequency: on-demand
-  from: cloud_server_01
-  id: cloud_to_alert
-  to: alert_service
-- data_type: analytics_result
-  frequency: periodic
-  from: cloud_server_01
-  id: cloud_to_controller
-  to: monitoring_controller
-- data_type: control_command
-  frequency: on-demand
-  from: monitoring_controller
-  id: controller_to_cloud
-  to: cloud_server_01
-logic:
-  aggregation_policy: time_window_average
-  alert_condition: temperature_exceeds_threshold
-  monitoring_mode: real_time
+  from: data_processor
+  id: link_processor_to_storage
+  to: storage_service
+logic: {}
 metadata:
   description: Smart home temperature monitoring system with cloud analytics
-  system_type: monitoring
-  version: '1.0'
-policies: {}
-schemas: {}
-version: '1.0'
+  version: 0.1.0
+policies: []
+schemas: []
+version: 0.1.0

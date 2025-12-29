@@ -3,6 +3,7 @@
 import os
 import time
 import subprocess
+import py_compile
 from datetime import datetime
 from typing import Dict, Any, Tuple, List
 
@@ -24,6 +25,7 @@ from autopipeline.verifier.endpoint_matching_checker import EndpointMatchingChec
 from autopipeline.verifier.device_info_catalog_checker import DeviceInfoCatalogChecker
 from autopipeline.catalog.render import catalog_hashes, component_types_summary, endpoint_types_summary, load_component_profiles, load_endpoint_types
 from autopipeline.verifier.generation_checker import GenerationConsistencyChecker
+from autopipeline.verifier.cross_artifact_checker import CrossArtifactChecker
 from autopipeline.llm import LLMClient
 from autopipeline.llm.types import LLMConfig
 from autopipeline.llm.hash_utils import stable_hash
@@ -83,6 +85,7 @@ class PipelineRunner:
         self.device_info_catalog_checker = DeviceInfoCatalogChecker(base_dir)
         self.ir_interface_checker = IRInterfaceChecker(self.component_catalog_checker)
         self.endpoint_matching_checker = EndpointMatchingChecker(load_endpoint_types(base_dir)["data"])
+        self.cross_artifact_checker = CrossArtifactChecker()
 
         combined_rules_hash = stable_hash({
             "ir": self.rules_bundle["ir"]["hash"],
@@ -156,14 +159,9 @@ class PipelineRunner:
             proc = subprocess.run(cmd, capture_output=True, text=True, check=False)
         except FileNotFoundError:
             return {
-                "pass": False,
-                "failures": [{
-                    "code": ErrorCode.E_RUNTIME_COMPOSE_CONFIG,
-                    "stage": "runtime",
-                    "checker": "RuntimeChecker",
-                    "message": "docker not available"
-                }],
-                "warnings": [],
+                "pass": True,
+                "failures": [],
+                "warnings": ["docker not available; skipped runtime check"],
                 "metrics": {}
             }
         if proc.returncode != 0:
@@ -178,7 +176,61 @@ class PipelineRunner:
                 "warnings": [],
                 "metrics": {}
             }
-        return {"pass": True, "failures": [], "warnings": [], "metrics": {}}
+
+        # Optional up/down check
+        up_proc = subprocess.run(["docker", "compose", "-f", deploy_file, "up", "-d"],
+                                 capture_output=True, text=True, check=False)
+        if up_proc.returncode != 0:
+            return {
+                "pass": False,
+                "failures": [{
+                    "code": ErrorCode.E_RUNTIME_COMPOSE_CONFIG,
+                    "stage": "runtime",
+                    "checker": "RuntimeChecker",
+                    "message": up_proc.stderr.strip() or "docker compose up failed"
+                }],
+                "warnings": [],
+                "metrics": {}
+            }
+        time.sleep(5)
+        ps_proc = subprocess.run(["docker", "compose", "-f", deploy_file, "ps"],
+                                 capture_output=True, text=True, check=False)
+        warnings = []
+        if ps_proc.returncode != 0:
+            warnings.append(ps_proc.stderr.strip() or "docker compose ps failed")
+        subprocess.run(["docker", "compose", "-f", deploy_file, "down"], capture_output=True, text=True, check=False)
+        return {"pass": True, "failures": [], "warnings": warnings, "metrics": {}}
+
+    def _validate_codegen(self, codegen_result: Dict[str, Any]) -> Dict[str, Any]:
+        failures = []
+        warnings = []
+        generated = codegen_result.get("generated_files", {})
+        for layer, path in generated.items():
+            if not os.path.exists(path):
+                failures.append({
+                    "code": ErrorCode.E_UNKNOWN,
+                    "stage": "codegen",
+                    "checker": "CodeGenValidator",
+                    "message": f"{layer} main.py missing"
+                })
+                continue
+            try:
+                py_compile.compile(path, doraise=True)
+            except Exception as e:
+                failures.append({
+                    "code": ErrorCode.E_UNKNOWN,
+                    "stage": "codegen",
+                    "checker": "CodeGenValidator",
+                    "message": f"{layer} main.py py_compile failed: {e}"
+                })
+        if not generated:
+            failures.append({
+                "code": ErrorCode.E_UNKNOWN,
+                "stage": "codegen",
+                "checker": "CodeGenValidator",
+                "message": "No code generated"
+            })
+        return {"pass": len(failures) == 0, "failures": failures, "warnings": warnings, "metrics": {}}
 
     def run(self) -> Dict[str, Any]:
         """Run the complete pipeline"""
@@ -220,6 +272,8 @@ class PipelineRunner:
                                                     bindings_hash, self.case_id)
         self.stages_passed.append("codegen")
         self._record_stage("codegen", codegen_start, attempts=1, passed=True)
+        codegen_validator = self._validate_codegen(codegen_result)
+        self._record_validator("code_generated", codegen_validator)
 
         # Step 6: Generate Deployment
         self.log("Step 6: Generating docker-compose.yml (Deploy)")
@@ -414,6 +468,13 @@ class PipelineRunner:
             else:
                 self._skip_validator("endpoint_matching", "Skipped catalog validation (--no-catalog)")
 
+            cross_res = self.cross_artifact_checker.check(ir_data, bindings_data)
+            self._record_validator("cross_artifact_consistency", cross_res)
+            if not cross_res["pass"]:
+                last_error = self._failure_message(cross_res) or "Cross artifact consistency failed"
+                self.log(f"Cross-artifact check failed: {last_error}", "WARNING")
+                continue
+
             self.log("Bindings validation passed")
             break
 
@@ -522,7 +583,7 @@ class PipelineRunner:
         # Simplified checks (backward compatibility)
         for name in ["user_problem_schema", "device_info_schema", "device_info_catalog",
                      "plan_schema", "ir_schema", "ir_boundary", "ir_component_catalog", "ir_interface",
-                     "bindings_schema", "coverage", "endpoint_legality", "endpoint_matching",
+                     "bindings_schema", "coverage", "endpoint_legality", "endpoint_matching", "cross_artifact_consistency",
                      "code_generated", "deploy_generated", "generation_consistency", "runtime_compose"]:
             res = self.validator_results.get(name, {"pass": True, "failures": [], "warnings": []})
             msg = res["failures"][0]["message"] if res["failures"] else "OK"

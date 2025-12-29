@@ -44,6 +44,21 @@ class CodeGenAgent:
                 with open(code_file, 'w', encoding='utf-8') as f:
                     f.write(code_content)
 
+                # Minimal requirements and Dockerfile placeholders
+                req_path = os.path.join(code_dir, 'requirements.txt')
+                with open(req_path, 'w', encoding='utf-8') as f:
+                    f.write("paho-mqtt\nrequests\n")
+
+                dockerfile_path = os.path.join(code_dir, 'Dockerfile')
+                with open(dockerfile_path, 'w', encoding='utf-8') as f:
+                    f.write(
+                        "FROM python:3.10-slim\n"
+                        "WORKDIR /app\n"
+                        "COPY . /app\n"
+                        "RUN pip install --no-cache-dir -r requirements.txt\n"
+                        "CMD [\"python\", \"main.py\"]\n"
+                    )
+
                 generated_files[layer] = code_file
 
         # Traceability manifest
@@ -94,7 +109,7 @@ class CodeGenAgent:
 
 import json
 import time
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 
 class {layer.capitalize()}Service:
@@ -115,11 +130,15 @@ class {layer.capitalize()}Service:
     def __init__(self):
         self.running = False
         print(f"[{layer.upper()}] Service initialized")
+        self.endpoints = {json.dumps(endpoints_preview)}
+        self.bindings_hash = "{bindings_hash}"
 
     def start(self):
         \"\"\"Start the service\"\"\"
         self.running = True
-        print(f"[{layer.upper()}] Service started")
+        print(f"[{layer.upper()}] Service started with bindings_hash={{self.bindings_hash}}")
+        if self.endpoints:
+            print(f"[{layer.upper()}] Endpoints preview: {{{{self.endpoints}}}}")
 
         # TODO: Initialize connections to endpoints
 """
@@ -144,7 +163,7 @@ class {layer.capitalize()}Service:
                 code += f"            # TODO: Execute {component_id} capabilities: {', '.join(capabilities)}\n"
 
         code += """
-            time.sleep(1)  # Placeholder loop
+            print(f\"[{layer.upper()}] heartbeat - running\")\n            time.sleep(1)  # Placeholder loop
 
 """
 

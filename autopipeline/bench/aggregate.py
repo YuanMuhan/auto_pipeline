@@ -13,6 +13,8 @@ def _summarize_eval(eval_data: Dict[str, Any], eval_path: Path) -> Dict[str, Any
     fail_codes = Counter([f.get("code", "E_UNKNOWN") for f in failures])
     pipeline = eval_data.get("pipeline", {}).get("stages", {})
     duration_total = sum(stage.get("duration_ms", 0) for stage in pipeline.values())
+    attempts = [stage.get("attempts", 0) for stage in pipeline.values() if stage.get("attempts") is not None]
+    avg_attempts = sum(attempts) / len(attempts) if attempts else 0
     row = {
         "eval_path": str(eval_path),
         "case_id": eval_data.get("case_id"),
@@ -20,6 +22,7 @@ def _summarize_eval(eval_data: Dict[str, Any], eval_path: Path) -> Dict[str, Any
         "pass": 1 if eval_data.get("overall_status") == "PASS" else 0,
         "fail_codes": ";".join([code for code, _ in fail_codes.most_common(3)]),
         "duration_ms_total": duration_total,
+        "attempts_avg": avg_attempts,
         "llm_calls": eval_data.get("llm", {}).get("calls_total"),
         "cache_hits": eval_data.get("llm", {}).get("cache_hits"),
         "cache_misses": eval_data.get("llm", {}).get("cache_misses"),

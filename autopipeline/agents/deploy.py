@@ -47,7 +47,8 @@ services:
   {layer}_service:
     image: autopipeline/{layer}:latest
     container_name: autopipeline_{layer}
-    command: python ./generated_code/{layer}/main.py
+    working_dir: /app
+    command: python main.py
     environment:
       - LAYER={layer.upper()}
       - SERVICE_NAME={layer}_service

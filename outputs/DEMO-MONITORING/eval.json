@@ -1,6 +1,6 @@
 {
   "case_id": "DEMO-MONITORING",
-  "timestamp": "2025-12-29T09:06:53.818450",
+  "timestamp": "2025-12-29T10:47:58.003363",
   "checks": {
     "user_problem_schema": {
       "status": "PASS",
@@ -50,6 +50,10 @@
       "status": "PASS",
       "message": "OK"
     },
+    "cross_artifact_consistency": {
+      "status": "PASS",
+      "message": "OK"
+    },
     "code_generated": {
       "status": "PASS",
       "message": "OK"
@@ -68,10 +72,10 @@
     }
   },
   "metrics": {
-    "num_components": 5,
-    "num_entities": 5,
-    "num_links": 5,
-    "num_placements": 5,
+    "num_components": 3,
+    "num_entities": 3,
+    "num_links": 2,
+    "num_placements": 3,
     "num_layers": 3
   },
   "overall_status": "PASS",
@@ -91,7 +95,7 @@
     "bindings_required_fields": 4,
     "bindings_forbidden_keywords": 4
   },
-  "bindings_hash": "fa6295966ef427dcdcc7f80dad59c837646a7b6d37be726e5216b335b58695ef",
+  "bindings_hash": "24cf8ac31fb38b36fecf3db00051fa631509c3438ff84b8b54b61e32d012bee9",
   "catalog_hashes": {
     "components_index_hash": "ba26c264fb48b9445d957bac399bb436826407143176f3fb0fad1dffd876fe78",
     "endpoint_types_hash": "5f566bd637fe54bc64c37b48c279b10e38490d8ce2a4b152cb5cfb68594be6e2"
@@ -139,16 +143,11 @@
       "pass": true,
       "failures": [],
       "warnings": [
-        "component temp_sensor_01 has no explicit ports; skipping port validation",
-        "component edge_gateway_01 has no explicit ports; skipping port validation",
-        "component cloud_server_01 has no explicit ports; skipping port validation",
-        "component alert_service has no explicit ports; skipping port validation",
-        "component monitoring_controller has no explicit ports; skipping port validation",
-        "link sensor_to_edge missing explicit ports; skipping port validation",
-        "link edge_to_cloud missing explicit ports; skipping port validation",
-        "link cloud_to_alert missing explicit ports; skipping port validation",
-        "link cloud_to_controller missing explicit ports; skipping port validation",
-        "link controller_to_cloud missing explicit ports; skipping port validation"
+        "component sensor_collector has no explicit ports; skipping port validation",
+        "component data_processor has no explicit ports; skipping port validation",
+        "component storage_service has no explicit ports; skipping port validation",
+        "link link_sensor_to_processor missing explicit ports; skipping port validation",
+        "link link_processor_to_storage missing explicit ports; skipping port validation"
       ],
       "metrics": {}
     },
@@ -156,16 +155,11 @@
       "pass": true,
       "failures": [],
       "warnings": [
-        "component temp_sensor_01 has no explicit ports; skipping port validation",
-        "component edge_gateway_01 has no explicit ports; skipping port validation",
-        "component cloud_server_01 has no explicit ports; skipping port validation",
-        "component alert_service has no explicit ports; skipping port validation",
-        "component monitoring_controller has no explicit ports; skipping port validation",
-        "link sensor_to_edge missing explicit ports; skipping port validation",
-        "link edge_to_cloud missing explicit ports; skipping port validation",
-        "link cloud_to_alert missing explicit ports; skipping port validation",
-        "link cloud_to_controller missing explicit ports; skipping port validation",
-        "link controller_to_cloud missing explicit ports; skipping port validation"
+        "component sensor_collector has no explicit ports; skipping port validation",
+        "component data_processor has no explicit ports; skipping port validation",
+        "component storage_service has no explicit ports; skipping port validation",
+        "link link_sensor_to_processor missing explicit ports; skipping port validation",
+        "link link_processor_to_storage missing explicit ports; skipping port validation"
       ],
       "metrics": {}
     },
@@ -188,11 +182,17 @@
       "failures": [],
       "warnings": [],
       "metrics": {
-        "referenced": 4,
+        "referenced": 3,
         "invalid": 0
       }
     },
     "endpoint_matching": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {}
+    },
+    "cross_artifact_consistency": {
       "pass": true,
       "failures": [],
       "warnings": [],
@@ -230,22 +230,22 @@
     "stages": {
       "plan": {
         "pass": true,
-        "duration_ms": 6,
+        "duration_ms": 5,
         "attempts": 1
       },
       "ir": {
         "pass": true,
-        "duration_ms": 69055,
-        "attempts": 3
+        "duration_ms": 12,
+        "attempts": 1
       },
       "bindings": {
         "pass": true,
-        "duration_ms": 41780,
-        "attempts": 2
+        "duration_ms": 12,
+        "attempts": 1
       },
       "codegen": {
         "pass": true,
-        "duration_ms": 1,
+        "duration_ms": 3,
         "attempts": 1
       },
       "deploy": {
@@ -255,30 +255,27 @@
       },
       "eval": {
         "pass": true,
-        "duration_ms": 59,
+        "duration_ms": 21,
         "attempts": 1
       }
     }
   },
   "llm": {
-    "provider": "deepseek",
-    "model": "deepseek-chat",
+    "provider": "mock",
+    "model": null,
     "temperature": 0.0,
     "cache_dir": ".cache/llm",
-    "cache_enabled": false,
-    "calls_total": 5,
+    "cache_enabled": true,
+    "calls_total": 2,
     "calls_by_stage": {
       "generate_ir": 1,
-      "repair_ir": 2,
-      "generate_bindings": 1,
-      "repair_bindings": 1
+      "generate_bindings": 1
     },
-    "cache_hits": 0,
-    "cache_misses": 5,
+    "cache_hits": 2,
+    "cache_misses": 0,
     "usage_tokens_total": 0,
     "prompt_template_hashes": {
       "ir_agent": "3b139c640d31d720bf2f7bb0d8b90fdd86a204c2e47586907d82349103f1816a",
-      "repair_agent": "2240406411b902e7b35b1f40c8961e4e26dab8b1431a4635a90e00f32f131627",
       "binding_agent": "eb7bf22c71118c6197aff798182e3fdd479aaf2db13a51eb5ddf4cbf73933e65"
     },
     "rules_hash": "4ac6af8005e0d2c30d37bd9c621b14d957fbb46d0e2cd23d2e6633466e91d3d1507a7f7bce8a858b23fb73c5ee5a3c013b50440700cc38e29c10c36123533724",

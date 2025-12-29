@@ -152,7 +152,13 @@ class LLMClient:
         self.stats["calls_total"] += 1
         self.stats["calls_by_stage"][stage] = self.stats["calls_by_stage"].get(stage, 0) + 1
         if cached_usage and isinstance(cached_usage, dict):
-            self.stats["usage_tokens_total"] += cached_usage.get("input_tokens", 0) + cached_usage.get("output_tokens", 0)
+            # Handle different provider usage formats
+            total = 0
+            if "input_tokens" in cached_usage or "output_tokens" in cached_usage:
+                total = cached_usage.get("input_tokens", 0) + cached_usage.get("output_tokens", 0)
+            elif "prompt_tokens" in cached_usage or "completion_tokens" in cached_usage:
+                total = cached_usage.get("prompt_tokens", 0) + cached_usage.get("completion_tokens", 0)
+            self.stats["usage_tokens_total"] += total
 
         return cached_text
 
