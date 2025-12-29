@@ -2,8 +2,8 @@
 
 import json
 import os
-from typing import Dict, Tuple
-from autopipeline.utils import sha256_of_file
+
+from autopipeline.eval.error_codes import ErrorCode, failure
 
 
 class GenerationConsistencyChecker:
@@ -13,7 +13,8 @@ class GenerationConsistencyChecker:
         self.bindings_hash = bindings_hash
         self.output_dir = output_dir
 
-    def check(self) -> Tuple[bool, str]:
+    def check(self):
+        failures = []
         manifest_path = os.path.join(self.output_dir, "generated_code", "manifest.json")
         compose_path = os.path.join(self.output_dir, "docker-compose.yml")
         main_paths = [
@@ -22,18 +23,24 @@ class GenerationConsistencyChecker:
         ]
 
         if not os.path.exists(manifest_path):
-            return False, "Manifest file missing"
+            failures.append(failure(ErrorCode.E_UNKNOWN, "codegen", "GenerationConsistencyChecker",
+                                    "Manifest file missing"))
+            return {"pass": False, "failures": failures, "warnings": [], "metrics": {}}
 
         try:
             with open(manifest_path, 'r', encoding='utf-8') as f:
                 manifest = json.load(f)
         except Exception as e:
-            return False, f"Failed to read manifest: {str(e)}"
+            failures.append(failure(ErrorCode.E_UNKNOWN, "codegen", "GenerationConsistencyChecker",
+                                    f"Failed to read manifest: {str(e)}"))
+            return {"pass": False, "failures": failures, "warnings": [], "metrics": {}}
 
         if manifest.get("bindings_hash") != self.bindings_hash:
-            return False, "bindings_hash mismatch in manifest"
+            failures.append(failure(ErrorCode.E_UNKNOWN, "codegen", "GenerationConsistencyChecker",
+                                    "bindings_hash mismatch in manifest",
+                                    {"manifest_bindings_hash": manifest.get("bindings_hash"),
+                                     "expected": self.bindings_hash}))
 
-        # Check main.py comments for hash
         main_has_hash = False
         for path in main_paths:
             if not os.path.exists(path):
@@ -43,14 +50,17 @@ class GenerationConsistencyChecker:
                 if self.bindings_hash in content:
                     main_has_hash = True
         if not main_has_hash:
-            return False, "bindings_hash not found in any main.py"
+            failures.append(failure(ErrorCode.E_UNKNOWN, "codegen", "GenerationConsistencyChecker",
+                                    "bindings_hash not found in any main.py"))
 
-        # Check docker-compose for hash
         if not os.path.exists(compose_path):
-            return False, "docker-compose.yml missing"
-        with open(compose_path, 'r', encoding='utf-8') as f:
-            compose_content = f.read()
-            if self.bindings_hash not in compose_content:
-                return False, "bindings_hash not found in docker-compose.yml"
+            failures.append(failure(ErrorCode.E_RUNTIME_COMPOSE_CONFIG, "deploy", "GenerationConsistencyChecker",
+                                    "docker-compose.yml missing"))
+        else:
+            with open(compose_path, 'r', encoding='utf-8') as f:
+                compose_content = f.read()
+                if self.bindings_hash not in compose_content:
+                    failures.append(failure(ErrorCode.E_RUNTIME_COMPOSE_CONFIG, "deploy", "GenerationConsistencyChecker",
+                                            "bindings_hash not found in docker-compose.yml"))
 
-        return True, "Generation consistency passed"
+        return {"pass": len(failures) == 0, "failures": failures, "warnings": [], "metrics": {}}

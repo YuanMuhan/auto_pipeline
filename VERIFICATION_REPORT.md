@@ -318,3 +318,11 @@ outputs/DEMO-SMARTHOME/
   - `python -m autopipeline run --case DEMO-MONITORING --llm-provider mock` PASS（含一次 repair_ir，cache_miss）；`input_validation` 记录 schema+catalog 校验。
   - `python -m autopipeline run --case DEMO-SMARTHOME --llm-provider mock` PASS；catalog 校验通过。
   - eval.json 新增 `catalog_hashes`，`input_validation`，LLM 统计保持。
+
+## 2025-12-29 Evaluation Pack（v0.1.1）
+- Failure Taxonomy：新增 `autopipeline/eval/error_codes.py` + `FailureRecord`，所有 checker 返回结构化结果（schema/boundary/coverage/endpoint/catalog/interface/generation 等）。
+- eval.json：新增 `validators`、`failures_flat`、`pipeline.stages`（耗时与 attempts）、`runtime_compose`（可选）；保留 llm/catalog_hashes/input_validation。
+- 报告：`autopipeline/eval/report.py` 自动生成 `report.md`（状态、LLM 配置、失败 Top-N、产物存在性、hash）。
+- Bench：`python -m autopipeline bench ...`（或 `python -m autopipeline.bench ...`）批量运行输出 `summary.csv` / `summary_by_error.csv` / `plots/`（未安装 matplotlib 时跳过绘图并提示）；开关：`--no-repair`、`--no-catalog`、`--runtime-check`、`--tag`、`--repeat`。
+- Runtime check（可选）：`--runtime-check` 时执行 `docker compose -f docker-compose.yml config`，失败记为 `E_RUNTIME_COMPOSE_CONFIG`。
+- 回归结果：DEMO-MONITORING、DEMO-SMARTHOME 在 mock provider 下均 PASS；bench（两案）PASS，summary 产出正常，plots 因未装 matplotlib 被跳过（已提示）。

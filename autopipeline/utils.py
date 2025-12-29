@@ -34,6 +34,13 @@ def save_yaml(data: Dict[str, Any], filepath: str) -> None:
         yaml.dump(data, f, default_flow_style=False, allow_unicode=True)
 
 
+def save_text(text: str, filepath: str) -> None:
+    """Save plain text to file, ensuring parent directory exists."""
+    os.makedirs(os.path.dirname(filepath), exist_ok=True)
+    with open(filepath, 'w', encoding='utf-8') as f:
+        f.write(text)
+
+
 def ensure_dir(path: str) -> None:
     """Ensure directory exists"""
     Path(path).mkdir(parents=True, exist_ok=True)

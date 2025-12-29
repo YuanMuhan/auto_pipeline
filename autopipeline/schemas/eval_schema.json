@@ -165,7 +165,70 @@
         "schema_hashes": { "type": "object" }
       },
       "additionalProperties": true
+    },
+    "validators": {
+      "type": "object",
+      "description": "Structured validator outputs",
+      "patternProperties": {
+        "^[a-zA-Z0-9_]+$": {
+          "type": "object",
+          "properties": {
+            "pass": { "type": "boolean" },
+            "failures": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "code": { "type": "string" },
+                  "stage": { "type": "string" },
+                  "checker": { "type": "string" },
+                  "message": { "type": "string" }
+                },
+                "additionalProperties": true
+              }
+            },
+            "warnings": { "type": "array", "items": { "type": "string" } },
+            "metrics": { "type": "object" }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "failures_flat": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "code": { "type": "string" },
+          "stage": { "type": "string" },
+          "checker": { "type": "string" },
+          "message": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    },
+    "pipeline": {
+      "type": "object",
+      "properties": {
+        "stages": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-zA-Z0-9_]+$": {
+              "type": "object",
+              "properties": {
+                "pass": { "type": "boolean" },
+                "duration_ms": { "type": "integer", "minimum": 0 },
+                "attempts": { "type": "integer", "minimum": 0 }
+              },
+              "additionalProperties": true
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
     }
   },
-  "additionalProperties": false
+  "additionalProperties": true
 }

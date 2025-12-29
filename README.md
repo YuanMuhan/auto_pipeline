@@ -42,6 +42,15 @@ python -m autopipeline run --case DEMO-SMARTHOME --llm-provider mock
 - `docker-compose.yml`：带 BINDINGS_HASH 标签/env 的占位部署  
 - `eval.json`：所有检查结果与统计（含 rules_hash、catalog_hashes、llm 统计、generation_consistency 等）  
 - `run.log`：调用与验证日志
+- `report.md`：人类可读摘要（LLM 配置、失败 Top-N、产物存在性）
+
+4) 批量评估（Evaluation Pack）  
+```
+python -m autopipeline bench --case-ids DEMO-MONITORING,DEMO-SMARTHOME --llm-provider mock --out-root outputs_bench
+```
+- 产物：`outputs_bench/summary.csv`、`summary_by_error.csv`、`plots/`（如已安装 matplotlib）  
+- 开关：`--no-repair`（单次生成，无 Repair）、`--no-catalog`（仅 schema，不做 catalog 校验）、`--runtime-check`（docker compose config）  
+- `--tag` 可将结果写入 `outputs_bench/<tag>/` 便于对比实验。
 
 ## 输入约束
 - `cases/<CASE>/user_problem.json`：软约束结构（id/title/target/context/triggers/expected_behavior/outputs/constraints），缺失字段会给 warning。  

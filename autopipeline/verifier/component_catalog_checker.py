@@ -1,8 +1,9 @@
 """Component catalog checker - ensures IR component types and interface usage are from catalog"""
 
-from typing import Dict, Any, Tuple, Set, List
+from typing import Dict, Any, Set, List
 
 from autopipeline.catalog.profile_loader import ProfileLoader
+from autopipeline.eval.error_codes import ErrorCode, failure
 
 
 class ComponentCatalogChecker:
@@ -10,25 +11,24 @@ class ComponentCatalogChecker:
         self.loader = ProfileLoader(base_dir)
         self.types: Set[str] = self.loader.list_types()
 
-    def check_ir(self, ir_data: Dict[str, Any]) -> Tuple[bool, str, List[str], List[str]]:
-        """Returns (ok, message, errors, warnings)"""
+    def check_ir(self, ir_data: Dict[str, Any]):
+        """Returns structured result with failures/warnings."""
         components = ir_data.get("components", ir_data.get("entities", []))
-        errors: List[str] = []
+        failures: List = []
         warnings: List[str] = []
 
-        # Type check
         invalid = []
         for comp in components:
             ctype = comp.get("type")
             if ctype not in self.types:
                 invalid.append(ctype)
         if invalid:
-            errors.append(f"IR component types not in catalog: {', '.join(filter(None, invalid))}")
+            failures.append(failure(ErrorCode.E_CATALOG_COMPONENT, "ir", "ComponentCatalogChecker",
+                                    f"IR component types not in catalog: {', '.join(filter(None, invalid))}",
+                                    {"invalid_types": invalid}))
 
-        # Build type map
         comp_map = {c.get("id"): c for c in components}
 
-        # Component-level interface use (best effort)
         for comp in components:
             cid = comp.get("id")
             ctype = comp.get("type")
@@ -40,11 +40,12 @@ class ComponentCatalogChecker:
                     ports = comp.get(field) or []
                     for p in ports:
                         if p not in interfaces["all_interfaces"]:
-                            errors.append(f"component {cid} uses unknown port '{p}' not in profile {ctype}")
+                            failures.append(failure(ErrorCode.E_CATALOG_COMPONENT, "ir", "ComponentCatalogChecker",
+                                                    f"component {cid} uses unknown port '{p}' not in profile {ctype}",
+                                                    {"component": cid, "port": p, "type": ctype}))
             if not any(k in comp for k in ["uses", "inputs", "outputs", "ports"]):
                 warnings.append(f"component {cid} has no explicit ports; skipping port validation")
 
-        # Link-level
         for link in ir_data.get("links", []):
             from_id = link.get("from")
             to_id = link.get("to")
@@ -57,7 +58,6 @@ class ComponentCatalogChecker:
                 to_port = link["to"].get("port")
                 to_id = link["to"].get("component") or link["to"].get("id")
 
-            # Ports missing -> warning
             if not from_port or not to_port:
                 warnings.append(f"link {link.get('id')} missing explicit ports; skipping port validation")
                 continue
@@ -69,9 +69,10 @@ class ComponentCatalogChecker:
                     continue
                 interfaces = self.loader.get_interfaces(ctype)
                 if port not in interfaces["all_interfaces"]:
-                    errors.append(f"link {link.get('id')}: port '{port}' not in profile of component {cid} ({ctype})")
+                    failures.append(failure(ErrorCode.E_CATALOG_COMPONENT, "ir", "ComponentCatalogChecker",
+                                            f"link {link.get('id')}: port '{port}' not in profile of component {cid} ({ctype})",
+                                            {"component": cid, "port": port, "type": ctype, "link": link.get("id")}))
 
-        # Policy-level (best effort)
         for pol in ir_data.get("policies", []):
             actions = pol.get("actions", [])
             for act in actions:
@@ -86,6 +87,9 @@ class ComponentCatalogChecker:
                     if service not in interfaces["provided_services"] and service not in interfaces["required_services"]:
                         warnings.append(f"policy {pol.get('name')}: service '{service}' not in component {target} profile")
 
-        if errors:
-            return False, "IR interface validation failed", errors, warnings
-        return True, "IR interface validation passed", errors, warnings
+        return {
+            "pass": len(failures) == 0,
+            "failures": failures,
+            "warnings": warnings,
+            "metrics": {}
+        }

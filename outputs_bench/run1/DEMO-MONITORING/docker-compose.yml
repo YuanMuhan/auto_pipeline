@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+
+  cloud_service:
+    image: autopipeline/cloud:latest
+    container_name: autopipeline_cloud
+    command: python ./generated_code/cloud/main.py
+    environment:
+      - LAYER=CLOUD
+      - SERVICE_NAME=cloud_service
+      - BINDINGS_HASH=24cf8ac31fb38b36fecf3db00051fa631509c3438ff84b8b54b61e32d012bee9
+    labels:
+      bindings_hash: "24cf8ac31fb38b36fecf3db00051fa631509c3438ff84b8b54b61e32d012bee9"
+    volumes:
+      - ./generated_code/cloud:/app
+    networks:
+      - autopipeline_network
+    restart: unless-stopped
+
+  edge_service:
+    image: autopipeline/edge:latest
+    container_name: autopipeline_edge
+    command: python ./generated_code/edge/main.py
+    environment:
+      - LAYER=EDGE
+      - SERVICE_NAME=edge_service
+      - BINDINGS_HASH=24cf8ac31fb38b36fecf3db00051fa631509c3438ff84b8b54b61e32d012bee9
+    labels:
+      bindings_hash: "24cf8ac31fb38b36fecf3db00051fa631509c3438ff84b8b54b61e32d012bee9"
+    volumes:
+      - ./generated_code/edge:/app
+    networks:
+      - autopipeline_network
+    restart: unless-stopped
+
+  device_service:
+    image: autopipeline/device:latest
+    container_name: autopipeline_device
+    command: python ./generated_code/device/main.py
+    environment:
+      - LAYER=DEVICE
+      - SERVICE_NAME=device_service
+      - BINDINGS_HASH=24cf8ac31fb38b36fecf3db00051fa631509c3438ff84b8b54b61e32d012bee9
+    labels:
+      bindings_hash: "24cf8ac31fb38b36fecf3db00051fa631509c3438ff84b8b54b61e32d012bee9"
+    volumes:
+      - ./generated_code/device:/app
+    networks:
+      - autopipeline_network
+    restart: unless-stopped
+
+networks:
+  autopipeline_network:
+    driver: bridge
+
+# TODO: Add volumes if needed for persistent storage
+# volumes:
+#   data_volume:
+
+# Transport protocols used:
+# - link_sensor_to_processor: MQTT (QoS: at_least_once)
+# - link_processor_to_storage: HTTP (QoS: best_effort)
+# BINDINGS_HASH: 24cf8ac31fb38b36fecf3db00051fa631509c3438ff84b8b54b61e32d012bee9

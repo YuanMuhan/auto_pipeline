@@ -1,0 +1,42 @@
+app_name: monitoring_app
+components:
+- capabilities:
+  - sense
+  - collect
+  id: sensor_collector
+  metadata: {}
+  type: TemperatureSensor
+- capabilities:
+  - filter
+  - aggregate
+  - analyze
+  id: data_processor
+  metadata: {}
+  type: Aggregator
+- capabilities:
+  - store
+  - query
+  id: storage_service
+  metadata: {}
+  type: DataStore
+description: Smart home temperature monitoring system with cloud analytics
+links:
+- contract: {}
+  data_type: sensor_reading
+  frequency: real-time
+  from: sensor_collector
+  id: link_sensor_to_processor
+  to: data_processor
+- contract: {}
+  data_type: processed_data
+  frequency: periodic
+  from: data_processor
+  id: link_processor_to_storage
+  to: storage_service
+logic: {}
+metadata:
+  description: Smart home temperature monitoring system with cloud analytics
+  version: 0.1.0
+policies: []
+schemas: []
+version: 0.1.0

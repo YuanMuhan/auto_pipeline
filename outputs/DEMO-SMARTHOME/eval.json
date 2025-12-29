@@ -1,38 +1,70 @@
 {
   "case_id": "DEMO-SMARTHOME",
-  "timestamp": "2025-12-28T03:04:10.135906",
+  "timestamp": "2025-12-29T05:51:13.906535",
   "checks": {
+    "user_problem_schema": {
+      "status": "PASS",
+      "message": "OK"
+    },
+    "device_info_schema": {
+      "status": "PASS",
+      "message": "OK"
+    },
+    "device_info_catalog": {
+      "status": "PASS",
+      "message": "OK"
+    },
     "plan_schema": {
       "status": "PASS",
-      "message": "Plan schema validation passed"
+      "message": "OK"
     },
     "ir_schema": {
       "status": "PASS",
-      "message": "IR schema validation passed"
+      "message": "OK"
     },
     "ir_boundary": {
       "status": "PASS",
-      "message": "IR boundary check passed"
+      "message": "OK"
+    },
+    "ir_component_catalog": {
+      "status": "PASS",
+      "message": "OK"
+    },
+    "ir_interface": {
+      "status": "PASS",
+      "message": "OK"
     },
     "bindings_schema": {
       "status": "PASS",
-      "message": "Bindings schema validation passed"
+      "message": "OK"
     },
     "coverage": {
       "status": "PASS",
-      "message": "Coverage check passed: all 5 IR links are mapped in bindings"
+      "message": "OK"
+    },
+    "endpoint_legality": {
+      "status": "PASS",
+      "message": "OK"
+    },
+    "endpoint_matching": {
+      "status": "PASS",
+      "message": "OK"
     },
     "code_generated": {
       "status": "PASS",
-      "message": "Generated code for 3 layers with manifest"
+      "message": "OK"
     },
     "deploy_generated": {
       "status": "PASS",
-      "message": "docker-compose.yml at .\\outputs\\DEMO-SMARTHOME\\docker-compose.yml"
+      "message": "OK"
     },
     "generation_consistency": {
       "status": "PASS",
-      "message": "Generation consistency passed"
+      "message": "OK"
+    },
+    "runtime_compose": {
+      "status": "PASS",
+      "message": "OK"
     }
   },
   "metrics": {
@@ -64,31 +96,175 @@
     "components_index_hash": "ba26c264fb48b9445d957bac399bb436826407143176f3fb0fad1dffd876fe78",
     "endpoint_types_hash": "5f566bd637fe54bc64c37b48c279b10e38490d8ce2a4b152cb5cfb68594be6e2"
   },
-  "ir_interface_validation": {
-    "errors": [],
-    "warnings": [
-      "component door_monitor has no explicit ports; skipping port validation",
-      "component motion_detector has no explicit ports; skipping port validation",
-      "component lighting_controller has no explicit ports; skipping port validation",
-      "component automation_engine has no explicit ports; skipping port validation",
-      "component notification_service has no explicit ports; skipping port validation",
-      "component data_recorder has no explicit ports; skipping port validation",
-      "link link_door_to_engine missing explicit ports; skipping port validation",
-      "link link_motion_to_engine missing explicit ports; skipping port validation",
-      "link link_engine_to_light missing explicit ports; skipping port validation",
-      "link link_engine_to_notify missing explicit ports; skipping port validation",
-      "link link_engine_to_storage missing explicit ports; skipping port validation"
-    ],
-    "status": "PASS"
+  "validators": {
+    "user_problem_schema": {
+      "pass": true,
+      "failures": [],
+      "warnings": [
+        "UserProblem soft-missing fields: id, title, target"
+      ],
+      "metrics": {}
+    },
+    "device_info_schema": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {}
+    },
+    "device_info_catalog": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {}
+    },
+    "plan_schema": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {}
+    },
+    "ir_schema": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {}
+    },
+    "ir_boundary": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {}
+    },
+    "ir_component_catalog": {
+      "pass": true,
+      "failures": [],
+      "warnings": [
+        "component door_monitor has no explicit ports; skipping port validation",
+        "component motion_detector has no explicit ports; skipping port validation",
+        "component lighting_controller has no explicit ports; skipping port validation",
+        "component automation_engine has no explicit ports; skipping port validation",
+        "component notification_service has no explicit ports; skipping port validation",
+        "component data_recorder has no explicit ports; skipping port validation",
+        "link link_door_to_engine missing explicit ports; skipping port validation",
+        "link link_motion_to_engine missing explicit ports; skipping port validation",
+        "link link_engine_to_light missing explicit ports; skipping port validation",
+        "link link_engine_to_notify missing explicit ports; skipping port validation",
+        "link link_engine_to_storage missing explicit ports; skipping port validation"
+      ],
+      "metrics": {}
+    },
+    "ir_interface": {
+      "pass": true,
+      "failures": [],
+      "warnings": [
+        "component door_monitor has no explicit ports; skipping port validation",
+        "component motion_detector has no explicit ports; skipping port validation",
+        "component lighting_controller has no explicit ports; skipping port validation",
+        "component automation_engine has no explicit ports; skipping port validation",
+        "component notification_service has no explicit ports; skipping port validation",
+        "component data_recorder has no explicit ports; skipping port validation",
+        "link link_door_to_engine missing explicit ports; skipping port validation",
+        "link link_motion_to_engine missing explicit ports; skipping port validation",
+        "link link_engine_to_light missing explicit ports; skipping port validation",
+        "link link_engine_to_notify missing explicit ports; skipping port validation",
+        "link link_engine_to_storage missing explicit ports; skipping port validation"
+      ],
+      "metrics": {}
+    },
+    "bindings_schema": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {}
+    },
+    "coverage": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {
+        "coverage_ratio": 1.0
+      }
+    },
+    "endpoint_legality": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {
+        "referenced": 4,
+        "invalid": 0
+      }
+    },
+    "endpoint_matching": {
+      "pass": true,
+      "failures": [],
+      "warnings": [
+        "link link_door_to_engine: endpoint ha://local type 'ha_state' uncommon as source",
+        "link link_motion_to_engine: endpoint ha://local type 'ha_state' uncommon as source",
+        "link link_engine_to_light: endpoint http://<SECRET_HA_HOST>:8123/api/services/light/turn_on type 'ha_service' uncommon as sink"
+      ],
+      "metrics": {}
+    },
+    "code_generated": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {}
+    },
+    "deploy_generated": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {}
+    },
+    "generation_consistency": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {}
+    },
+    "runtime_compose": {
+      "pass": true,
+      "failures": [],
+      "warnings": [
+        "Runtime check disabled"
+      ],
+      "metrics": {}
+    }
   },
-  "endpoint_matching_validation": {
-    "errors": [],
-    "warnings": [
-      "link link_door_to_engine: endpoint ha://local type 'ha_state' uncommon as source",
-      "link link_motion_to_engine: endpoint ha://local type 'ha_state' uncommon as source",
-      "link link_engine_to_light: endpoint http://<SECRET_HA_HOST>:8123/api/services/light/turn_on type 'ha_service' uncommon as sink"
-    ],
-    "status": "PASS"
+  "failures_flat": [],
+  "pipeline": {
+    "stages": {
+      "plan": {
+        "pass": true,
+        "duration_ms": 9,
+        "attempts": 1
+      },
+      "ir": {
+        "pass": true,
+        "duration_ms": 19,
+        "attempts": 1
+      },
+      "bindings": {
+        "pass": true,
+        "duration_ms": 21,
+        "attempts": 1
+      },
+      "codegen": {
+        "pass": true,
+        "duration_ms": 1,
+        "attempts": 1
+      },
+      "deploy": {
+        "pass": true,
+        "duration_ms": 0,
+        "attempts": 1
+      },
+      "eval": {
+        "pass": true,
+        "duration_ms": 3,
+        "attempts": 1
+      }
+    }
   },
   "llm": {
     "provider": "mock",
@@ -118,8 +294,6 @@
   "generated_manifest_present": true,
   "generation_consistency_pass": true,
   "input_validation": [
-    "UserProblem: UserProblem soft-missing fields: id, title, target",
-    "DeviceInfo: DeviceInfo schema validation passed",
-    "DeviceInfoCatalog: DeviceInfo endpoints conform to catalog"
+    "UserProblem warning: UserProblem soft-missing fields: id, title, target"
   ]
 }

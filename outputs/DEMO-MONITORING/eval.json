@@ -1,38 +1,66 @@
 {
   "case_id": "DEMO-MONITORING",
-  "timestamp": "2025-12-28T03:04:21.726784",
+  "timestamp": "2025-12-29T05:26:20.595830",
   "checks": {
+    "user_problem_schema": {
+      "status": "PASS",
+      "message": "OK"
+    },
+    "device_info_schema": {
+      "status": "PASS",
+      "message": "OK"
+    },
+    "device_info_catalog": {
+      "status": "PASS",
+      "message": "OK"
+    },
     "plan_schema": {
       "status": "PASS",
-      "message": "Plan schema validation passed"
+      "message": "OK"
     },
     "ir_schema": {
       "status": "PASS",
-      "message": "IR schema validation passed"
+      "message": "OK"
     },
     "ir_boundary": {
       "status": "PASS",
-      "message": "IR boundary check passed"
+      "message": "OK"
+    },
+    "ir_component_catalog": {
+      "status": "PASS",
+      "message": "OK"
+    },
+    "ir_interface": {
+      "status": "PASS",
+      "message": "OK"
     },
     "bindings_schema": {
       "status": "PASS",
-      "message": "Bindings schema validation passed"
+      "message": "OK"
     },
     "coverage": {
       "status": "PASS",
-      "message": "Coverage check passed: all 2 IR links are mapped in bindings"
+      "message": "OK"
+    },
+    "endpoint_legality": {
+      "status": "PASS",
+      "message": "OK"
+    },
+    "endpoint_matching": {
+      "status": "PASS",
+      "message": "OK"
     },
     "code_generated": {
       "status": "PASS",
-      "message": "Generated code for 3 layers with manifest"
+      "message": "OK"
     },
     "deploy_generated": {
       "status": "PASS",
-      "message": "docker-compose.yml at .\\outputs\\DEMO-MONITORING\\docker-compose.yml"
+      "message": "OK"
     },
     "generation_consistency": {
       "status": "PASS",
-      "message": "Generation consistency passed"
+      "message": "OK"
     }
   },
   "metrics": {
@@ -64,21 +92,151 @@
     "components_index_hash": "ba26c264fb48b9445d957bac399bb436826407143176f3fb0fad1dffd876fe78",
     "endpoint_types_hash": "5f566bd637fe54bc64c37b48c279b10e38490d8ce2a4b152cb5cfb68594be6e2"
   },
-  "ir_interface_validation": {
-    "errors": [],
-    "warnings": [
-      "component sensor_collector has no explicit ports; skipping port validation",
-      "component data_processor has no explicit ports; skipping port validation",
-      "component storage_service has no explicit ports; skipping port validation",
-      "link link_sensor_to_processor missing explicit ports; skipping port validation",
-      "link link_processor_to_storage missing explicit ports; skipping port validation"
-    ],
-    "status": "PASS"
+  "validators": {
+    "user_problem_schema": {
+      "pass": true,
+      "failures": [],
+      "warnings": [
+        "UserProblem soft-missing fields: id, title, target"
+      ],
+      "metrics": {}
+    },
+    "device_info_schema": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {}
+    },
+    "device_info_catalog": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {}
+    },
+    "plan_schema": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {}
+    },
+    "ir_schema": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {}
+    },
+    "ir_boundary": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {}
+    },
+    "ir_component_catalog": {
+      "pass": true,
+      "failures": [],
+      "warnings": [
+        "component sensor_collector has no explicit ports; skipping port validation",
+        "component data_processor has no explicit ports; skipping port validation",
+        "component storage_service has no explicit ports; skipping port validation",
+        "link link_sensor_to_processor missing explicit ports; skipping port validation",
+        "link link_processor_to_storage missing explicit ports; skipping port validation"
+      ],
+      "metrics": {}
+    },
+    "ir_interface": {
+      "pass": true,
+      "failures": [],
+      "warnings": [
+        "component sensor_collector has no explicit ports; skipping port validation",
+        "component data_processor has no explicit ports; skipping port validation",
+        "component storage_service has no explicit ports; skipping port validation",
+        "link link_sensor_to_processor missing explicit ports; skipping port validation",
+        "link link_processor_to_storage missing explicit ports; skipping port validation"
+      ],
+      "metrics": {}
+    },
+    "bindings_schema": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {}
+    },
+    "coverage": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {
+        "coverage_ratio": 1.0
+      }
+    },
+    "endpoint_legality": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {
+        "referenced": 3,
+        "invalid": 0
+      }
+    },
+    "endpoint_matching": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {}
+    },
+    "code_generated": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {}
+    },
+    "deploy_generated": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {}
+    },
+    "generation_consistency": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {}
+    }
   },
-  "endpoint_matching_validation": {
-    "errors": [],
-    "warnings": [],
-    "status": "PASS"
+  "failures_flat": [],
+  "pipeline": {
+    "stages": {
+      "plan": {
+        "pass": true,
+        "duration_ms": 5,
+        "attempts": 1
+      },
+      "ir": {
+        "pass": true,
+        "duration_ms": 13,
+        "attempts": 1
+      },
+      "bindings": {
+        "pass": true,
+        "duration_ms": 13,
+        "attempts": 1
+      },
+      "codegen": {
+        "pass": true,
+        "duration_ms": 2,
+        "attempts": 1
+      },
+      "deploy": {
+        "pass": true,
+        "duration_ms": 0,
+        "attempts": 1
+      },
+      "eval": {
+        "pass": true,
+        "duration_ms": 5,
+        "attempts": 1
+      }
+    }
   },
   "llm": {
     "provider": "mock",
@@ -108,8 +266,6 @@
   "generated_manifest_present": true,
   "generation_consistency_pass": true,
   "input_validation": [
-    "UserProblem: UserProblem soft-missing fields: id, title, target",
-    "DeviceInfo: DeviceInfo schema validation passed",
-    "DeviceInfoCatalog: DeviceInfo endpoints conform to catalog"
+    "UserProblem warning: UserProblem soft-missing fields: id, title, target"
   ]
 }

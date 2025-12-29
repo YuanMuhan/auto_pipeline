@@ -1,6 +1,8 @@
 """Endpoint matching checker - validates bindings endpoints against device_info definitions"""
 
-from typing import Dict, Any, Tuple, List
+from typing import Dict, Any, List
+
+from autopipeline.eval.error_codes import ErrorCode, failure
 
 
 class EndpointMatchingChecker:
@@ -9,7 +11,6 @@ class EndpointMatchingChecker:
         self.type_map = {et["name"]: et for et in self.endpoint_types}
 
     def _direction_allowed(self, etype: str, role: str) -> bool:
-        # role: source or sink
         if etype == "mqtt_pub":
             return role == "source"
         if etype == "mqtt_sub":
@@ -35,8 +36,8 @@ class EndpointMatchingChecker:
                     ep_map[ep["id"]] = ep
         return ep_map
 
-    def check(self, bindings_data: Dict[str, Any], device_info: Dict[str, Any]) -> Tuple[bool, List[str], List[str]]:
-        errors: List[str] = []
+    def check(self, bindings_data: Dict[str, Any], device_info: Dict[str, Any]):
+        errors: List = []
         warnings: List[str] = []
         ep_map = self._collect_device_endpoints(device_info)
         endpoints = bindings_data.get("endpoints", [])
@@ -49,17 +50,27 @@ class EndpointMatchingChecker:
                     warnings.append(f"link {link_id}: {key} missing")
                     continue
                 if ref not in ep_map:
-                    errors.append(f"link {link_id}: endpoint ref '{ref}' not found in device_info")
+                    errors.append(failure(ErrorCode.E_ENDPOINT_CHECK, "bindings", "EndpointMatchingChecker",
+                                          f"link {link_id}: endpoint ref '{ref}' not found in device_info",
+                                          {"link_id": link_id, "endpoint_ref": ref}))
                     continue
                 ep_def = ep_map[ref]
                 etype = ep_def.get("type") or ep_def.get("protocol")
                 if etype not in self.type_map:
-                    errors.append(f"link {link_id}: endpoint {ref} has unknown type '{etype}'")
+                    errors.append(failure(ErrorCode.E_ENDPOINT_TYPE, "bindings", "EndpointMatchingChecker",
+                                          f"link {link_id}: endpoint {ref} has unknown type '{etype}'",
+                                          {"endpoint_ref": ref, "type": etype}))
                     continue
                 if not self._direction_allowed(etype, role):
                     warnings.append(f"link {link_id}: endpoint {ref} type '{etype}' uncommon as {role}")
                 if self._requires_payload(etype) and not ep_def.get("payload_schema"):
-                    errors.append(f"link {link_id}: endpoint {ref} of type {etype} missing payload_schema")
+                    errors.append(failure(ErrorCode.E_ENDPOINT_MISSING_FIELDS, "bindings", "EndpointMatchingChecker",
+                                          f"link {link_id}: endpoint {ref} of type {etype} missing payload_schema",
+                                          {"endpoint_ref": ref, "type": etype}))
 
-        # Weak op/payload subset checks: not present in current bindings, so skip with warning placeholder
-        return (len(errors) == 0), errors, warnings
+        return {
+            "pass": len(errors) == 0,
+            "failures": errors,
+            "warnings": warnings,
+            "metrics": {}
+        }
