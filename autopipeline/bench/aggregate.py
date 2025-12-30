@@ -1,6 +1,7 @@
 """Aggregate multiple eval.json files into CSV summaries."""
 
 import csv
+import json
 from collections import Counter
 from pathlib import Path
 from typing import List, Dict, Any
@@ -15,6 +16,8 @@ def _summarize_eval(eval_data: Dict[str, Any], eval_path: Path) -> Dict[str, Any
     duration_total = sum(stage.get("duration_ms", 0) for stage in pipeline.values())
     attempts = [stage.get("attempts", 0) for stage in pipeline.values() if stage.get("attempts") is not None]
     avg_attempts = sum(attempts) / len(attempts) if attempts else 0
+    config = eval_data.get("pipeline", {}).get("config", {})
+    attempts_by_stage = {k: v.get("attempts", 0) for k, v in pipeline.items()}
     row = {
         "eval_path": str(eval_path),
         "case_id": eval_data.get("case_id"),
@@ -23,11 +26,17 @@ def _summarize_eval(eval_data: Dict[str, Any], eval_path: Path) -> Dict[str, Any
         "fail_codes": ";".join([code for code, _ in fail_codes.most_common(3)]),
         "duration_ms_total": duration_total,
         "attempts_avg": avg_attempts,
+        "attempts_total": sum(attempts) if attempts else 0,
+        "attempts_by_stage": json.dumps(attempts_by_stage),
         "llm_calls": eval_data.get("llm", {}).get("calls_total"),
         "cache_hits": eval_data.get("llm", {}).get("cache_hits"),
         "cache_misses": eval_data.get("llm", {}).get("cache_misses"),
+        "tokens_total": eval_data.get("llm", {}).get("usage_tokens_total"),
         "provider": eval_data.get("llm", {}).get("provider"),
         "model": eval_data.get("llm", {}).get("model"),
+        "prompt_tier": config.get("prompt_tier"),
+        "temperature": config.get("temperature"),
+        "repair_enabled": config.get("enable_repair"),
         "ir_attempts": pipeline.get("ir", {}).get("attempts"),
         "bindings_attempts": pipeline.get("bindings", {}).get("attempts"),
         "rules_hash": eval_data.get("llm", {}).get("rules_hash"),

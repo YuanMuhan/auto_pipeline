@@ -225,6 +225,10 @@
             }
           },
           "additionalProperties": true
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": true
         }
       },
       "additionalProperties": true

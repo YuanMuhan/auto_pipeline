@@ -1,6 +1,6 @@
 {
   "case_id": "DEMO-MONITORING",
-  "timestamp": "2025-12-29T10:47:58.003363",
+  "timestamp": "2025-12-30T10:43:55.821526",
   "checks": {
     "user_problem_schema": {
       "status": "PASS",
@@ -76,7 +76,16 @@
     "num_entities": 3,
     "num_links": 2,
     "num_placements": 3,
-    "num_layers": 3
+    "num_layers": 3,
+    "total_duration_ms": 67,
+    "total_attempts": 5,
+    "attempts_by_stage": {
+      "plan": 1,
+      "ir": 1,
+      "bindings": 1,
+      "codegen": 1,
+      "deploy": 1
+    }
   },
   "overall_status": "PASS",
   "stages_passed": [
@@ -230,17 +239,17 @@
     "stages": {
       "plan": {
         "pass": true,
-        "duration_ms": 5,
+        "duration_ms": 15,
         "attempts": 1
       },
       "ir": {
         "pass": true,
-        "duration_ms": 12,
+        "duration_ms": 18,
         "attempts": 1
       },
       "bindings": {
         "pass": true,
-        "duration_ms": 12,
+        "duration_ms": 31,
         "attempts": 1
       },
       "codegen": {
@@ -255,7 +264,7 @@
       },
       "eval": {
         "pass": true,
-        "duration_ms": 21,
+        "duration_ms": 17,
         "attempts": 1
       }
     }
@@ -265,14 +274,14 @@
     "model": null,
     "temperature": 0.0,
     "cache_dir": ".cache/llm",
-    "cache_enabled": true,
+    "cache_enabled": false,
     "calls_total": 2,
     "calls_by_stage": {
       "generate_ir": 1,
       "generate_bindings": 1
     },
-    "cache_hits": 2,
-    "cache_misses": 0,
+    "cache_hits": 0,
+    "cache_misses": 2,
     "usage_tokens_total": 0,
     "prompt_template_hashes": {
       "ir_agent": "3b139c640d31d720bf2f7bb0d8b90fdd86a204c2e47586907d82349103f1816a",

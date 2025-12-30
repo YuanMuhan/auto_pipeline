@@ -29,20 +29,22 @@ def generate_plots(summary_csv: Path, summary_error_csv: Path, out_dir: Path):
     ensure_dir(str(out_dir))
     rows = _load_summary(summary_csv) if summary_csv.exists() else []
 
-    # Pass rate by case
+    # Pass rate by provider/model/prompt/repair
     pass_rate: Dict[str, List[int]] = defaultdict(list)
     for r in rows:
-        case = r.get("case_id", "UNKNOWN")
-        pass_rate[case].append(int(r.get("pass", 0)))
-    cases = list(pass_rate.keys())
-    rates = [sum(pass_rate[c]) / len(pass_rate[c]) if pass_rate[c] else 0 for c in cases]
-    plt.figure()
-    plt.bar(cases, rates, color="seagreen")
+        label = f"{r.get('provider','')}/{r.get('model','')}/{r.get('prompt_tier','')}/" \
+                f"{'repair' if str(r.get('repair_enabled','True')).lower() in ['true','1'] else 'norepair'}"
+        pass_rate[label].append(int(r.get("pass", 0)))
+    labels = list(pass_rate.keys())
+    rates = [sum(pass_rate[l]) / len(pass_rate[l]) if pass_rate[l] else 0 for l in labels]
+    plt.figure(figsize=(10, 5))
+    plt.bar(labels, rates, color="seagreen")
     plt.ylabel("Pass Rate")
     plt.ylim(0, 1.0)
-    plt.title("Pass Rate by Case")
+    plt.xticks(rotation=45, ha="right")
+    plt.title("Pass Rate by Model/Prompt/Repair")
     plt.tight_layout()
-    plt.savefig(out_dir / "pass_rate_by_case.png")
+    plt.savefig(out_dir / "pass_rate_by_model_prompt_repair.png")
     plt.close()
 
     # Failure code histogram
@@ -56,14 +58,14 @@ def generate_plots(summary_csv: Path, summary_error_csv: Path, out_dir: Path):
     if error_counts:
         plt.bar(error_counts.keys(), error_counts.values(), color="salmon")
         plt.ylabel("Count")
-        plt.title("Failure Code Histogram")
+        plt.title("Error Distribution (top)")
         plt.xticks(rotation=45, ha="right")
     else:
         plt.text(0.5, 0.5, "No failures", ha="center", va="center")
         plt.xticks([])
         plt.yticks([])
     plt.tight_layout()
-    plt.savefig(out_dir / "failure_code_hist.png")
+    plt.savefig(out_dir / "error_distribution_topk.png")
     plt.close()
 
     # Repair attempts distribution (max of ir/bindings)

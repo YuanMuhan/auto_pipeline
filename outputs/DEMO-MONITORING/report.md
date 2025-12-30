@@ -1,6 +1,6 @@
 # Evaluation Report - DEMO-MONITORING
 - 状态: **PASS**
-- 时间: 2025-12-29T10:47:58.003363
+- 时间: 2025-12-30T10:43:55.821526
 - ESR: 1
 
 ## Case 信息
@@ -12,7 +12,7 @@
 - 无失败（全部通过）
 
 ## LLM 统计
-- calls_total: 2, cache_hits: 2, cache_misses: 0
+- calls_total: 2, cache_hits: 0, cache_misses: 2
 - usage_tokens_total: 0
 
 ## 产物存在性

@@ -33,7 +33,7 @@ python -m autopipeline run --case DEMO-MONITORING --llm-provider mock
 python -m autopipeline run --case DEMO-SMARTHOME --llm-provider mock
 ```
 可选参数：`--model`、`--temperature`、`--max-tokens`、`--cache-dir`、`--no-cache`、`--llm-provider anthropic`（需设置 `ANTHROPIC_API_KEY`）。
-也支持 `--llm-provider deepseek`（需 `DEEPSEEK_API_KEY`）。
+也支持 `--llm-provider deepseek`（需 `DEEPSEEK_API_KEY`）或 `--llm-provider openai`（需 `OPENAI_API_KEY`）。
 
 3) 查看产物（`outputs/<CASE_ID>/`）：  
 - `plan.json`：任务分解计划（不含实现细节）  

@@ -21,7 +21,7 @@ class LLMClient:
         self.config = config
         self.logger = logger
         self.cache = LLMDiskCache(config.cache_dir, enabled=config.cache_enabled)
-        self.prompt_loader = PromptLoader(Path(base_dir) / "prompts")
+        self.prompt_loader = PromptLoader(Path(base_dir) / "prompts", tier=config.prompt_tier)
         comp = load_component_profiles(base_dir)
         ep = load_endpoint_types(base_dir)
         self.catalog_summary = {
@@ -57,6 +57,8 @@ class LLMClient:
             return provider_module.AnthropicProvider()
         if name == "deepseek":
             return provider_module.DeepseekProvider()
+        if name == "openai":
+            return provider_module.OpenAIProvider()
         raise ValueError(f"Unsupported provider: {name}")
 
     def _compute_cache_key(self, stage: str, provider_name: str, model: str, params: Dict[str, Any],

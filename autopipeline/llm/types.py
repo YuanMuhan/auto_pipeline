@@ -10,6 +10,8 @@ class LLMConfig:
     max_tokens: Optional[int] = None
     cache_dir: str = ".cache/llm"
     cache_enabled: bool = True
+    prompt_tier: str = "P0"
+    seed: int = 0
 
 
 @dataclass

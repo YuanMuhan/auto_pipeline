@@ -28,8 +28,11 @@ def cli():
 @click.option('--no-repair', is_flag=True, default=False, help='Disable repair loops')
 @click.option('--no-catalog', is_flag=True, default=False, help='Skip catalog-based validators')
 @click.option('--runtime-check', is_flag=True, default=False, help='Run docker compose config check')
+@click.option('--prompt-tier', default="P0", type=click.Choice(["P0", "P1", "P2"]), show_default=True)
+@click.option('--seed', default=0, type=int, show_default=True)
 def run(case: str, llm_provider: str, model: str, temperature: float, max_tokens: int,
-        cache_dir: str, no_cache: bool, output_root: str, no_repair: bool, no_catalog: bool, runtime_check: bool):
+        cache_dir: str, no_cache: bool, output_root: str, no_repair: bool, no_catalog: bool, runtime_check: bool,
+        prompt_tier: str, seed: int):
     """Run the pipeline for a specific case"""
     try:
         llm_config = LLMConfig(
@@ -38,7 +41,9 @@ def run(case: str, llm_provider: str, model: str, temperature: float, max_tokens
             temperature=temperature,
             max_tokens=max_tokens,
             cache_dir=cache_dir,
-            cache_enabled=not no_cache
+            cache_enabled=not no_cache,
+            prompt_tier=prompt_tier,
+            seed=seed
         )
         runner = PipelineRunner(
             case_id=case,
@@ -95,8 +100,10 @@ def _discover_cases(cases_dir: Path):
 @click.option('--no-catalog', is_flag=True, default=False)
 @click.option('--repeat', default=1, type=int, show_default=True)
 @click.option('--runtime-check', is_flag=True, default=False)
+@click.option('--prompt-tier', default="P0", type=click.Choice(["P0", "P1", "P2"]), show_default=True)
+@click.option('--seed', default=0, type=int, show_default=True)
 def bench(cases_dir, case_ids, out_root, tag, llm_provider, model, temperature, max_tokens,
-          cache_dir, no_cache, no_repair, no_catalog, repeat, runtime_check):
+          cache_dir, no_cache, no_repair, no_catalog, repeat, runtime_check, prompt_tier, seed):
     """Batch run multiple cases and aggregate results."""
     base_dir = Path(".")
     cases_dir_path = base_dir / cases_dir
@@ -108,7 +115,9 @@ def bench(cases_dir, case_ids, out_root, tag, llm_provider, model, temperature, 
         temperature=temperature,
         max_tokens=max_tokens,
         cache_dir=cache_dir,
-        cache_enabled=not no_cache
+        cache_enabled=not no_cache,
+        prompt_tier=prompt_tier,
+        seed=seed
     )
 
     run_root = Path(out_root)

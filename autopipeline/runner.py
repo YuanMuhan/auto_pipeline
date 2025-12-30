@@ -417,6 +417,15 @@ class PipelineRunner:
 
         return ir_data, attempts_used
 
+    @staticmethod
+    def _align_bindings_with_ir(bindings_data: Dict[str, Any], ir_data: Dict[str, Any]):
+        """Ensure bindings app_name/version align with IR to reduce trivial mismatches."""
+        if not bindings_data:
+            return
+        if ir_data.get("app_name"):
+            bindings_data["app_name"] = ir_data.get("app_name")
+        if ir_data.get("version"):
+            bindings_data["version"] = ir_data.get("version")
     def _generate_and_validate_bindings(self, ir_data: Dict[str, Any],
                                         device_info: Dict[str, Any]) -> Tuple[Dict[str, Any], int]:
         """Generate Bindings with auto-repair loop (max 3 attempts)"""
@@ -436,6 +445,9 @@ class PipelineRunner:
                 bindings_data = self.repair_agent.repair_bindings(bindings_data, last_error,
                                                                   ir_data, device_info,
                                                                   self.rules_ctx, self.schema_versions)
+
+            # Align with IR to avoid trivial mismatches
+            self._align_bindings_with_ir(bindings_data, ir_data)
 
             schema_res = self.schema_checker.validate_bindings(bindings_data)
             self._record_validator("bindings_schema", schema_res)
@@ -515,7 +527,21 @@ class PipelineRunner:
             "catalog_hashes": self.catalog_hash,
             "validators": {},
             "failures_flat": [],
-            "pipeline": {"stages": self.pipeline_stats},
+            "pipeline": {
+                "stages": self.pipeline_stats,
+                "config": {
+                    "provider": self.llm_config.provider,
+                    "model": self.llm_config.model,
+                    "temperature": self.llm_config.temperature,
+                    "max_tokens": self.llm_config.max_tokens,
+                    "cache_enabled": self.llm_config.cache_enabled,
+                    "prompt_tier": self.llm_config.prompt_tier,
+                    "seed": self.llm_config.seed,
+                    "enable_repair": self.enable_repair,
+                    "enable_catalog": self.enable_catalog,
+                    "runtime_check": self.runtime_check,
+                }
+            },
             "llm": {
                 "provider": self.llm_config.provider,
                 "model": self.llm_config.model,
@@ -579,6 +605,12 @@ class PipelineRunner:
         eval_result["metrics"]["num_links"] = len(ir_data.get("links", []))
         eval_result["metrics"]["num_placements"] = len(bindings_data.get("placements", []))
         eval_result["metrics"]["num_layers"] = len(codegen_result["generated_files"])
+        # pipeline metrics
+        total_duration_ms = sum(stage.get("duration_ms", 0) for stage in self.pipeline_stats.values())
+        total_attempts = sum(stage.get("attempts", 0) for stage in self.pipeline_stats.values())
+        eval_result["metrics"]["total_duration_ms"] = total_duration_ms
+        eval_result["metrics"]["total_attempts"] = total_attempts
+        eval_result["metrics"]["attempts_by_stage"] = {k: v.get("attempts", 0) for k, v in self.pipeline_stats.items()}
 
         # Simplified checks (backward compatibility)
         for name in ["user_problem_schema", "device_info_schema", "device_info_catalog",

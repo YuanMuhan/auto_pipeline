@@ -7,14 +7,18 @@ from autopipeline.llm.hash_utils import text_hash
 class PromptLoader:
     """Load prompt templates from prompts/ and render with a simple format map."""
 
-    def __init__(self, base_dir: Path):
+    def __init__(self, base_dir: Path, tier: str = "P0"):
         self.base_dir = base_dir
+        self.tier = tier
 
     def load(self, prompt_name: str) -> str:
-        prompt_path = self.base_dir / f"{prompt_name}.txt"
-        if not prompt_path.exists():
-            raise FileNotFoundError(f"Prompt template not found: {prompt_path}")
-        return prompt_path.read_text(encoding="utf-8")
+        tier_path = self.base_dir / self.tier / f"{prompt_name}.txt"
+        fallback_path = self.base_dir / f"{prompt_name}.txt"
+        if tier_path.exists():
+            return tier_path.read_text(encoding="utf-8")
+        if fallback_path.exists():
+            return fallback_path.read_text(encoding="utf-8")
+        raise FileNotFoundError(f"Prompt template not found for tier {self.tier}: {tier_path}")
 
     def render(self, prompt_name: str, context: Dict[str, Any], extras: Optional[str] = None) -> Dict[str, str]:
         template = self.load(prompt_name)

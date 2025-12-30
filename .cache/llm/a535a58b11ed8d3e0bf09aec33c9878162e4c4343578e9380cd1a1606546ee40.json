@@ -1,0 +1,37 @@
+{
+  "request_meta": {
+    "stage": "repair_ir",
+    "provider": "openai",
+    "model": "gpt-4o-mini",
+    "params": {
+      "temperature": 0.0,
+      "max_tokens": null
+    },
+    "prompt_template_hash": "2240406411b902e7b35b1f40c8961e4e26dab8b1431a4635a90e00f32f131627",
+    "rendered_prompt_hash": "56f87de5e9afd509cac7ca29aac4a395358bd28d1fc4244b554f0afa2dd1604f",
+    "rules_hash": "0efd038d1492aea276cbeabe81f659e0ba9364816b7b4002abf5953ace5c2cf7",
+    "schema_versions": {
+      "plan_schema": "8d8399a603d1b200692b2f75170ce1bbf742b5051503966cfee3aae1fcedcd9c",
+      "ir_schema": "d1b20ea900cec23d6966c056a65ba93f30671c40bfe3737fa7fdaaa48d330fbb",
+      "bindings_schema": "16e635d1178c71dabaf7ed996785e535b597198dbc2545cfa0372db633c0a640"
+    },
+    "inputs_hash": "646d6df5fafd76a82c09b4c36c7c4ce7a1239c87a7bb7f04c1ae98e03fdd18d4"
+  },
+  "response_text": "components:\n  - id: temp_sensor_01\n    type: TemperatureSensor\n    capabilities:\n      - sense\n      - collect\n  - id: edge_gateway_01\n    type: processor\n    capabilities:\n      - filter\n      - aggregate\n      - store\n  - id: cloud_server_01\n    type: DataStore\n    capabilities:\n      - store\n      - analyze\n      - visualize\n      - alert\nlinks:\n  - id: sensor_to_gateway\n    from: temp_sensor_01\n    to: edge_gateway_01\n    data_type: sensor_reading\n    frequency: real-time\n  - id: gateway_to_cloud\n    from: edge_gateway_01\n    to: cloud_server_01\n    data_type: aggregated_data\n    frequency: periodic\nlogic:\n  alert_condition: temperature_exceeds_threshold\n  aggregation_window: 5_minutes\nmetadata:\n  app_name: Smart Home Monitoring\n  description: Smart home temperature monitoring system with cloud analytics\n  version: '1.0'\n  schemas: \n    - schema_version: '1.0'\n      schema_type: temperature_data\n  policies:\n    - policy_name: data_retention\n      policy_details: Retain data for 30 days",
+  "usage": {
+    "prompt_tokens": 1375,
+    "completion_tokens": 261,
+    "total_tokens": 1636,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 0,
+      "audio_tokens": 0,
+      "accepted_prediction_tokens": 0,
+      "rejected_prediction_tokens": 0
+    }
+  },
+  "created_at": "2025-12-30T07:50:51.243138"
+}
