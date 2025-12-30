@@ -12,7 +12,7 @@ class BindingsAgent:
         self.llm = llm_client
 
     def generate_bindings(self, ir_data: Dict[str, Any], device_info: Dict[str, Any],
-                          rules_ctx: Dict[str, Any], schema_versions: Dict[str, Any]) -> Dict[str, Any]:
+                          rules_ctx: Dict[str, Any], schema_versions: Dict[str, Any], attempt: int = 1) -> Dict[str, Any]:
         """
         Generate bindings (placements, transports, endpoints) from IR
 
@@ -26,7 +26,8 @@ class BindingsAgent:
             device_info=device_info,
             rules_ctx=rules_ctx,
             schema_versions=schema_versions,
-            prompt_name="binding_agent"
+            prompt_name="binding_agent",
+            attempt=attempt
         )
         return yaml.safe_load(bindings_yaml)
 

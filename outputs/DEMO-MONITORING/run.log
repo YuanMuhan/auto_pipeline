@@ -1,21 +1,28 @@
-[2025-12-30T11:13:58.934420] [INFO] Starting pipeline for case: DEMO-MONITORING
-[2025-12-30T11:13:58.934765] [INFO] Step 1: Loading user problem and device info
-[2025-12-30T11:13:58.935207] [INFO] Successfully loaded input files
-[2025-12-30T11:13:58.939210] [INFO] Step 2: Generating Plan (Planner Agent)
-[2025-12-30T11:13:58.945307] [INFO] Saved Plan to .\outputs\DEMO-MONITORING\plan.json
-[2025-12-30T11:13:58.945414] [INFO] Step 3: Generating IR (IR Agent)
-[2025-12-30T11:13:58.945490] [INFO] IR generation attempt 1/3
-[2025-12-30T11:13:58.951868] [INFO] [LLM] stage=generate_ir cache=MISS key=7bfcaa41 time=0.000s
-[2025-12-30T11:13:58.955499] [INFO] IR validation passed
-[2025-12-30T11:13:58.957675] [INFO] Saved IR to .\outputs\DEMO-MONITORING\ir.yaml
-[2025-12-30T11:13:58.957757] [INFO] Step 4: Generating Bindings (Bindings Agent)
-[2025-12-30T11:13:58.957846] [INFO] Bindings generation attempt 1/3
-[2025-12-30T11:13:58.964582] [INFO] [LLM] stage=generate_bindings cache=MISS key=475aa11d time=0.000s
-[2025-12-30T11:13:58.967789] [INFO] Bindings validation passed
-[2025-12-30T11:13:58.970058] [INFO] Saved Bindings to .\outputs\DEMO-MONITORING\bindings.yaml
-[2025-12-30T11:13:58.971246] [INFO] Step 5: Generating code skeletons (CodeGen)
-[2025-12-30T11:13:58.982849] [INFO] Step 6: Generating docker-compose.yml (Deploy)
-[2025-12-30T11:13:58.983389] [INFO] Step 7: Running evaluation
-[2025-12-30T11:13:58.986736] [INFO] Saved evaluation to .\outputs\DEMO-MONITORING\eval.json
-[2025-12-30T11:13:58.988064] [INFO] Saved report to outputs\DEMO-MONITORING\report.md
-[2025-12-30T11:13:58.988145] [INFO] Step 9: Saving run log
+[2025-12-30T15:59:06.815220] [INFO] Starting pipeline for case: DEMO-MONITORING
+[2025-12-30T15:59:06.815602] [INFO] Step 1: Loading user problem and device info
+[2025-12-30T15:59:06.816102] [INFO] Successfully loaded input files
+[2025-12-30T15:59:06.820082] [INFO] Step 2: Generating Plan (Planner Agent)
+[2025-12-30T15:59:06.825995] [INFO] Saved Plan to .\outputs\DEMO-MONITORING\plan.json
+[2025-12-30T15:59:06.826119] [INFO] Step 3: Generating IR (IR Agent)
+[2025-12-30T15:59:06.826199] [INFO] IR generation attempt 1/3
+[2025-12-30T15:59:23.234722] [INFO] [LLM] stage=generate_ir cache=MISS key=9385563e time=16.403s, usage={'prompt_tokens': 1713, 'completion_tokens': 456, 'total_tokens': 2169, 'prompt_tokens_details': {'cached_tokens': 1664}, 'prompt_cache_hit_tokens': 1664, 'prompt_cache_miss_tokens': 49}
+[2025-12-30T15:59:23.246332] [WARNING] IR component catalog check failed: IR component types not in catalog: processor
+[2025-12-30T15:59:23.246437] [INFO] IR generation attempt 2/3
+[2025-12-30T15:59:48.537474] [INFO] [LLM] stage=repair_ir cache=MISS key=3a3aa037 time=25.287s, usage={'prompt_tokens': 1802, 'completion_tokens': 720, 'total_tokens': 2522, 'prompt_tokens_details': {'cached_tokens': 1408}, 'prompt_cache_hit_tokens': 1408, 'prompt_cache_miss_tokens': 394}
+[2025-12-30T15:59:48.550158] [INFO] IR validation passed
+[2025-12-30T15:59:48.553240] [INFO] Saved IR to .\outputs\DEMO-MONITORING\ir.yaml
+[2025-12-30T15:59:48.553347] [INFO] Step 4: Generating Bindings (Bindings Agent)
+[2025-12-30T15:59:48.553444] [INFO] Bindings generation attempt 1/3
+[2025-12-30T16:00:05.919873] [INFO] [LLM] stage=generate_bindings cache=MISS key=a92c8b74 time=17.358s, usage={'prompt_tokens': 2347, 'completion_tokens': 497, 'total_tokens': 2844, 'prompt_tokens_details': {'cached_tokens': 0}, 'prompt_cache_hit_tokens': 0, 'prompt_cache_miss_tokens': 2347}
+[2025-12-30T16:00:05.928619] [WARNING] Bindings schema validation failed: Bindings missing required fields: component_bindings
+[2025-12-30T16:00:05.928728] [INFO] Bindings generation attempt 2/3
+[2025-12-30T16:00:29.840007] [INFO] [LLM] stage=repair_bindings cache=MISS key=0fd2c0e0 time=23.908s, usage={'prompt_tokens': 1796, 'completion_tokens': 688, 'total_tokens': 2484, 'prompt_tokens_details': {'cached_tokens': 1152}, 'prompt_cache_hit_tokens': 1152, 'prompt_cache_miss_tokens': 644}
+[2025-12-30T16:00:29.851672] [INFO] Bindings validation passed
+[2025-12-30T16:00:29.854578] [INFO] Saved Bindings to .\outputs\DEMO-MONITORING\bindings.yaml
+[2025-12-30T16:00:29.867692] [INFO] Step 5: Generating code skeletons (CodeGen)
+[2025-12-30T16:00:29.916435] [INFO] Step 6: Generating docker-compose.yml (Deploy)
+[2025-12-30T16:00:29.916985] [INFO] Step 7: Running evaluation
+[2025-12-30T16:00:29.937297] [INFO] Saved evaluation to .\outputs\DEMO-MONITORING\eval.json
+[2025-12-30T16:00:29.938735] [INFO] Saved report to outputs\DEMO-MONITORING\report.md
+[2025-12-30T16:00:29.938807] [INFO] Pipeline completed in 83.12 seconds
+[2025-12-30T16:00:29.938886] [INFO] Step 9: Saving run log

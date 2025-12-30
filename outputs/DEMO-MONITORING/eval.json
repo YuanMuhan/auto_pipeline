@@ -1,6 +1,6 @@
 {
   "case_id": "DEMO-MONITORING",
-  "timestamp": "2025-12-30T11:13:58.983456",
+  "timestamp": "2025-12-30T16:00:29.917067",
   "checks": {
     "user_problem_schema": {
       "status": "PASS",
@@ -72,17 +72,18 @@
     }
   },
   "metrics": {
-    "num_components": 3,
-    "num_entities": 3,
-    "num_links": 2,
-    "num_placements": 3,
+    "num_components": 5,
+    "num_entities": 5,
+    "num_links": 5,
+    "num_placements": 5,
     "num_layers": 3,
-    "total_duration_ms": 33,
-    "total_attempts": 5,
+    "total_duration_ms": 83040,
+    "total_attempts": 8,
     "attempts_by_stage": {
+      "inputs": 1,
       "plan": 1,
-      "ir": 1,
-      "bindings": 1,
+      "ir": 2,
+      "bindings": 2,
       "codegen": 1,
       "deploy": 1
     }
@@ -104,7 +105,7 @@
     "bindings_required_fields": 4,
     "bindings_forbidden_keywords": 4
   },
-  "bindings_hash": "24cf8ac31fb38b36fecf3db00051fa631509c3438ff84b8b54b61e32d012bee9",
+  "bindings_hash": "965f38e40064d85d2de6827aa70ae8dd461c099a7d209b54390e66539fb5f892",
   "catalog_hashes": {
     "components_index_hash": "ba26c264fb48b9445d957bac399bb436826407143176f3fb0fad1dffd876fe78",
     "endpoint_types_hash": "5f566bd637fe54bc64c37b48c279b10e38490d8ce2a4b152cb5cfb68594be6e2"
@@ -152,11 +153,16 @@
       "pass": true,
       "failures": [],
       "warnings": [
-        "component sensor_collector has no explicit ports; skipping port validation",
-        "component data_processor has no explicit ports; skipping port validation",
-        "component storage_service has no explicit ports; skipping port validation",
-        "link link_sensor_to_processor missing explicit ports; skipping port validation",
-        "link link_processor_to_storage missing explicit ports; skipping port validation"
+        "component temp_sensor_01 has no explicit ports; skipping port validation",
+        "component edge_gateway_01 has no explicit ports; skipping port validation",
+        "component cloud_server_01 has no explicit ports; skipping port validation",
+        "component alert_notifier has no explicit ports; skipping port validation",
+        "component monitoring_controller has no explicit ports; skipping port validation",
+        "link sensor_to_edge missing explicit ports; skipping port validation",
+        "link edge_to_cloud missing explicit ports; skipping port validation",
+        "link cloud_to_alert missing explicit ports; skipping port validation",
+        "link cloud_to_controller missing explicit ports; skipping port validation",
+        "link controller_to_notifier missing explicit ports; skipping port validation"
       ],
       "metrics": {}
     },
@@ -164,11 +170,16 @@
       "pass": true,
       "failures": [],
       "warnings": [
-        "component sensor_collector has no explicit ports; skipping port validation",
-        "component data_processor has no explicit ports; skipping port validation",
-        "component storage_service has no explicit ports; skipping port validation",
-        "link link_sensor_to_processor missing explicit ports; skipping port validation",
-        "link link_processor_to_storage missing explicit ports; skipping port validation"
+        "component temp_sensor_01 has no explicit ports; skipping port validation",
+        "component edge_gateway_01 has no explicit ports; skipping port validation",
+        "component cloud_server_01 has no explicit ports; skipping port validation",
+        "component alert_notifier has no explicit ports; skipping port validation",
+        "component monitoring_controller has no explicit ports; skipping port validation",
+        "link sensor_to_edge missing explicit ports; skipping port validation",
+        "link edge_to_cloud missing explicit ports; skipping port validation",
+        "link cloud_to_alert missing explicit ports; skipping port validation",
+        "link cloud_to_controller missing explicit ports; skipping port validation",
+        "link controller_to_notifier missing explicit ports; skipping port validation"
       ],
       "metrics": {}
     },
@@ -191,7 +202,7 @@
       "failures": [],
       "warnings": [],
       "metrics": {
-        "referenced": 3,
+        "referenced": 4,
         "invalid": 0
       }
     },
@@ -237,20 +248,25 @@
   "failures_flat": [],
   "pipeline": {
     "stages": {
+      "inputs": {
+        "pass": true,
+        "duration_ms": 4,
+        "attempts": 1
+      },
       "plan": {
         "pass": true,
-        "duration_ms": 6,
+        "duration_ms": 5,
         "attempts": 1
       },
       "ir": {
         "pass": true,
-        "duration_ms": 12,
-        "attempts": 1
+        "duration_ms": 41727,
+        "attempts": 2
       },
       "bindings": {
         "pass": true,
-        "duration_ms": 12,
-        "attempts": 1
+        "duration_ms": 41301,
+        "attempts": 2
       },
       "codegen": {
         "pass": true,
@@ -264,13 +280,13 @@
       },
       "eval": {
         "pass": true,
-        "duration_ms": 2,
+        "duration_ms": 19,
         "attempts": 1
       }
     },
     "config": {
-      "provider": "mock",
-      "model": null,
+      "provider": "deepseek",
+      "model": "deepseek-chat",
       "temperature": 0.0,
       "max_tokens": null,
       "cache_enabled": false,
@@ -278,32 +294,50 @@
       "seed": 0,
       "enable_repair": true,
       "enable_catalog": true,
-      "runtime_check": false
+      "runtime_check": false,
+      "cache_dir": ".cache/llm"
     }
   },
   "llm": {
-    "provider": "mock",
-    "model": null,
+    "provider": "deepseek",
+    "model": "deepseek-chat",
     "temperature": 0.0,
     "cache_dir": ".cache/llm",
     "cache_enabled": false,
-    "calls_total": 2,
+    "calls_total": 4,
     "calls_by_stage": {
       "generate_ir": 1,
-      "generate_bindings": 1
+      "repair_ir": 1,
+      "generate_bindings": 1,
+      "repair_bindings": 1
     },
     "cache_hits": 0,
-    "cache_misses": 2,
-    "usage_tokens_total": 0,
+    "cache_misses": 4,
+    "usage_tokens_total": 10019,
     "prompt_template_hashes": {
       "ir_agent": "3b139c640d31d720bf2f7bb0d8b90fdd86a204c2e47586907d82349103f1816a",
+      "repair_agent": "2240406411b902e7b35b1f40c8961e4e26dab8b1431a4635a90e00f32f131627",
       "binding_agent": "eb7bf22c71118c6197aff798182e3fdd479aaf2db13a51eb5ddf4cbf73933e65"
     },
-    "rules_hash": "4ac6af8005e0d2c30d37bd9c621b14d957fbb46d0e2cd23d2e6633466e91d3d1507a7f7bce8a858b23fb73c5ee5a3c013b50440700cc38e29c10c36123533724",
+    "rules_hash": "0efd038d1492aea276cbeabe81f659e0ba9364816b7b4002abf5953ace5c2cf7",
     "schema_hashes": {
       "plan_schema": "8d8399a603d1b200692b2f75170ce1bbf742b5051503966cfee3aae1fcedcd9c",
       "ir_schema": "d1b20ea900cec23d6966c056a65ba93f30671c40bfe3737fa7fdaaa48d330fbb",
       "bindings_schema": "16e635d1178c71dabaf7ed996785e535b597198dbc2545cfa0372db633c0a640"
+    },
+    "raw_paths": {
+      "generate_ir": [
+        "outputs\\DEMO-MONITORING\\llm_raw\\generate_ir_attempt1.txt"
+      ],
+      "repair_ir": [
+        "outputs\\DEMO-MONITORING\\llm_raw\\repair_ir_attempt2.txt"
+      ],
+      "generate_bindings": [
+        "outputs\\DEMO-MONITORING\\llm_raw\\generate_bindings_attempt1.txt"
+      ],
+      "repair_bindings": [
+        "outputs\\DEMO-MONITORING\\llm_raw\\repair_bindings_attempt2.txt"
+      ]
     }
   },
   "generated_manifest_present": true,

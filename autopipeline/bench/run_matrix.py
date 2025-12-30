@@ -7,6 +7,8 @@ import yaml
 
 from autopipeline.runner import PipelineRunner
 from autopipeline.llm.types import LLMConfig
+from autopipeline.bench.aggregate import aggregate_runs
+from autopipeline.bench.plots import generate_plots
 
 
 def load_experiment(config_path: Path):
@@ -29,7 +31,9 @@ def main():
     runtime_check = cfg.get("runtime_check", False)
     no_catalog = cfg.get("no_catalog", False)
     seed = cfg.get("seed", 0)
+    no_cache = cfg.get("no_cache", True)
 
+    eval_paths = []
     for case_id, model_cfg, prompt_tier, repair, temp in itertools.product(
             cases, models, prompt_tiers, repairs, temperatures):
         provider = model_cfg.get("provider")
@@ -41,7 +45,7 @@ def main():
             model=model,
             temperature=float(temp),
             cache_dir=cache_dir,
-            cache_enabled=True,
+            cache_enabled=not no_cache,
             prompt_tier=prompt_tier,
             seed=seed,
         )
@@ -54,8 +58,21 @@ def main():
             runtime_check=runtime_check
         )
         result = runner.run()
+        eval_paths.append(Path(runner.output_dir) / "eval.json")
         print(f"[matrix] case={case_id} provider={provider} model={model} "
               f"prompt={prompt_tier} repair={repair} temp={temp} => {result.get('overall_status')}")
+
+    # aggregate and plots
+    if eval_paths:
+        summary_csv, summary_error_csv = aggregate_runs(eval_paths, Path(args.out_root))
+        plots_dir = Path(args.out_root) / "plots"
+        try:
+            generate_plots(summary_csv, summary_error_csv, plots_dir)
+            print(f"[matrix] summary: {summary_csv}")
+            print(f"[matrix] summary_by_error: {summary_error_csv}")
+            print(f"[matrix] plots: {plots_dir}")
+        except Exception as e:
+            print(f"[matrix] plots skipped: {e}")
 
 
 if __name__ == "__main__":

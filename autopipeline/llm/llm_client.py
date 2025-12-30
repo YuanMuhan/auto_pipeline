@@ -1,7 +1,7 @@
 import os
 import time
 from pathlib import Path
-from typing import Dict, Any, Callable
+from typing import Dict, Any, Callable, Optional
 
 import yaml
 
@@ -11,12 +11,13 @@ from autopipeline.llm.prompt_loader import PromptLoader
 from autopipeline.llm.types import LLMConfig, LLMResponse
 from autopipeline.llm import providers as provider_module
 from autopipeline.catalog.render import load_component_profiles, load_endpoint_types, component_types_summary, endpoint_types_summary
+from autopipeline.llm.decode import decode_payload, LLMOutputFormatError
 
 
 class LLMClient:
     """Unified LLM client with caching and provider abstraction."""
 
-    def __init__(self, base_dir: str, config: LLMConfig, logger: Callable[[str], None]):
+    def __init__(self, base_dir: str, config: LLMConfig, logger: Callable[[str], None], output_root: Optional[str] = "outputs"):
         self.base_dir = base_dir
         self.config = config
         self.logger = logger
@@ -28,6 +29,7 @@ class LLMClient:
             "components": component_types_summary(comp["profiles"]),
             "endpoint_types": endpoint_types_summary(ep["data"]),
         }
+        self.output_root = output_root or "outputs"
         self.stats = {
             "provider": config.provider,
             "model": config.model,
@@ -40,7 +42,13 @@ class LLMClient:
             "cache_misses": 0,
             "usage_tokens_total": 0,
             "prompt_template_hashes": {},
+            "raw_paths": {},
         }
+        # Track attempts per stage for raw naming
+        self._stage_attempt_counters: Dict[str, int] = {}
+
+    def _raw_dir(self, case_id: str) -> Path:
+        return Path(self.base_dir) / self.output_root / case_id / "llm_raw"
 
     def _log_call(self, stage: str, cache_hit: bool, cache_key: str, elapsed: float, usage: Any):
         cache_mark = "HIT" if cache_hit else "MISS"
@@ -84,8 +92,14 @@ class LLMClient:
         self.stats["prompt_template_hashes"][prompt_name] = rendered["template_hash"]
         return rendered
 
+    def _register_raw_path(self, stage: str, path: Optional[str]):
+        if not path:
+            return
+        paths = self.stats["raw_paths"].setdefault(stage, [])
+        paths.append(path)
+
     def _invoke(self, stage: str, prompt_name: str, context: Dict[str, Any], rules_hash: str,
-                schema_versions: Dict[str, Any], inputs_hash: str) -> str:
+                schema_versions: Dict[str, Any], inputs_hash: str, attempt: int = 1, expected_format: str = "yaml") -> str:
         provider = self._get_provider()
         model = self.config.model or "mock-model"
         params = {
@@ -149,6 +163,14 @@ class LLMClient:
 
         elapsed = time.time() - start
         self._log_call(stage, cache_hit, cache_key, elapsed, cached_usage)
+        # Save raw output for debugging
+        raw_dir = self._raw_dir(context.get("case_id", "unknown"))
+        try:
+            _, raw_path = decode_payload(cached_text, expected_format, stage, attempt, str(raw_dir))
+            self._register_raw_path(stage, raw_path)
+        except LLMOutputFormatError as e:
+            # Even if decode failed, raw already saved by decode_payload
+            self._register_raw_path(stage, e.raw_path)
 
         # Stats
         self.stats["calls_total"] += 1
@@ -166,7 +188,7 @@ class LLMClient:
 
     def generate_ir(self, case_id: str, user_problem: Dict[str, Any], device_info: Dict[str, Any],
                     rules_ctx: Dict[str, Any], schema_versions: Dict[str, Any],
-                    prompt_name: str = "ir_agent") -> str:
+                    prompt_name: str = "ir_agent", attempt: int = 1) -> str:
         inputs_hash = stable_hash({"user_problem": user_problem, "device_info": device_info})
         context = {
             "USER_PROBLEM": yaml.safe_dump(user_problem, sort_keys=False, allow_unicode=True),
@@ -174,11 +196,11 @@ class LLMClient:
             "case_id": case_id,
         }
         return self._invoke("generate_ir", prompt_name, context, rules_ctx["rules_hash"],
-                            schema_versions, inputs_hash)
+                            schema_versions, inputs_hash, attempt=attempt, expected_format="yaml")
 
     def generate_bindings(self, case_id: str, ir_yaml: str, device_info: Dict[str, Any],
                           rules_ctx: Dict[str, Any], schema_versions: Dict[str, Any],
-                          prompt_name: str = "binding_agent") -> str:
+                          prompt_name: str = "binding_agent", attempt: int = 1) -> str:
         inputs_hash = stable_hash({"ir_yaml": ir_yaml, "device_info": device_info})
         context = {
             "IR_YAML": ir_yaml,
@@ -186,11 +208,11 @@ class LLMClient:
             "case_id": case_id,
         }
         return self._invoke("generate_bindings", prompt_name, context, rules_ctx["rules_hash"],
-                            schema_versions, inputs_hash)
+                            schema_versions, inputs_hash, attempt=attempt, expected_format="yaml")
 
     def repair_ir(self, case_id: str, ir_draft: Dict[str, Any], verifier_errors: Any,
                   rules_ctx: Dict[str, Any], schema_versions: Dict[str, Any],
-                  prompt_name: str = "repair_agent") -> str:
+                  prompt_name: str = "repair_agent", attempt: int = 1) -> str:
         inputs_hash = stable_hash({"ir_draft": ir_draft, "verifier_errors": verifier_errors})
         context = {
             "IR_DRAFT": yaml.safe_dump(ir_draft, sort_keys=False, allow_unicode=True),
@@ -198,11 +220,11 @@ class LLMClient:
             "case_id": case_id,
         }
         return self._invoke("repair_ir", prompt_name, context, rules_ctx["rules_hash"],
-                            schema_versions, inputs_hash)
+                            schema_versions, inputs_hash, attempt=attempt, expected_format="yaml")
 
     def repair_bindings(self, case_id: str, bindings_draft: Dict[str, Any], verifier_errors: Any,
                         rules_ctx: Dict[str, Any], schema_versions: Dict[str, Any],
-                        prompt_name: str = "repair_agent") -> str:
+                        prompt_name: str = "repair_agent", attempt: int = 1) -> str:
         inputs_hash = stable_hash({"bindings_draft": bindings_draft, "verifier_errors": verifier_errors})
         context = {
             "BINDINGS_DRAFT": yaml.safe_dump(bindings_draft, sort_keys=False, allow_unicode=True),
@@ -210,4 +232,4 @@ class LLMClient:
             "case_id": case_id,
         }
         return self._invoke("repair_bindings", prompt_name, context, rules_ctx["rules_hash"],
-                            schema_versions, inputs_hash)
+                            schema_versions, inputs_hash, attempt=attempt, expected_format="yaml")

@@ -4,6 +4,7 @@ from typing import Dict, Any, List
 from datetime import datetime
 import yaml
 from autopipeline.llm.llm_client import LLMClient
+from autopipeline.llm.decode import decode_payload, minimal_ir_check, LLMOutputFormatError, populate_ir_defaults
 
 
 class IRAgent:
@@ -14,7 +15,7 @@ class IRAgent:
 
     def generate_ir(self, plan_data: Dict[str, Any], user_problem: Dict[str, Any],
                     device_info: Dict[str, Any], rules_ctx: Dict[str, Any],
-                    schema_versions: Dict[str, Any]) -> Dict[str, Any]:
+                    schema_versions: Dict[str, Any], attempt: int = 1) -> Dict[str, Any]:
         """
         Generate IR from plan and user problem.
 
@@ -26,11 +27,16 @@ class IRAgent:
             device_info=device_info,
             rules_ctx=rules_ctx,
             schema_versions=schema_versions,
-            prompt_name="ir_agent"
+            prompt_name="ir_agent",
+            attempt=attempt
         )
-        ir_obj = yaml.safe_load(ir_yaml)
-        if not isinstance(ir_obj, dict):
-            raise ValueError("IRAgent expected YAML mapping, got non-dict content")
+        ir_obj, _ = decode_payload(ir_yaml, expected="yaml", stage="ir", attempt=attempt,
+                                   output_dir=str(self.llm._raw_dir(rules_ctx.get("case_id", "unknown"))))
+        ir_obj = populate_ir_defaults(ir_obj, case_id=rules_ctx.get("case_id", ""), plan_data=plan_data, user_problem=user_problem)
+        if not minimal_ir_check(ir_obj):
+            raise LLMOutputFormatError("IR minimal check failed (missing required top-level keys)",
+                                       stage="ir", attempt=attempt,
+                                       raw_path=str(self.llm._raw_dir(rules_ctx.get("case_id", "unknown"))))
         return ir_obj
 
     def _simulate_ir_generation(self, plan_data: Dict[str, Any], user_problem: Dict[str, Any]) -> Dict[str, Any]:

@@ -27,9 +27,20 @@ from autopipeline.catalog.render import catalog_hashes, component_types_summary,
 from autopipeline.verifier.generation_checker import GenerationConsistencyChecker
 from autopipeline.verifier.cross_artifact_checker import CrossArtifactChecker
 from autopipeline.llm import LLMClient
+from autopipeline.llm.decode import LLMOutputFormatError
 from autopipeline.llm.types import LLMConfig
 from autopipeline.llm.hash_utils import stable_hash
 from autopipeline.eval.error_codes import FailureRecord, ErrorCode
+
+
+class StageError(Exception):
+    """Carry stage, attempts and error code information for failed stages."""
+
+    def __init__(self, message: str, stage: str, attempts: int = 0, code: str = ErrorCode.E_UNKNOWN):
+        super().__init__(message)
+        self.stage = stage
+        self.attempts = attempts
+        self.code = code
 
 
 class PipelineRunner:
@@ -42,7 +53,12 @@ class PipelineRunner:
         self.base_dir = base_dir
         self.case_dir = os.path.join(base_dir, "cases", case_id)
         self.output_root = output_root
-        self.output_dir = os.path.join(base_dir, output_root, case_id)
+        # unique run directory to avoid overwrite
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        short = stable_hash({"case": case_id, "time": ts})[:6]
+        self.run_id = f"run={ts}_{short}"
+        self.output_base = os.path.join(base_dir, output_root, case_id)
+        self.output_dir = os.path.join(self.output_base, self.run_id)
         self.llm_config = llm_config or LLMConfig()
         self.enable_repair = enable_repair
         self.enable_catalog = enable_catalog
@@ -58,7 +74,9 @@ class PipelineRunner:
 
         # Initialize agents
         self.planner = PlannerAgent()
-        self.llm_client = LLMClient(base_dir=base_dir, config=self.llm_config, logger=self.log)
+        # Pass run-specific output root to LLM client for raw dumps
+        self.llm_client = LLMClient(base_dir=base_dir, config=self.llm_config, logger=self.log,
+                                    output_root=os.path.join(output_root, case_id, self.run_id))
         self.ir_agent = IRAgent(self.llm_client)
         self.bindings_agent = BindingsAgent(self.llm_client)
         self.repair_agent = RepairAgent(self.llm_client)
@@ -222,7 +240,7 @@ class PipelineRunner:
                     "stage": "codegen",
                     "checker": "CodeGenValidator",
                     "message": f"{layer} main.py py_compile failed: {e}"
-                })
+            })
         if not generated:
             failures.append({
                 "code": ErrorCode.E_UNKNOWN,
@@ -232,6 +250,98 @@ class PipelineRunner:
             })
         return {"pass": len(failures) == 0, "failures": failures, "warnings": warnings, "metrics": {}}
 
+    def _pipeline_config(self) -> Dict[str, Any]:
+        return {
+            "provider": self.llm_config.provider,
+            "model": self.llm_config.model,
+            "temperature": self.llm_config.temperature,
+            "max_tokens": self.llm_config.max_tokens,
+            "cache_enabled": self.llm_config.cache_enabled,
+            "prompt_tier": self.llm_config.prompt_tier,
+            "seed": self.llm_config.seed,
+            "enable_repair": self.enable_repair,
+            "enable_catalog": self.enable_catalog,
+            "runtime_check": self.runtime_check,
+            "cache_dir": self.llm_config.cache_dir,
+            "run_id": self.run_id,
+            "output_dir": self.output_dir,
+        }
+
+    def _llm_summary(self) -> Dict[str, Any]:
+        stats = self.llm_client.stats
+        return {
+            "provider": self.llm_config.provider,
+            "model": self.llm_config.model,
+            "temperature": self.llm_config.temperature,
+            "cache_dir": self.llm_config.cache_dir,
+            "cache_enabled": self.llm_config.cache_enabled,
+            "calls_total": stats.get("calls_total", 0),
+            "calls_by_stage": stats.get("calls_by_stage", {}),
+            "cache_hits": stats.get("cache_hits", 0),
+            "cache_misses": stats.get("cache_misses", 0),
+            "usage_tokens_total": stats.get("usage_tokens_total", 0),
+            "prompt_template_hashes": stats.get("prompt_template_hashes", {}),
+            "rules_hash": self.rules_ctx["rules_hash"],
+            "schema_hashes": self.schema_versions,
+            "raw_paths": stats.get("raw_paths", {}),
+        }
+
+    def _rules_version(self) -> Dict[str, Any]:
+        return {
+            "ir_rules_hash": self.rules_bundle["ir"]["hash"],
+            "bindings_rules_hash": self.rules_bundle["bindings"]["hash"],
+            "ir_required_fields": len(self.rules_bundle["ir"]["required_fields"]),
+            "ir_forbidden_keywords": len(self.rules_bundle["ir"]["forbidden_keywords"]),
+            "bindings_required_fields": len(self.rules_bundle["bindings"]["required_fields"]),
+            "bindings_forbidden_keywords": len(self.rules_bundle["bindings"]["forbidden_keywords"])
+        }
+
+    def _aggregate_failures(self) -> List[Dict[str, Any]]:
+        return [f for res in self.validator_results.values() for f in res.get("failures", [])]
+
+    def _finalize_metrics(self):
+        total_duration_ms = sum(stage.get("duration_ms", 0) for stage in self.pipeline_stats.values())
+        total_attempts = sum(stage.get("attempts", 0) for stage in self.pipeline_stats.values())
+        attempts_by_stage = {k: v.get("attempts", 0) for k, v in self.pipeline_stats.items()}
+        return total_duration_ms, total_attempts, attempts_by_stage
+
+    def _build_failure_eval(self, start_time: float, error_info: Dict[str, Any]) -> Dict[str, Any]:
+        """Persist a failure eval even when pipeline aborts early."""
+        rules_version = self._rules_version()
+        total_duration_ms, total_attempts, attempts_by_stage = self._finalize_metrics()
+        eval_result = {
+            "case_id": self.case_id,
+            "timestamp": datetime.now().isoformat(),
+            "overall_status": "FAIL",
+            "stages_passed": self.stages_passed,
+            "checks": {},
+            "metrics": {
+                "total_duration_ms": total_duration_ms or int((time.time() - start_time) * 1000),
+                "total_attempts": total_attempts,
+                "attempts_by_stage": attempts_by_stage,
+            },
+            "validators": self.validator_results,
+            "failures_flat": self._aggregate_failures(),
+            "pipeline": {
+                "stages": self.pipeline_stats,
+                "config": self._pipeline_config(),
+            },
+            "llm": self._llm_summary(),
+            "rules_version": rules_version,
+            "catalog_hashes": self.catalog_hash,
+            "input_validation": self.input_validation,
+            "error": {
+                "stage": (error_info or {}).get("stage"),
+                "message": (error_info or {}).get("message"),
+                "attempts": (error_info or {}).get("attempts"),
+                "code": (error_info or {}).get("code", ErrorCode.E_UNKNOWN),
+            },
+        }
+        eval_file = os.path.join(self.output_dir, "eval.json")
+        save_json(eval_result, eval_file)
+        self.log(f"Saved failure evaluation to {eval_file}")
+        return eval_result
+
     def run(self) -> Dict[str, Any]:
         """Run the complete pipeline"""
 
@@ -240,64 +350,104 @@ class PipelineRunner:
 
         # Ensure output directory exists
         ensure_dir(self.output_dir)
+        eval_result = None
+        error_info: Dict[str, Any] = {}
 
-        # Step 1: Load inputs
-        self.log("Step 1: Loading user problem and device info")
-        user_problem, device_info = self._load_inputs()
+        try:
+            # Step 1: Load inputs
+            self.log("Step 1: Loading user problem and device info")
+            inputs_start = time.time()
+            try:
+                user_problem, device_info = self._load_inputs()
+                self._record_stage("inputs", inputs_start, attempts=1, passed=True)
+            except Exception as e:
+                self._record_stage("inputs", inputs_start, attempts=1, passed=False)
+                raise StageError(str(e), stage="inputs", attempts=1, code=ErrorCode.E_INPUT_INVALID) from e
 
-        # Step 2: Generate Plan
-        self.log("Step 2: Generating Plan (Planner Agent)")
-        plan_start = time.time()
-        plan_data = self._generate_and_validate_plan(user_problem, device_info)
-        self._record_stage("plan", plan_start, attempts=1, passed=True)
+            # Step 2: Generate Plan
+            self.log("Step 2: Generating Plan (Planner Agent)")
+            plan_start = time.time()
+            try:
+                plan_data = self._generate_and_validate_plan(user_problem, device_info)
+                self._record_stage("plan", plan_start, attempts=1, passed=True)
+            except Exception as e:
+                self._record_stage("plan", plan_start, attempts=1, passed=False)
+                raise StageError(str(e), stage="plan", attempts=1) from e
 
-        # Step 3: Generate IR
-        self.log("Step 3: Generating IR (IR Agent)")
-        ir_start = time.time()
-        ir_data, ir_attempts = self._generate_and_validate_ir(plan_data, user_problem, device_info)
-        self._record_stage("ir", ir_start, attempts=ir_attempts, passed=True)
+            # Step 3: Generate IR
+            self.log("Step 3: Generating IR (IR Agent)")
+            ir_start = time.time()
+            try:
+                ir_data, ir_attempts = self._generate_and_validate_ir(plan_data, user_problem, device_info)
+                self._record_stage("ir", ir_start, attempts=ir_attempts, passed=True)
+            except StageError as e:
+                self._record_stage("ir", ir_start, attempts=e.attempts or 0, passed=False)
+                raise
+            except Exception as e:
+                self._record_stage("ir", ir_start, attempts=1, passed=False)
+                raise StageError(str(e), stage="ir", attempts=1) from e
 
-        # Step 4: Generate Bindings
-        self.log("Step 4: Generating Bindings (Bindings Agent)")
-        bind_start = time.time()
-        bindings_data, bind_attempts = self._generate_and_validate_bindings(ir_data, device_info)
-        self._record_stage("bindings", bind_start, attempts=bind_attempts, passed=True)
-        bindings_file = os.path.join(self.output_dir, "bindings.yaml")
-        bindings_hash = sha256_of_file(bindings_file)
+            # Step 4: Generate Bindings
+            self.log("Step 4: Generating Bindings (Bindings Agent)")
+            bind_start = time.time()
+            try:
+                bindings_data, bind_attempts = self._generate_and_validate_bindings(ir_data, device_info)
+                self._record_stage("bindings", bind_start, attempts=bind_attempts, passed=True)
+            except StageError as e:
+                self._record_stage("bindings", bind_start, attempts=e.attempts or 0, passed=False)
+                raise
+            except Exception as e:
+                self._record_stage("bindings", bind_start, attempts=1, passed=False)
+                raise StageError(str(e), stage="bindings", attempts=1) from e
+            bindings_file = os.path.join(self.output_dir, "bindings.yaml")
+            bindings_hash = sha256_of_file(bindings_file)
 
-        # Step 5: Generate Code
-        self.log("Step 5: Generating code skeletons (CodeGen)")
-        codegen_start = time.time()
-        codegen_result = self.codegen.generate_code(bindings_data, ir_data, self.output_dir,
-                                                    bindings_hash, self.case_id)
-        self.stages_passed.append("codegen")
-        self._record_stage("codegen", codegen_start, attempts=1, passed=True)
-        codegen_validator = self._validate_codegen(codegen_result)
-        self._record_validator("code_generated", codegen_validator)
+            # Step 5: Generate Code
+            self.log("Step 5: Generating code skeletons (CodeGen)")
+            codegen_start = time.time()
+            codegen_result = self.codegen.generate_code(bindings_data, ir_data, self.output_dir,
+                                                        bindings_hash, self.case_id)
+            self.stages_passed.append("codegen")
+            self._record_stage("codegen", codegen_start, attempts=1, passed=True)
+            codegen_validator = self._validate_codegen(codegen_result)
+            self._record_validator("code_generated", codegen_validator)
 
-        # Step 6: Generate Deployment
-        self.log("Step 6: Generating docker-compose.yml (Deploy)")
-        deploy_start = time.time()
-        deploy_file = self.deploy.generate_deployment(bindings_data, self.output_dir, bindings_hash)
-        self.stages_passed.append("deploy")
-        self._record_stage("deploy", deploy_start, attempts=1, passed=True)
+            # Step 6: Generate Deployment
+            self.log("Step 6: Generating docker-compose.yml (Deploy)")
+            deploy_start = time.time()
+            deploy_file = self.deploy.generate_deployment(bindings_data, self.output_dir, bindings_hash)
+            self.stages_passed.append("deploy")
+            self._record_stage("deploy", deploy_start, attempts=1, passed=True)
 
-        # Step 7: Run evaluation
-        self.log("Step 7: Running evaluation")
-        eval_start = time.time()
-        eval_result = self._run_evaluation(plan_data, ir_data, device_info, bindings_data, codegen_result, deploy_file, bindings_hash, eval_start)
+            # Step 7: Run evaluation
+            self.log("Step 7: Running evaluation")
+            eval_start = time.time()
+            eval_result = self._run_evaluation(plan_data, ir_data, device_info, bindings_data, codegen_result, deploy_file, bindings_hash, eval_start)
 
-        # Step 8: Generate report
-        from autopipeline.eval.report import generate_report
-        report_path = generate_report(eval_result, self.output_dir)
-        self.log(f"Saved report to {report_path}")
+            # Step 8: Generate report
+            from autopipeline.eval.report import generate_report
+            report_path = generate_report(eval_result, self.output_dir)
+            self.log(f"Saved report to {report_path}")
 
-        # Step 9: Save run log
-        self.log("Step 9: Saving run log")
-        self._save_run_log()
+            elapsed_time = time.time() - start_time
+            self.log(f"Pipeline completed in {elapsed_time:.2f} seconds")
 
-        elapsed_time = time.time() - start_time
-        self.log(f"Pipeline completed in {elapsed_time:.2f} seconds")
+        except StageError as se:
+            error_info = {
+                "stage": se.stage,
+                "message": str(se),
+                "attempts": se.attempts,
+                "code": getattr(se, "code", ErrorCode.E_UNKNOWN),
+            }
+            self.log(f"Pipeline failed at stage {se.stage}: {se}", "ERROR")
+        except Exception as e:
+            error_info = {"stage": "unknown", "message": str(e)}
+            self.log(f"Pipeline failed: {e}", "ERROR")
+        finally:
+            if eval_result is None:
+                eval_result = self._build_failure_eval(start_time, error_info)
+            self.log("Step 9: Saving run log")
+            self._save_run_log()
 
         return eval_result
 
@@ -358,23 +508,31 @@ class PipelineRunner:
 
         ir_data = None
         last_error = ""
+        last_error_code = ErrorCode.E_UNKNOWN
         attempts_used = 0
         max_attempts = 1 if not self.enable_repair else 3
         for attempt in range(1, max_attempts + 1):
             attempts_used = attempt
             self.log(f"IR generation attempt {attempt}/3")
 
-            if attempt == 1:
-                ir_data = self.ir_agent.generate_ir(plan_data, user_problem, device_info,
-                                                    self.rules_ctx, self.schema_versions)
-            else:
-                ir_data = self.repair_agent.repair_ir(ir_data, last_error, device_info,
-                                                      self.rules_ctx, self.schema_versions)
+            try:
+                if attempt == 1:
+                    ir_data = self.ir_agent.generate_ir(plan_data, user_problem, device_info,
+                                                        self.rules_ctx, self.schema_versions, attempt=attempt)
+                else:
+                    ir_data = self.repair_agent.repair_ir(ir_data, last_error, device_info,
+                                                          self.rules_ctx, self.schema_versions, attempt=attempt)
+            except LLMOutputFormatError as e:
+                last_error = str(e)
+                last_error_code = e.code
+                self.log(f"IR decode failed: {last_error}", "WARNING")
+                continue
 
             schema_res = self.schema_checker.validate_ir(ir_data)
             self._record_validator("ir_schema", schema_res)
             if not schema_res["pass"]:
                 last_error = self._failure_message(schema_res) or "IR schema failed"
+                last_error_code = ErrorCode.E_SCHEMA_IR
                 self.log(f"IR schema validation failed: {last_error}", "WARNING")
                 continue
 
@@ -382,6 +540,7 @@ class PipelineRunner:
             self._record_validator("ir_boundary", boundary_res)
             if not boundary_res["pass"]:
                 last_error = self._failure_message(boundary_res) or "IR boundary failed"
+                last_error_code = ErrorCode.E_BOUNDARY
                 self.log(f"IR boundary check failed: {last_error}", "WARNING")
                 continue
 
@@ -390,6 +549,7 @@ class PipelineRunner:
                 self._record_validator("ir_component_catalog", comp_res)
                 if not comp_res["pass"]:
                     last_error = self._failure_message(comp_res) or "IR catalog failed"
+                    last_error_code = ErrorCode.E_CATALOG_COMPONENT
                     self.log(f"IR component catalog check failed: {last_error}", "WARNING")
                     continue
 
@@ -397,6 +557,7 @@ class PipelineRunner:
                 self._record_validator("ir_interface", iface_res)
                 if not iface_res["pass"]:
                     last_error = self._failure_message(iface_res) or "IR interface failed"
+                    last_error_code = ErrorCode.E_CHECKER_FAIL
                     self.log(f"IR interface check failed: {last_error}", "WARNING")
                     continue
             else:
@@ -408,7 +569,7 @@ class PipelineRunner:
 
         else:
             self.log("IR generation failed after 3 attempts", "ERROR")
-            raise ValueError("Failed to generate valid IR")
+            raise StageError(last_error or "Failed to generate valid IR", stage="ir", attempts=attempts_used, code=last_error_code)
 
         ir_file = os.path.join(self.output_dir, "ir.yaml")
         save_yaml(ir_data, ir_file)
@@ -432,19 +593,26 @@ class PipelineRunner:
 
         bindings_data = None
         last_error = ""
+        last_error_code = ErrorCode.E_UNKNOWN
         attempts_used = 0
         max_attempts = 1 if not self.enable_repair else 3
         for attempt in range(1, max_attempts + 1):
             attempts_used = attempt
             self.log(f"Bindings generation attempt {attempt}/3")
 
-            if attempt == 1:
-                bindings_data = self.bindings_agent.generate_bindings(ir_data, device_info,
-                                                                      self.rules_ctx, self.schema_versions)
-            else:
-                bindings_data = self.repair_agent.repair_bindings(bindings_data, last_error,
-                                                                  ir_data, device_info,
-                                                                  self.rules_ctx, self.schema_versions)
+            try:
+                if attempt == 1:
+                    bindings_data = self.bindings_agent.generate_bindings(ir_data, device_info,
+                                                                          self.rules_ctx, self.schema_versions, attempt=attempt)
+                else:
+                    bindings_data = self.repair_agent.repair_bindings(bindings_data, last_error,
+                                                                      ir_data, device_info,
+                                                                      self.rules_ctx, self.schema_versions, attempt=attempt)
+            except LLMOutputFormatError as e:
+                last_error = str(e)
+                last_error_code = e.code
+                self.log(f"Bindings decode failed: {last_error}", "WARNING")
+                continue
 
             # Align with IR to avoid trivial mismatches
             self._align_bindings_with_ir(bindings_data, ir_data)
@@ -453,6 +621,7 @@ class PipelineRunner:
             self._record_validator("bindings_schema", schema_res)
             if not schema_res["pass"]:
                 last_error = self._failure_message(schema_res) or "Bindings schema failed"
+                last_error_code = ErrorCode.E_SCHEMA_BIND
                 self.log(f"Bindings schema validation failed: {last_error}", "WARNING")
                 continue
 
@@ -460,6 +629,7 @@ class PipelineRunner:
             self._record_validator("coverage", coverage_res)
             if not coverage_res["pass"]:
                 last_error = self._failure_message(coverage_res) or "Coverage failed"
+                last_error_code = ErrorCode.E_COVERAGE
                 self.log(f"Coverage check failed: {last_error}", "WARNING")
                 continue
 
@@ -467,6 +637,7 @@ class PipelineRunner:
             self._record_validator("endpoint_legality", endpoint_res)
             if not endpoint_res["pass"]:
                 last_error = self._failure_message(endpoint_res) or "Endpoint legality failed"
+                last_error_code = ErrorCode.E_ENDPOINT_CHECK
                 self.log(f"Endpoint legality check failed: {last_error}", "WARNING")
                 continue
 
@@ -475,6 +646,7 @@ class PipelineRunner:
                 self._record_validator("endpoint_matching", ep_match_res)
                 if not ep_match_res["pass"]:
                     last_error = self._failure_message(ep_match_res) or "Endpoint matching failed"
+                    last_error_code = ErrorCode.E_ENDPOINT_CHECK
                     self.log(f"Endpoint matching check failed: {last_error}", "WARNING")
                     continue
             else:
@@ -484,6 +656,7 @@ class PipelineRunner:
             self._record_validator("cross_artifact_consistency", cross_res)
             if not cross_res["pass"]:
                 last_error = self._failure_message(cross_res) or "Cross artifact consistency failed"
+                last_error_code = ErrorCode.E_CHECKER_FAIL
                 self.log(f"Cross-artifact check failed: {last_error}", "WARNING")
                 continue
 
@@ -492,7 +665,7 @@ class PipelineRunner:
 
         else:
             self.log("Bindings generation failed after 3 attempts", "ERROR")
-            raise ValueError("Failed to generate valid Bindings")
+            raise StageError(last_error or "Failed to generate valid Bindings", stage="bindings", attempts=attempts_used, code=last_error_code)
 
         bindings_file = os.path.join(self.output_dir, "bindings.yaml")
         save_yaml(bindings_data, bindings_file)
@@ -506,15 +679,7 @@ class PipelineRunner:
                         deploy_file: str, bindings_hash: str, eval_start: float) -> Dict[str, Any]:
         """Run deterministic evaluation"""
 
-        rules_version = {
-            "ir_rules_hash": self.rules_bundle["ir"]["hash"],
-            "bindings_rules_hash": self.rules_bundle["bindings"]["hash"],
-            "ir_required_fields": len(self.rules_bundle["ir"]["required_fields"]),
-            "ir_forbidden_keywords": len(self.rules_bundle["ir"]["forbidden_keywords"]),
-            "bindings_required_fields": len(self.rules_bundle["bindings"]["required_fields"]),
-            "bindings_forbidden_keywords": len(self.rules_bundle["bindings"]["forbidden_keywords"])
-        }
-
+        rules_version = self._rules_version()
         eval_result = {
             "case_id": self.case_id,
             "timestamp": datetime.now().isoformat(),
@@ -529,34 +694,9 @@ class PipelineRunner:
             "failures_flat": [],
             "pipeline": {
                 "stages": self.pipeline_stats,
-                "config": {
-                    "provider": self.llm_config.provider,
-                    "model": self.llm_config.model,
-                    "temperature": self.llm_config.temperature,
-                    "max_tokens": self.llm_config.max_tokens,
-                    "cache_enabled": self.llm_config.cache_enabled,
-                    "prompt_tier": self.llm_config.prompt_tier,
-                    "seed": self.llm_config.seed,
-                    "enable_repair": self.enable_repair,
-                    "enable_catalog": self.enable_catalog,
-                    "runtime_check": self.runtime_check,
-                }
+                "config": self._pipeline_config(),
             },
-            "llm": {
-                "provider": self.llm_config.provider,
-                "model": self.llm_config.model,
-                "temperature": self.llm_config.temperature,
-                "cache_dir": self.llm_config.cache_dir,
-                "cache_enabled": self.llm_config.cache_enabled,
-                "calls_total": self.llm_client.stats["calls_total"],
-                "calls_by_stage": self.llm_client.stats["calls_by_stage"],
-                "cache_hits": self.llm_client.stats["cache_hits"],
-                "cache_misses": self.llm_client.stats["cache_misses"],
-                "usage_tokens_total": self.llm_client.stats["usage_tokens_total"],
-                "prompt_template_hashes": self.llm_client.stats["prompt_template_hashes"],
-                "rules_hash": rules_version["ir_rules_hash"] + rules_version["bindings_rules_hash"],
-                "schema_hashes": self.schema_versions,
-            }
+            "llm": self._llm_summary(),
         }
 
         # Carry validators collected during generation
@@ -606,11 +746,10 @@ class PipelineRunner:
         eval_result["metrics"]["num_placements"] = len(bindings_data.get("placements", []))
         eval_result["metrics"]["num_layers"] = len(codegen_result["generated_files"])
         # pipeline metrics
-        total_duration_ms = sum(stage.get("duration_ms", 0) for stage in self.pipeline_stats.values())
-        total_attempts = sum(stage.get("attempts", 0) for stage in self.pipeline_stats.values())
+        total_duration_ms, total_attempts, attempts_by_stage = self._finalize_metrics()
         eval_result["metrics"]["total_duration_ms"] = total_duration_ms
         eval_result["metrics"]["total_attempts"] = total_attempts
-        eval_result["metrics"]["attempts_by_stage"] = {k: v.get("attempts", 0) for k, v in self.pipeline_stats.items()}
+        eval_result["metrics"]["attempts_by_stage"] = attempts_by_stage
 
         # Simplified checks (backward compatibility)
         for name in ["user_problem_schema", "device_info_schema", "device_info_catalog",
