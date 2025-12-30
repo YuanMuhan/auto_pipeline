@@ -1,0 +1,144 @@
+{
+  "placements": [
+    {
+      "component_id": "door_sensor_main",
+      "layer": "device",
+      "device_ref": "door_sensor_main"
+    },
+    {
+      "component_id": "motion_sensor_living",
+      "layer": "device",
+      "device_ref": "motion_sensor_living"
+    },
+    {
+      "component_id": "smart_light_living",
+      "layer": "device",
+      "device_ref": "smart_light_living"
+    },
+    {
+      "component_id": "edge_gateway_ha",
+      "layer": "edge",
+      "device_ref": "edge_gateway_ha"
+    },
+    {
+      "component_id": "cloud_automation_service",
+      "layer": "cloud",
+      "device_ref": "cloud_automation_service"
+    },
+    {
+      "component_id": "cloud_storage_service",
+      "layer": "cloud",
+      "device_ref": "cloud_storage_service"
+    },
+    {
+      "component_id": "system_scheduler",
+      "layer": "cloud",
+      "device_ref": "cloud_automation_service"
+    },
+    {
+      "component_id": "security_controller",
+      "layer": "cloud",
+      "device_ref": "cloud_automation_service"
+    }
+  ],
+  "transports": [
+    {
+      "link_id": "door_state_to_edge",
+      "protocol": "MQTT",
+      "qos": "at_least_once"
+    },
+    {
+      "link_id": "motion_state_to_edge",
+      "protocol": "MQTT",
+      "qos": "at_least_once"
+    },
+    {
+      "link_id": "edge_to_light_control_home",
+      "protocol": "MQTT",
+      "qos": "at_least_once"
+    },
+    {
+      "link_id": "edge_to_cloud_events",
+      "protocol": "HTTP",
+      "qos": "best_effort"
+    },
+    {
+      "link_id": "edge_to_cloud_storage",
+      "protocol": "HTTP",
+      "qos": "best_effort"
+    },
+    {
+      "link_id": "scheduler_to_edge",
+      "protocol": "HTTP",
+      "qos": "best_effort"
+    },
+    {
+      "link_id": "edge_to_security_controller",
+      "protocol": "HTTP",
+      "qos": "at_least_once"
+    },
+    {
+      "link_id": "security_to_notifier",
+      "protocol": "HTTP",
+      "qos": "at_least_once"
+    },
+    {
+      "link_id": "cloud_query_to_storage",
+      "protocol": "HTTP",
+      "qos": "best_effort"
+    }
+  ],
+  "endpoints": [
+    {
+      "link_id": "door_state_to_edge",
+      "from_endpoint": "ha://local",
+      "to_endpoint": "mqtt://ha_broker/homeassistant/events/#"
+    },
+    {
+      "link_id": "motion_state_to_edge",
+      "from_endpoint": "ha://local",
+      "to_endpoint": "mqtt://ha_broker/homeassistant/events/#"
+    },
+    {
+      "link_id": "edge_to_light_control_home",
+      "from_endpoint": "mqtt://ha_broker/homeassistant/commands",
+      "to_endpoint": "http://<SECRET_HA_HOST>:8123/api/services/light/turn_on"
+    },
+    {
+      "link_id": "edge_to_cloud_events",
+      "from_endpoint": "mqtt://ha_broker/homeassistant/commands",
+      "to_endpoint": "https://<SECRET_CLOUD_API>/api/v1/events"
+    },
+    {
+      "link_id": "edge_to_cloud_storage",
+      "from_endpoint": "mqtt://ha_broker/homeassistant/commands",
+      "to_endpoint": "https://<SECRET_CLOUD_DB>/write?db=smarthome&precision=s"
+    },
+    {
+      "link_id": "scheduler_to_edge",
+      "from_endpoint": "https://<SECRET_CLOUD_API>/api/v1/events",
+      "to_endpoint": "http://<SECRET_HA_HOST>:8123/api/webhook/<SECRET_WEBHOOK_ID>"
+    },
+    {
+      "link_id": "edge_to_security_controller",
+      "from_endpoint": "mqtt://ha_broker/homeassistant/commands",
+      "to_endpoint": "https://<SECRET_CLOUD_API>/api/v1/events"
+    },
+    {
+      "link_id": "security_to_notifier",
+      "from_endpoint": "https://<SECRET_CLOUD_API>/api/v1/events",
+      "to_endpoint": "https://api.pushover.net/1/messages.json?token=<SECRET_PUSHOVER_TOKEN>"
+    },
+    {
+      "link_id": "cloud_query_to_storage",
+      "from_endpoint": "https://<SECRET_CLOUD_API>/api/v1/events",
+      "to_endpoint": "https://<SECRET_CLOUD_DB>/query?db=smarthome"
+    }
+  ],
+  "component_bindings": [],
+  "deployment": {
+    "orchestrator": "docker-compose"
+  },
+  "app_name": "automation_app",
+  "version": "0.1.0"
+}

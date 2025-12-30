@@ -1,0 +1,137 @@
+app_name: automation_app
+components:
+- capabilities:
+  - sense
+  - collect
+  id: door_sensor_main
+  metadata:
+    description: 主卧门磁传感器
+  type: DoorContact
+- capabilities:
+  - sense
+  - collect
+  id: motion_sensor_living
+  metadata:
+    description: 客厅人体传感器
+  type: MotionSensor
+- capabilities:
+  - actuate
+  id: smart_light_living
+  metadata:
+    description: 客厅智能灯
+  type: Light
+- capabilities:
+  - analyze
+  - decide
+  - route
+  id: edge_gateway_ha
+  metadata:
+    description: 边缘网关逻辑处理
+  type: RuleEngine
+- capabilities:
+  - analyze
+  - notify
+  id: cloud_automation_service
+  metadata:
+    description: 云端通知服务
+  type: Notifier
+- capabilities:
+  - store
+  - query
+  id: cloud_storage_service
+  metadata:
+    description: 云端存储服务
+  type: DataStore
+- capabilities:
+  - schedule
+  id: system_mode_scheduler
+  metadata:
+    description: 系统模式调度器
+  type: TimeScheduler
+description: 智能家居安防自动化系统：门磁和人体传感器联动夜间照明，异常情况实时通知，支持离家模式和安防策略
+links:
+- contract:
+    event_type: door_state_change
+  data_type: sensor_event
+  frequency: real-time
+  from: door_sensor_main
+  id: door_state_to_edge
+  to: edge_gateway_ha
+- contract:
+    event_type: motion_detected
+  data_type: sensor_event
+  frequency: real-time
+  from: motion_sensor_living
+  id: motion_state_to_edge
+  to: edge_gateway_ha
+- contract:
+    command_type: light_control
+  data_type: command
+  frequency: on-demand
+  from: edge_gateway_ha
+  id: edge_to_light_control
+  to: smart_light_living
+- contract:
+    event_category: security_alert
+  data_type: event
+  frequency: real-time
+  from: edge_gateway_ha
+  id: edge_to_cloud_events
+  to: cloud_automation_service
+- contract:
+    data_type: time_series
+  data_type: sensor_reading
+  frequency: periodic
+  from: edge_gateway_ha
+  id: edge_to_cloud_storage
+  to: cloud_storage_service
+- contract:
+    event_type: mode_change
+  data_type: event
+  frequency: periodic
+  from: system_mode_scheduler
+  id: scheduler_to_edge_mode
+  to: edge_gateway_ha
+- contract:
+    query_type: historical_data
+  data_type: query_result
+  frequency: on-demand
+  from: cloud_storage_service
+  id: cloud_to_edge_query
+  to: edge_gateway_ha
+logic:
+  fault_handling:
+  - action: use_backup_strategy
+    condition: sensor_offline
+  - action: send_fault_notification
+    condition: sensor_fault
+  modes:
+    away_mode:
+      description: 离家模式：任何门磁触发均告警
+      rules:
+      - action: send_notification
+        condition: door_state_change
+      - action: send_high_priority_alert
+        condition: motion_detected
+    home_mode:
+      description: 在家模式：夜间人体感应开灯
+      rules:
+      - action: turn_on_light
+        condition: time_period(22:00-06:00) AND motion_detected
+      - action: turn_off_light
+        condition: no_motion_for(5_minutes)
+    security_mode:
+      description: 安防模式：双重传感器联动
+      rules:
+      - action: trigger_alarm
+        condition: door_state_change AND motion_detected
+      - action: notify_emergency_contact
+        condition: consecutive_anomalies
+metadata:
+  category: smart_home_automation
+  description: 智能家居安防自动化系统中间表示
+  priority: high
+  version: '1.0'
+policies: []
+schemas: []
+version: 0.1.0

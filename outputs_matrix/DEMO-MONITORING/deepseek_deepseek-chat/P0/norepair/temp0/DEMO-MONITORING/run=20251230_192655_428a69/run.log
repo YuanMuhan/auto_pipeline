@@ -1,0 +1,10 @@
+[2025-12-30T19:26:55.391673] [INFO] Starting pipeline for case: DEMO-MONITORING
+[2025-12-30T19:26:55.393137] [INFO] Step 1: Loading user problem and device info
+[2025-12-30T19:26:55.393569] [INFO] Successfully loaded input files
+[2025-12-30T19:26:55.397627] [INFO] Step 2: Generating Plan (Planner Agent)
+[2025-12-30T19:26:55.404399] [INFO] Saved Plan to .\outputs_matrix\DEMO-MONITORING\deepseek_deepseek-chat\P0\norepair\temp0\DEMO-MONITORING\run=20251230_192655_428a69\plan.json
+[2025-12-30T19:26:55.404419] [INFO] Step 3: Generating IR (IR Agent)
+[2025-12-30T19:26:55.404433] [INFO] IR generation attempt 1/3
+[2025-12-30T19:26:55.408516] [ERROR] Pipeline failed at stage ir: DEEPSEEK_API_KEY is not set for deepseek provider
+[2025-12-30T19:26:55.409557] [INFO] Saved failure evaluation to .\outputs_matrix\DEMO-MONITORING\deepseek_deepseek-chat\P0\norepair\temp0\DEMO-MONITORING\run=20251230_192655_428a69\eval.json
+[2025-12-30T19:26:55.409579] [INFO] Step 9: Saving run log
