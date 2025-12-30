@@ -1,6 +1,6 @@
 {
   "case_id": "DEMO-MONITORING",
-  "timestamp": "2025-12-30T10:43:55.821526",
+  "timestamp": "2025-12-30T11:13:58.983456",
   "checks": {
     "user_problem_schema": {
       "status": "PASS",
@@ -77,7 +77,7 @@
     "num_links": 2,
     "num_placements": 3,
     "num_layers": 3,
-    "total_duration_ms": 67,
+    "total_duration_ms": 33,
     "total_attempts": 5,
     "attempts_by_stage": {
       "plan": 1,
@@ -239,17 +239,17 @@
     "stages": {
       "plan": {
         "pass": true,
-        "duration_ms": 15,
+        "duration_ms": 6,
         "attempts": 1
       },
       "ir": {
         "pass": true,
-        "duration_ms": 18,
+        "duration_ms": 12,
         "attempts": 1
       },
       "bindings": {
         "pass": true,
-        "duration_ms": 31,
+        "duration_ms": 12,
         "attempts": 1
       },
       "codegen": {
@@ -264,9 +264,21 @@
       },
       "eval": {
         "pass": true,
-        "duration_ms": 17,
+        "duration_ms": 2,
         "attempts": 1
       }
+    },
+    "config": {
+      "provider": "mock",
+      "model": null,
+      "temperature": 0.0,
+      "max_tokens": null,
+      "cache_enabled": false,
+      "prompt_tier": "P0",
+      "seed": 0,
+      "enable_repair": true,
+      "enable_catalog": true,
+      "runtime_check": false
     }
   },
   "llm": {

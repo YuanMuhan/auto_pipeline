@@ -632,7 +632,8 @@ class PipelineRunner:
 
         # Refresh pipeline stages with eval duration included
         self._record_stage("eval", eval_start, attempts=1, passed=(eval_result.get("overall_status") == "PASS"))
-        eval_result["pipeline"] = {"stages": self.pipeline_stats}
+        cfg = eval_result.get("pipeline", {}).get("config", {})
+        eval_result["pipeline"] = {"stages": self.pipeline_stats, "config": cfg}
         eval_result["validators"] = self.validator_results
         eval_result["failures_flat"] = [f for res in self.validator_results.values() for f in res.get("failures", [])]
 
