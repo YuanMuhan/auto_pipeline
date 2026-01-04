@@ -275,6 +275,8 @@ class PipelineRunner:
             "cache_misses": stats.get("cache_misses", 0),
             "usage_tokens_total": stats.get("usage_tokens_total", 0),
             "prompt_template_hashes": stats.get("prompt_template_hashes", {}),
+            "prompt_resolved_hashes": stats.get("prompt_resolved_hashes", {}),
+            "prompt_injections": stats.get("prompt_injections", {}),
             "rules_hash": self.rules_ctx["rules_hash"],
             "schema_hashes": self.schema_versions,
             "raw_paths": stats.get("raw_paths", {}),

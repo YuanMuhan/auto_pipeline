@@ -11,6 +11,8 @@ from autopipeline.llm.prompt_loader import PromptLoader
 from autopipeline.llm.types import LLMConfig, LLMResponse
 from autopipeline.llm import providers as provider_module
 from autopipeline.catalog.render import load_component_profiles, load_endpoint_types, component_types_summary, endpoint_types_summary
+from autopipeline.llm.prompt_injector import build_prompt_injections
+from autopipeline.verifier.rules_loader import load_rules_bundle
 from autopipeline.llm.decode import decode_payload, LLMOutputFormatError
 
 
@@ -23,12 +25,14 @@ class LLMClient:
         self.logger = logger
         self.cache = LLMDiskCache(config.cache_dir, enabled=config.cache_enabled)
         self.prompt_loader = PromptLoader(Path(base_dir) / "prompts", tier=config.prompt_tier)
+        self.rules_bundle = load_rules_bundle()
         comp = load_component_profiles(base_dir)
         ep = load_endpoint_types(base_dir)
         self.catalog_summary = {
             "components": component_types_summary(comp["profiles"]),
             "endpoint_types": endpoint_types_summary(ep["data"]),
         }
+        self.prompt_injections, self.prompt_injection_hashes = build_prompt_injections(Path(base_dir), self.rules_bundle)
         self.output_root = output_root or "outputs"
         self.stats = {
             "provider": config.provider,
@@ -42,6 +46,8 @@ class LLMClient:
             "cache_misses": 0,
             "usage_tokens_total": 0,
             "prompt_template_hashes": {},
+            "prompt_resolved_hashes": {},
+            "prompt_injections": self.prompt_injection_hashes,
             "raw_paths": {},
         }
         # Track attempts per stage for raw naming
@@ -86,10 +92,10 @@ class LLMClient:
         return stable_hash(key_obj)
 
     def _render_prompt(self, prompt_name: str, context: Dict[str, Any]) -> Dict[str, str]:
-        extras = f"Component types:\n{self.catalog_summary['components']}\n\nEndpoint types:\n{self.catalog_summary['endpoint_types']}"
-        rendered = self.prompt_loader.render(prompt_name, context, extras=extras)
-        # Track template hashes
+        rendered = self.prompt_loader.render(prompt_name, context, injections=self.prompt_injections)
+        # Track hashes
         self.stats["prompt_template_hashes"][prompt_name] = rendered["template_hash"]
+        self.stats["prompt_resolved_hashes"][prompt_name] = rendered["rendered_hash"]
         return rendered
 
     def _register_raw_path(self, stage: str, path: Optional[str]):
@@ -171,6 +177,16 @@ class LLMClient:
         except LLMOutputFormatError as e:
             # Even if decode failed, raw already saved by decode_payload
             self._register_raw_path(stage, e.raw_path)
+
+        # Optionally dump rendered prompt
+        if self.config.dump_prompts:
+            cnt = self._stage_attempt_counters.get(stage, 0) + 1
+            self._stage_attempt_counters[stage] = cnt
+            prompt_dir = Path(self.base_dir) / self.output_root / (context.get("case_id") or "unknown") / "prompts_resolved"
+            prompt_dir.mkdir(parents=True, exist_ok=True)
+            fname = prompt_dir / f"{stage}_attempt{cnt}.txt"
+            fname.write_text(prompt_obj["rendered"], encoding="utf-8")
+            self._register_raw_path(f"{stage}_prompt", str(fname))
 
         # Stats
         self.stats["calls_total"] += 1

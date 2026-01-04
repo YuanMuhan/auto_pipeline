@@ -1,0 +1,8 @@
+cases: [DEMO-MONITORING, DEMO-SMARTHOME]
+models:
+  - provider: deepseek
+    model: deepseek-chat
+prompt_tiers: [P0, P1, P2]
+repair: [true, false]
+temperatures: [0]
+repeat: 1

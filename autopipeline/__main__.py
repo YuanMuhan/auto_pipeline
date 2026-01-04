@@ -31,9 +31,10 @@ def cli():
 @click.option('--prompt-tier', default="P0", type=click.Choice(["P0", "P1", "P2"]), show_default=True)
 @click.option('--seed', default=0, type=int, show_default=True)
 @click.option('--no-semantic-warnings', is_flag=True, default=False, help='Disable semantic proxy checker (warnings-only)')
+@click.option('--dump-prompts', is_flag=True, default=False, help='Dump resolved prompts to run_dir/prompts_resolved')
 def run(case: str, llm_provider: str, model: str, temperature: float, max_tokens: int,
         cache_dir: str, no_cache: bool, output_root: str, no_repair: bool, no_catalog: bool, runtime_check: bool,
-        prompt_tier: str, seed: int, no_semantic_warnings: bool):
+        prompt_tier: str, seed: int, no_semantic_warnings: bool, dump_prompts: bool):
     """Run the pipeline for a specific case"""
     try:
         llm_config = LLMConfig(
@@ -44,7 +45,8 @@ def run(case: str, llm_provider: str, model: str, temperature: float, max_tokens
             cache_dir=cache_dir,
             cache_enabled=not no_cache,
             prompt_tier=prompt_tier,
-            seed=seed
+            seed=seed,
+            dump_prompts=dump_prompts,
         )
         runner = PipelineRunner(
             case_id=case,
@@ -105,8 +107,9 @@ def _discover_cases(cases_dir: Path):
 @click.option('--prompt-tier', default="P0", type=click.Choice(["P0", "P1", "P2"]), show_default=True)
 @click.option('--seed', default=0, type=int, show_default=True)
 @click.option('--no-semantic-warnings', is_flag=True, default=False)
+@click.option('--dump-prompts', is_flag=True, default=False)
 def bench(cases_dir, case_ids, out_root, tag, llm_provider, model, temperature, max_tokens,
-          cache_dir, no_cache, no_repair, no_catalog, repeat, runtime_check, prompt_tier, seed, no_semantic_warnings):
+          cache_dir, no_cache, no_repair, no_catalog, repeat, runtime_check, prompt_tier, seed, no_semantic_warnings, dump_prompts):
     """Batch run multiple cases and aggregate results."""
     base_dir = Path(".")
     cases_dir_path = base_dir / cases_dir
@@ -120,7 +123,8 @@ def bench(cases_dir, case_ids, out_root, tag, llm_provider, model, temperature, 
         cache_dir=cache_dir,
         cache_enabled=not no_cache,
         prompt_tier=prompt_tier,
-        seed=seed
+        seed=seed,
+        dump_prompts=dump_prompts,
     )
 
     run_root = Path(out_root)

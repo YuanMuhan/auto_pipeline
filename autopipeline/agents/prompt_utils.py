@@ -15,11 +15,16 @@ class PromptTemplate:
 
     def load_template(self, template_name: str) -> str:
         """Load a prompt template file"""
-        template_path = self.prompts_dir / f"{template_name}.txt"
-        if not template_path.exists():
+        template_path = self.prompts_dir / "P0" / f"{template_name}.txt"
+        legacy_path = self.prompts_dir / f"{template_name}.txt"
+        if template_path.exists():
+            path = template_path
+        elif legacy_path.exists():
+            path = legacy_path
+        else:
             raise FileNotFoundError(f"Prompt template not found: {template_path}")
 
-        with open(template_path, 'r', encoding='utf-8') as f:
+        with open(path, 'r', encoding='utf-8') as f:
             return f.read()
 
     def fill_template(self, template: str, variables: Dict[str, Any]) -> str:

@@ -12,6 +12,7 @@ class LLMConfig:
     cache_enabled: bool = True
     prompt_tier: str = "P0"
     seed: int = 0
+    dump_prompts: bool = False
 
 
 @dataclass
