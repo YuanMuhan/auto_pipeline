@@ -34,7 +34,8 @@ def generate_plots(summary_csv: Path, summary_error_csv: Path, out_dir: Path):
     for r in rows:
         label = f"{r.get('provider','')}/{r.get('model','')}/{r.get('prompt_tier','')}/" \
                 f"{'repair' if str(r.get('repair_enabled','True')).lower() in ['true','1'] else 'norepair'}"
-        pass_rate[label].append(int(r.get("pass", 0)))
+        status_static = (r.get("status_static") or r.get("status") or "").upper()
+        pass_rate[label].append(1 if status_static == "PASS" else 0)
     labels = list(pass_rate.keys())
     rates = [sum(pass_rate[l]) / len(pass_rate[l]) if pass_rate[l] else 0 for l in labels]
     plt.figure(figsize=(10, 5))

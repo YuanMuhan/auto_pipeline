@@ -1,0 +1,284 @@
+{
+  "case_id": "M02_BAD_COMPONENT_TYPE",
+  "overall_status": "FAIL",
+  "overall_static_status": "FAIL",
+  "overall_runtime_status": "SKIP",
+  "checks": {
+    "user_problem_schema": {
+      "status": "PASS",
+      "message": "OK"
+    },
+    "device_info_schema": {
+      "status": "PASS",
+      "message": "OK"
+    },
+    "device_info_catalog": {
+      "status": "PASS",
+      "message": "OK"
+    },
+    "plan_schema": {
+      "status": "PASS",
+      "message": "OK"
+    },
+    "ir_schema": {
+      "status": "PASS",
+      "message": "OK"
+    },
+    "ir_boundary": {
+      "status": "PASS",
+      "message": "OK"
+    },
+    "ir_component_catalog": {
+      "status": "FAIL",
+      "message": "IR component types not in catalog: NonCatalogType"
+    },
+    "ir_interface": {
+      "status": "FAIL",
+      "message": "IR component types not in catalog: NonCatalogType"
+    },
+    "bindings_schema": {
+      "status": "PASS",
+      "message": "OK"
+    },
+    "coverage": {
+      "status": "PASS",
+      "message": "OK"
+    },
+    "endpoint_legality": {
+      "status": "PASS",
+      "message": "OK"
+    },
+    "endpoint_matching": {
+      "status": "PASS",
+      "message": "OK"
+    },
+    "cross_artifact_consistency": {
+      "status": "PASS",
+      "message": "OK"
+    },
+    "generation_consistency": {
+      "status": "PASS",
+      "message": "OK"
+    },
+    "code_generated": {
+      "status": "PASS",
+      "message": "OK"
+    },
+    "runtime_compose": {
+      "status": "SKIP",
+      "message": "OK"
+    }
+  },
+  "validators": {
+    "user_problem_schema": {
+      "pass": true,
+      "failures": [],
+      "warnings": [
+        "UserProblem soft-missing fields: id, title, target"
+      ],
+      "metrics": {},
+      "status": "PASS",
+      "skipped": false
+    },
+    "device_info_schema": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {},
+      "status": "PASS",
+      "skipped": false
+    },
+    "device_info_catalog": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {},
+      "status": "PASS",
+      "skipped": false
+    },
+    "plan_schema": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {},
+      "status": "PASS",
+      "skipped": false
+    },
+    "ir_schema": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {},
+      "status": "PASS",
+      "skipped": false
+    },
+    "ir_boundary": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {},
+      "status": "PASS",
+      "skipped": false
+    },
+    "ir_component_catalog": {
+      "pass": false,
+      "failures": [
+        {
+          "code": "E_CATALOG_COMPONENT",
+          "stage": "ir",
+          "checker": "ComponentCatalogChecker",
+          "message": "IR component types not in catalog: NonCatalogType",
+          "details": {
+            "invalid_types": [
+              "NonCatalogType"
+            ]
+          }
+        }
+      ],
+      "warnings": [
+        "alias target not resolved: RuleEngine (candidates=[])",
+        "alias target not resolved: RuleEngine (candidates=[])",
+        "alias target not resolved: RuleEngine (candidates=[])",
+        "alias target not resolved: StateTracker (candidates=[])",
+        "component data_processor has no explicit ports; skipping port validation",
+        "component storage_service has no explicit ports; skipping port validation",
+        "link link_sensor_to_processor missing explicit ports; skipping port validation",
+        "link link_processor_to_storage missing explicit ports; skipping port validation"
+      ],
+      "metrics": {},
+      "status": "FAIL",
+      "skipped": false
+    },
+    "ir_interface": {
+      "pass": false,
+      "failures": [
+        {
+          "code": "E_CATALOG_COMPONENT",
+          "stage": "ir",
+          "checker": "ComponentCatalogChecker",
+          "message": "IR component types not in catalog: NonCatalogType",
+          "details": {
+            "invalid_types": [
+              "NonCatalogType"
+            ]
+          }
+        }
+      ],
+      "warnings": [
+        "alias target not resolved: RuleEngine (candidates=[])",
+        "alias target not resolved: RuleEngine (candidates=[])",
+        "alias target not resolved: RuleEngine (candidates=[])",
+        "alias target not resolved: StateTracker (candidates=[])",
+        "component data_processor has no explicit ports; skipping port validation",
+        "component storage_service has no explicit ports; skipping port validation",
+        "link link_sensor_to_processor missing explicit ports; skipping port validation",
+        "link link_processor_to_storage missing explicit ports; skipping port validation"
+      ],
+      "metrics": {},
+      "status": "FAIL",
+      "skipped": false
+    },
+    "bindings_schema": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {},
+      "status": "PASS",
+      "skipped": false
+    },
+    "coverage": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {
+        "coverage_ratio": 1.0
+      },
+      "status": "PASS",
+      "skipped": false
+    },
+    "endpoint_legality": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {
+        "referenced": 3,
+        "invalid": 0
+      },
+      "status": "PASS",
+      "skipped": false
+    },
+    "endpoint_matching": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {},
+      "status": "PASS",
+      "skipped": false
+    },
+    "cross_artifact_consistency": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {},
+      "status": "PASS",
+      "skipped": false
+    },
+    "generation_consistency": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {},
+      "status": "PASS",
+      "skipped": false
+    },
+    "code_generated": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {},
+      "status": "PASS",
+      "skipped": false
+    },
+    "runtime_compose": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {},
+      "status": "SKIP",
+      "skipped": true
+    }
+  },
+  "failures_flat": [
+    {
+      "code": "E_CATALOG_COMPONENT",
+      "stage": "ir",
+      "checker": "ComponentCatalogChecker",
+      "message": "IR component types not in catalog: NonCatalogType",
+      "details": {
+        "invalid_types": [
+          "NonCatalogType"
+        ]
+      }
+    },
+    {
+      "code": "E_CATALOG_COMPONENT",
+      "stage": "ir",
+      "checker": "ComponentCatalogChecker",
+      "message": "IR component types not in catalog: NonCatalogType",
+      "details": {
+        "invalid_types": [
+          "NonCatalogType"
+        ]
+      }
+    }
+  ],
+  "catalog_hashes": {
+    "components_index_hash": "ba26c264fb48b9445d957bac399bb436826407143176f3fb0fad1dffd876fe78",
+    "endpoint_types_hash": "5f566bd637fe54bc64c37b48c279b10e38490d8ce2a4b152cb5cfb68594be6e2"
+  },
+  "rules_version": {
+    "rules_source": "yaml",
+    "ir_rules_hash": "047ca0d25ee6a7cd98cdd4e68af932f2f456879fc9ac62b28ebb8d99f1327bda",
+    "bindings_rules_hash": "047ca0d25ee6a7cd98cdd4e68af932f2f456879fc9ac62b28ebb8d99f1327bda"
+  }
+}

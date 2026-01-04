@@ -1,0 +1,46 @@
+{
+  "case_id": "DEMO-MONITORING",
+  "overall_status": "FAIL",
+  "overall_static_status": "FAIL",
+  "overall_runtime_status": "SKIP",
+  "failures_flat": [
+    {
+      "code": "E_BOUNDARY",
+      "stage": "ir",
+      "checker": "BoundaryChecker",
+      "message": "Forbidden keyword 'https' at components[0].config.url",
+      "details": {
+        "path": "components[0].config.url",
+        "match": "https",
+        "rule": "forbidden_keywords"
+      }
+    },
+    {
+      "code": "E_BOUNDARY",
+      "stage": "ir",
+      "checker": "BoundaryChecker",
+      "message": "Forbidden pattern matched at components[0].config.url: https://example.com",
+      "details": {
+        "path": "components[0].config.url",
+        "match": "https://example.com",
+        "rule": "forbidden_regex"
+      }
+    }
+  ],
+  "pipeline": {
+    "stages": {
+      "ir": {
+        "duration_ms": 0,
+        "attempts": 1
+      }
+    },
+    "config": {}
+  },
+  "llm": {},
+  "checks": {
+    "runtime_compose": {
+      "status": "SKIP",
+      "message": "SKIP"
+    }
+  }
+}

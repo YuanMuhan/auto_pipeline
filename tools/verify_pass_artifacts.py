@@ -18,6 +18,8 @@ def check_eval(eval_path: Path):
     res = []
     status_ok = data.get("overall_status") == "PASS"
     res.append(("overall_status", status_ok, data.get("overall_status")))
+    res.append(("overall_static_status", data.get("overall_static_status") == "PASS", data.get("overall_static_status")))
+    res.append(("overall_runtime_status", data.get("overall_runtime_status") in ("PASS", "SKIP"), data.get("overall_runtime_status")))
 
     cfg = (data.get("pipeline") or {}).get("config", {}) or {}
     cfg_checks = {
@@ -36,6 +38,10 @@ def check_eval(eval_path: Path):
     tokens = llm.get("usage_tokens_total")
     tokens_ok = (tokens == EXPECTED_TOKENS)
     res.append((f"llm.usage_tokens_total=={EXPECTED_TOKENS}", tokens_ok, tokens))
+
+    # runtime compose status (allow SKIP)
+    rt_status = (data.get("checks", {}) or {}).get("runtime_compose", {}).get("status", "SKIP")
+    res.append(("checks.runtime_compose.status", rt_status in ("PASS", "SKIP"), rt_status))
 
     # Artifact existence
     root = eval_path.parent
@@ -67,6 +73,8 @@ def write_evidence(eval_path: Path, summary_text: str, eval_data: dict):
         f"- eval: {eval_path}",
         f"- case: {eval_data.get('case_id')}",
         f"- status: {eval_data.get('overall_status')}",
+        f"- static: {eval_data.get('overall_static_status')}",
+        f"- runtime: {eval_data.get('overall_runtime_status')}",
         "",
         "## Checks",
         summary_text,

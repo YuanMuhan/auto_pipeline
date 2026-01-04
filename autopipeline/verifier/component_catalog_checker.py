@@ -1,21 +1,79 @@
 """Component catalog checker - ensures IR component types and interface usage are from catalog"""
 
 from typing import Dict, Any, Set, List
+from pathlib import Path
 
 from autopipeline.catalog.profile_loader import ProfileLoader
+from autopipeline.catalog.catalog_utils import load_catalog_types
 from autopipeline.eval.error_codes import ErrorCode, failure
+import yaml
+import os
+import re
 
 
 class ComponentCatalogChecker:
     def __init__(self, base_dir: str):
         self.loader = ProfileLoader(base_dir)
         self.types: Set[str] = self.loader.list_types()
+        alias_path = os.path.join(base_dir, "catalog", "type_aliases.yaml")
+        if os.path.exists(alias_path):
+            self.aliases = yaml.safe_load(open(alias_path, "r", encoding="utf-8")) or {}
+        else:
+            self.aliases = {}
+        # Normalize alias targets to valid catalog types
+        valid_types = load_catalog_types(Path(base_dir) / "catalog" / "components" / "index.yaml")
+        self.alias_warnings: List[str] = []
+
+        def _variants(name: str):
+            variants = set()
+            lower = name.lower()
+            variants.add(lower)
+            variants.add(lower.replace("_", ""))
+            variants.add(lower.replace("-", ""))
+            # camel to snake-ish
+            s = re.sub(r"(?<!^)(?=[A-Z])", "_", name).lower()
+            variants.add(s)
+            variants.add(s.replace("_", ""))
+            return variants
+
+        fixed_aliases = {}
+        for k, v in self.aliases.items():
+            target = v
+            if target in valid_types:
+                fixed_aliases[k] = target
+                continue
+            candidates = []
+            target_variants = _variants(target)
+            for vt in valid_types:
+                if _variants(vt) & target_variants:
+                    candidates.append(vt)
+            if len(candidates) == 1:
+                fixed_aliases[k] = candidates[0]
+                if candidates[0] != target:
+                    self.alias_warnings.append(f"alias target fixed: {target} -> {candidates[0]}")
+            else:
+                fixed_aliases[k] = target
+                self.alias_warnings.append(f"alias target not resolved: {target} (candidates={candidates})")
+        self.aliases = fixed_aliases
 
     def check_ir(self, ir_data: Dict[str, Any]):
         """Returns structured result with failures/warnings."""
         components = ir_data.get("components", ir_data.get("entities", []))
         failures: List = []
         warnings: List[str] = []
+
+        warnings.extend(self.alias_warnings)
+        # Normalize aliases
+        for comp in components:
+            ctype = comp.get("type")
+            if not ctype:
+                continue
+            alias_key = str(ctype).lower()
+            if alias_key in self.aliases:
+                new_type = self.aliases[alias_key]
+                if new_type != ctype:
+                    warnings.append(f"normalized component {comp.get('id')} type {ctype} -> {new_type}")
+                comp["type"] = new_type
 
         invalid = []
         for comp in components:

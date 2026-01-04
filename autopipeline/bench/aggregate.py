@@ -19,15 +19,32 @@ def _summarize_eval(eval_data: Dict[str, Any], eval_path: Path) -> Dict[str, Any
     avg_attempts = sum(attempts) / len(attempts) if attempts else 0
     config = eval_data.get("pipeline", {}).get("config", {})
     attempts_by_stage = {k: v.get("attempts", 0) for k, v in pipeline.items()}
+    status_static = eval_data.get("overall_static_status") or eval_data.get("overall_status")
+    runtime_status = eval_data.get("overall_runtime_status")
+    if not runtime_status:
+        runtime_status = (eval_data.get("checks", {}).get("runtime_compose", {}) or {}).get("status", "SKIP")
+    sem_warnings = []
+    sem_val = (eval_data.get("validators") or {}).get("semantic_proxy") or {}
+    for w in sem_val.get("warnings", []) or []:
+        if isinstance(w, dict):
+            sem_warnings.append(w.get("code") or "")
+        elif isinstance(w, str):
+            sem_warnings.append("")
+    sem_counter = Counter([c for c in sem_warnings if c])
+
     row = {
         "eval_path": str(eval_path),
         "case_id": eval_data.get("case_id"),
         "run_id": config.get("run_id"),
         "output_dir": config.get("output_dir"),
         "status": eval_data.get("overall_status"),
-        "pass": 1 if eval_data.get("overall_status") == "PASS" else 0,
+        "status_static": status_static,
+        "status_runtime": runtime_status,
+        "pass": 1 if (status_static == "PASS") else 0,
         "fail_codes": ";".join([code for code, _ in fail_codes.most_common(3)]),
         "error_code_top1": error_code_top1,
+        "semantic_warning_count": len(sem_warnings),
+        "semantic_warning_codes_top3": ";".join([code for code, _ in sem_counter.most_common(3)]),
         "duration_ms_total": duration_total,
         "attempts_avg": avg_attempts,
         "attempts_total": sum(attempts) if attempts else 0,

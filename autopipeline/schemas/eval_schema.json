@@ -70,6 +70,16 @@
       "description": "Overall evaluation status",
       "enum": ["PASS", "FAIL", "PARTIAL"]
     },
+    "overall_static_status": {
+      "type": "string",
+      "description": "Static validation status (excluding runtime checks)",
+      "enum": ["PASS", "FAIL"]
+    },
+    "overall_runtime_status": {
+      "type": "string",
+      "description": "Runtime validation status; SKIP when runtime_check disabled",
+      "enum": ["PASS", "FAIL", "SKIP"]
+    },
     "failed_checks": {
       "type": "array",
       "description": "List of failed check names (if any)",
@@ -187,7 +197,25 @@
                 "additionalProperties": true
               }
             },
-            "warnings": { "type": "array", "items": { "type": "string" } },
+            "warnings": {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  { "type": "string" },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "code": { "type": "string" },
+                      "stage": { "type": "string" },
+                      "checker": { "type": "string" },
+                      "message": { "type": "string" },
+                      "details": { "type": "object" }
+                    },
+                    "additionalProperties": true
+                  }
+                ]
+              }
+            },
             "metrics": { "type": "object" }
           },
           "additionalProperties": true

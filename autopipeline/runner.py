@@ -14,19 +14,11 @@ from autopipeline.agents.bindings import BindingsAgent
 from autopipeline.agents.repair import RepairAgent
 from autopipeline.agents.codegen import CodeGenAgent
 from autopipeline.agents.deploy import DeployAgent
-from autopipeline.verifier.rules_loader import load_rules_bundle
-from autopipeline.verifier.schema_checker import SchemaChecker
-from autopipeline.verifier.boundary_checker import BoundaryChecker
-from autopipeline.verifier.coverage_checker import CoverageChecker
-from autopipeline.verifier.endpoint_checker import EndpointChecker
-from autopipeline.verifier.component_catalog_checker import ComponentCatalogChecker
-from autopipeline.verifier.ir_interface_checker import IRInterfaceChecker
-from autopipeline.verifier.endpoint_matching_checker import EndpointMatchingChecker
-from autopipeline.verifier.device_info_catalog_checker import DeviceInfoCatalogChecker
 from autopipeline.catalog.render import catalog_hashes, component_types_summary, endpoint_types_summary, load_component_profiles, load_endpoint_types
+from autopipeline.eval.validators_registry import build_validators
 from autopipeline.verifier.generation_checker import GenerationConsistencyChecker
 from autopipeline.verifier.cross_artifact_checker import CrossArtifactChecker
-from autopipeline.llm import LLMClient
+from autopipeline.llm.llm_client import LLMClient
 from autopipeline.llm.decode import LLMOutputFormatError
 from autopipeline.llm.types import LLMConfig
 from autopipeline.llm.hash_utils import stable_hash
@@ -48,7 +40,7 @@ class PipelineRunner:
 
     def __init__(self, case_id: str, base_dir: str = ".", llm_config: LLMConfig = None,
                  output_root: str = "outputs", enable_repair: bool = True, enable_catalog: bool = True,
-                 runtime_check: bool = False):
+                 runtime_check: bool = False, enable_semantic: bool = True):
         self.case_id = case_id
         self.base_dir = base_dir
         self.case_dir = os.path.join(base_dir, "cases", case_id)
@@ -63,6 +55,7 @@ class PipelineRunner:
         self.enable_repair = enable_repair
         self.enable_catalog = enable_catalog
         self.runtime_check = runtime_check
+        self.enable_semantic = enable_semantic
 
         # Logs and stage tracking
         self.logs: List[str] = []
@@ -71,6 +64,7 @@ class PipelineRunner:
         self.validator_results: Dict[str, Dict[str, Any]] = {}
         self.failures_flat: List[Dict[str, Any]] = []
         self.pipeline_stats: Dict[str, Dict[str, Any]] = {}
+        self.inputs_paths: Dict[str, str] = {}
 
         # Initialize agents
         self.planner = PlannerAgent()
@@ -83,35 +77,29 @@ class PipelineRunner:
         self.codegen = CodeGenAgent()
         self.deploy = DeployAgent()
 
-        # Load rules once
-        self.rules_bundle = load_rules_bundle()
+        # Validators registry
+        v = build_validators(base_dir, enable_catalog, enable_semantic)
+        self.rules_bundle = v["rules_bundle"]
+        self.schema_checker = v["schema_checker"]
+        self.boundary_checker = v["boundary_checker"]
+        self.coverage_checker = v["coverage_checker"]
+        self.endpoint_checker = v["endpoint_checker"]
+        self.component_catalog_checker = v["component_catalog_checker"]
+        self.device_info_catalog_checker = v["device_info_catalog_checker"]
+        self.ir_interface_checker = v["ir_interface_checker"]
+        self.endpoint_matching_checker = v["endpoint_matching_checker"]
+        self.cross_artifact_checker = v["cross_artifact_checker"]
+        self.catalog_hash = v["catalog_hash"]
+        self.semantic_checker = v.get("semantic_checker")
 
-        # Initialize verifiers with rules
-        plan_required_fields = ["app_name", "description", "version", "problem_type",
-                                "components_outline", "links_outline"]
-        self.schema_checker = SchemaChecker(
-            ir_required_fields=self.rules_bundle["ir"]["required_fields"],
-            bindings_required_fields=self.rules_bundle["bindings"]["required_fields"],
-            plan_required_fields=plan_required_fields
-        )
-        self.boundary_checker = BoundaryChecker(
-            forbidden_keywords=self.rules_bundle["ir"]["forbidden_keywords"]
-        )
-        self.coverage_checker = CoverageChecker()
-        self.endpoint_checker = EndpointChecker()
-        self.component_catalog_checker = ComponentCatalogChecker(base_dir)
-        self.device_info_catalog_checker = DeviceInfoCatalogChecker(base_dir)
-        self.ir_interface_checker = IRInterfaceChecker(self.component_catalog_checker)
-        self.endpoint_matching_checker = EndpointMatchingChecker(load_endpoint_types(base_dir)["data"])
-        self.cross_artifact_checker = CrossArtifactChecker()
-
-        combined_rules_hash = stable_hash({
+        combined_rules_hash = self.rules_bundle.get("hash") or stable_hash({
             "ir": self.rules_bundle["ir"]["hash"],
             "bindings": self.rules_bundle["bindings"]["hash"]
         })
         self.rules_ctx = {
             "rules_hash": combined_rules_hash,
-            "case_id": self.case_id
+            "case_id": self.case_id,
+            "rules_source": self.rules_bundle.get("source", "md_fallback")
         }
         schemas_dir = os.path.join(base_dir, "autopipeline", "schemas")
         self.schema_versions = {
@@ -139,7 +127,9 @@ class PipelineRunner:
             "pass": result.get("pass", False),
             "failures": failures,
             "warnings": result.get("warnings", []),
-            "metrics": result.get("metrics", {})
+            "metrics": result.get("metrics", {}),
+            "status": result.get("status") or ("SKIP" if result.get("skipped") else ("PASS" if result.get("pass") else "FAIL")),
+            "skipped": result.get("skipped", False)
         }
         self.validator_results[name] = entry
 
@@ -156,7 +146,9 @@ class PipelineRunner:
             "pass": True,
             "failures": [],
             "warnings": [warning],
-            "metrics": {}
+            "metrics": {},
+            "status": "SKIP",
+            "skipped": True
         })
 
     @staticmethod
@@ -265,6 +257,8 @@ class PipelineRunner:
             "cache_dir": self.llm_config.cache_dir,
             "run_id": self.run_id,
             "output_dir": self.output_dir,
+            "inputs": self.inputs_paths or {},
+            "semantic_warnings": self.enable_semantic,
         }
 
     def _llm_summary(self) -> Dict[str, Any]:
@@ -284,6 +278,7 @@ class PipelineRunner:
             "rules_hash": self.rules_ctx["rules_hash"],
             "schema_hashes": self.schema_versions,
             "raw_paths": stats.get("raw_paths", {}),
+            "rules_source": self.rules_ctx.get("rules_source", "md_fallback"),
         }
 
     def _rules_version(self) -> Dict[str, Any]:
@@ -293,7 +288,8 @@ class PipelineRunner:
             "ir_required_fields": len(self.rules_bundle["ir"]["required_fields"]),
             "ir_forbidden_keywords": len(self.rules_bundle["ir"]["forbidden_keywords"]),
             "bindings_required_fields": len(self.rules_bundle["bindings"]["required_fields"]),
-            "bindings_forbidden_keywords": len(self.rules_bundle["bindings"]["forbidden_keywords"])
+            "bindings_forbidden_keywords": len(self.rules_bundle["bindings"]["forbidden_keywords"]),
+            "rules_source": self.rules_bundle.get("source", "md_fallback")
         }
 
     def _aggregate_failures(self) -> List[Dict[str, Any]]:
@@ -313,6 +309,8 @@ class PipelineRunner:
             "case_id": self.case_id,
             "timestamp": datetime.now().isoformat(),
             "overall_status": "FAIL",
+            "overall_static_status": "FAIL",
+            "overall_runtime_status": "SKIP",
             "stages_passed": self.stages_passed,
             "checks": {},
             "metrics": {
@@ -422,7 +420,7 @@ class PipelineRunner:
             # Step 7: Run evaluation
             self.log("Step 7: Running evaluation")
             eval_start = time.time()
-            eval_result = self._run_evaluation(plan_data, ir_data, device_info, bindings_data, codegen_result, deploy_file, bindings_hash, eval_start)
+            eval_result = self._run_evaluation(plan_data, ir_data, device_info, bindings_data, codegen_result, deploy_file, bindings_hash, eval_start, user_problem)
 
             # Step 8: Generate report
             from autopipeline.eval.report import generate_report
@@ -457,6 +455,17 @@ class PipelineRunner:
             user_problem = load_json(os.path.join(self.case_dir, "user_problem.json"))
             device_info = load_json(os.path.join(self.case_dir, "device_info.json"))
             self.log("Successfully loaded input files")
+            # Persist a self-contained copy under run_dir/inputs for downstream tools
+            inputs_dir = os.path.join(self.output_dir, "inputs")
+            ensure_dir(inputs_dir)
+            up_path = os.path.join(inputs_dir, "user_problem.json")
+            di_path = os.path.join(inputs_dir, "device_info.json")
+            save_json(user_problem, up_path)
+            save_json(device_info, di_path)
+            self.inputs_paths = {
+                "user_problem_path": os.path.relpath(up_path, self.output_dir),
+                "device_info_path": os.path.relpath(di_path, self.output_dir),
+            }
             # Schema validation
             up_result = self.schema_checker.validate_user_problem(user_problem)
             di_result = self.schema_checker.validate_device_info(device_info)
@@ -676,7 +685,7 @@ class PipelineRunner:
 
     def _run_evaluation(self, plan_data: Dict[str, Any], ir_data: Dict[str, Any], device_info: Dict[str, Any],
                         bindings_data: Dict[str, Any], codegen_result: Dict[str, Any],
-                        deploy_file: str, bindings_hash: str, eval_start: float) -> Dict[str, Any]:
+                        deploy_file: str, bindings_hash: str, eval_start: float, user_problem: Dict[str, Any]) -> Dict[str, Any]:
         """Run deterministic evaluation"""
 
         rules_version = self._rules_version()
@@ -686,6 +695,8 @@ class PipelineRunner:
             "checks": {},
             "metrics": {},
             "overall_status": "PASS",
+            "overall_static_status": "PASS",
+            "overall_runtime_status": "SKIP" if not self.runtime_check else "PASS",
             "stages_passed": (self.stages_passed + ["eval"]),
             "rules_version": rules_version,
             "bindings_hash": bindings_hash,
@@ -732,6 +743,22 @@ class PipelineRunner:
             os.path.join(self.output_dir, "generated_code", "manifest.json"))
         eval_result["generation_consistency_pass"] = gen_res["pass"]
 
+        # Semantic proxy warnings (non-blocking)
+        if self.semantic_checker:
+            art = {
+                "user_problem": user_problem,
+                "device_info": device_info,
+                "plan": plan_data,
+                "ir": ir_data,
+                "bindings": bindings_data,
+                "compose": None,
+                "attempts_by_stage": {k: v.get("attempts") for k, v in self.pipeline_stats.items()},
+            }
+            sem_res = self.semantic_checker.check(art)
+            self._record_validator("semantic_proxy", sem_res)
+        else:
+            self._skip_validator("semantic_proxy", "Semantic warnings disabled")
+
         if self.runtime_check:
             runtime_res = self._runtime_compose_check(deploy_file)
             self._record_validator("runtime_compose", runtime_res)
@@ -755,15 +782,26 @@ class PipelineRunner:
         for name in ["user_problem_schema", "device_info_schema", "device_info_catalog",
                      "plan_schema", "ir_schema", "ir_boundary", "ir_component_catalog", "ir_interface",
                      "bindings_schema", "coverage", "endpoint_legality", "endpoint_matching", "cross_artifact_consistency",
-                     "code_generated", "deploy_generated", "generation_consistency", "runtime_compose"]:
-            res = self.validator_results.get(name, {"pass": True, "failures": [], "warnings": []})
+                     "semantic_proxy", "code_generated", "deploy_generated", "generation_consistency", "runtime_compose"]:
+            res = self.validator_results.get(name, {"pass": True, "failures": [], "warnings": [], "status": "PASS"})
             msg = res["failures"][0]["message"] if res["failures"] else "OK"
-            eval_result["checks"][name] = {"status": "PASS" if res.get("pass") else "FAIL", "message": msg}
+            eval_result["checks"][name] = {"status": res.get("status", "PASS") if res.get("pass") else "FAIL", "message": msg}
 
         failed_checks = [k for k, v in eval_result["checks"].items() if v["status"] == "FAIL"]
         if failed_checks:
             eval_result["overall_status"] = "FAIL"
             eval_result["failed_checks"] = failed_checks
+
+        # Static/runtime split
+        static_fail = [k for k, v in eval_result["checks"].items() if k != "runtime_compose" and v["status"] == "FAIL"]
+        eval_result["overall_static_status"] = "FAIL" if static_fail else "PASS"
+        runtime_status = eval_result["checks"].get("runtime_compose", {}).get("status", "SKIP")
+        if self.runtime_check and runtime_status == "FAIL":
+            eval_result["overall_runtime_status"] = "FAIL"
+        elif self.runtime_check and runtime_status == "PASS":
+            eval_result["overall_runtime_status"] = "PASS"
+        else:
+            eval_result["overall_runtime_status"] = "SKIP"
 
         eval_result["input_validation"] = self.input_validation
 

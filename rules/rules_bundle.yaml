@@ -1,0 +1,28 @@
+ir:
+  required_fields:
+    - app_name
+    - version
+    - components
+    - links
+  forbidden_keywords:
+    - mqtt
+    - http
+    - https
+    - tcp
+    - udp
+    - ip
+    - port
+    - url
+    - topic
+    - broker
+    - token
+    - api_key
+  forbidden_regex:
+    - "(https?://\\S+)"
+    - "\\b\\d{1,3}(?:\\.\\d{1,3}){3}\\b"
+bindings:
+  required_fields:
+    - transports
+    - component_bindings
+  forbidden_keywords: []
+  forbidden_regex: []

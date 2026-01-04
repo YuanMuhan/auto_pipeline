@@ -1,0 +1,22 @@
+[2026-01-04T14:53:21.927021] [INFO] Starting pipeline for case: DEMO-SMARTHOME
+[2026-01-04T14:53:21.927669] [INFO] Step 1: Loading user problem and device info
+[2026-01-04T14:53:21.947787] [INFO] Successfully loaded input files
+[2026-01-04T14:53:21.951985] [INFO] Step 2: Generating Plan (Planner Agent)
+[2026-01-04T14:53:21.961112] [INFO] Saved Plan to .\outputs_runs_pr1_bench\run1\DEMO-SMARTHOME\run=20260104_145321_4b1a81\plan.json
+[2026-01-04T14:53:21.961129] [INFO] Step 3: Generating IR (IR Agent)
+[2026-01-04T14:53:21.961138] [INFO] IR generation attempt 1/3
+[2026-01-04T14:53:21.980231] [INFO] [LLM] stage=generate_ir cache=MISS key=dae4e0f5 time=0.009s
+[2026-01-04T14:53:21.993173] [INFO] IR validation passed
+[2026-01-04T14:53:21.996252] [INFO] Saved IR to .\outputs_runs_pr1_bench\run1\DEMO-SMARTHOME\run=20260104_145321_4b1a81\ir.yaml
+[2026-01-04T14:53:21.996265] [INFO] Step 4: Generating Bindings (Bindings Agent)
+[2026-01-04T14:53:21.996274] [INFO] Bindings generation attempt 1/3
+[2026-01-04T14:53:22.018106] [INFO] [LLM] stage=generate_bindings cache=MISS key=deffc507 time=0.010s
+[2026-01-04T14:53:22.029896] [INFO] Bindings validation passed
+[2026-01-04T14:53:22.033656] [INFO] Saved Bindings to .\outputs_runs_pr1_bench\run1\DEMO-SMARTHOME\run=20260104_145321_4b1a81\bindings.yaml
+[2026-01-04T14:53:22.044959] [INFO] Step 5: Generating code skeletons (CodeGen)
+[2026-01-04T14:53:22.091741] [INFO] Step 6: Generating docker-compose.yml (Deploy)
+[2026-01-04T14:53:22.092160] [INFO] Step 7: Running evaluation
+[2026-01-04T14:53:22.112942] [INFO] Saved evaluation to .\outputs_runs_pr1_bench\run1\DEMO-SMARTHOME\run=20260104_145321_4b1a81\eval.json
+[2026-01-04T14:53:22.113577] [INFO] Saved report to outputs_runs_pr1_bench\run1\DEMO-SMARTHOME\run=20260104_145321_4b1a81\report.md
+[2026-01-04T14:53:22.113587] [INFO] Pipeline completed in 0.19 seconds
+[2026-01-04T14:53:22.113591] [INFO] Step 9: Saving run log

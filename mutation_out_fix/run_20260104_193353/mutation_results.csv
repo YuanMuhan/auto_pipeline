@@ -1,0 +1,13 @@
+mutation_id,description,expected_check,expected_code,expect_pass,hit,overshadowed_by,overall_status,overall_static_status,failed_checks,error_code_top1,failures_count,notes
+M01_DROP_IR_TOP_FIELD,Remove components from IR,ir_schema,,False,True,,FAIL,FAIL,ir_schema;cross_artifact_consistency,E_CATALOG_COMPONENT,7,
+M02_BAD_COMPONENT_TYPE,Set component type to non-catalog,ir_component_catalog,E_CATALOG_COMPONENT,False,True,,FAIL,FAIL,ir_component_catalog;ir_interface,E_CATALOG_COMPONENT,2,
+M03_ALIAS_TYPE_NORMALIZE,Set component type to processor to trigger alias,,,True,True,,PASS,PASS,,,0,
+M04_DROP_BINDINGS_REQUIRED,Remove component_bindings from bindings,bindings_schema,,False,True,,FAIL,FAIL,bindings_schema;generation_consistency,E_UNKNOWN,4,
+M05_COVERAGE_MISSING_LINK,Remove a binding endpoint/link,coverage,,False,False,generation_consistency,FAIL,FAIL,generation_consistency,E_UNKNOWN,3,
+M06_ENDPOINT_ID_NOT_EXIST,Use nonexistent endpoint id,endpoint_matching,,False,True,,FAIL,FAIL,endpoint_legality;endpoint_matching;generation_consistency,E_ENDPOINT_CHECK,5,
+M07_ENDPOINT_WRONG_TYPE,Set endpoint type invalid,endpoint_legality,,False,False,,PASS,PASS,,,0,
+M08_CROSS_ARTIFACT_BAD_REF,Bindings reference missing component,cross_artifact_consistency,,False,True,,FAIL,FAIL,cross_artifact_consistency;generation_consistency,E_UNKNOWN,4,
+M09_BOUNDARY_URL_IN_CONFIG,Add https URL to config,,E_BOUNDARY,False,True,,FAIL,FAIL,ir_boundary,E_BOUNDARY,2,
+M10_REMOVE_COMPOSE_SERVICE,Remove a compose service,deploy_generated,,False,False,,PASS,PASS,,,0,
+M11_BREAK_BINDINGS_HASH,Mutate bindings to break hash,generation_consistency,,False,True,,FAIL,FAIL,cross_artifact_consistency;generation_consistency,E_UNKNOWN,4,
+M12_PLAN_IR_MISMATCH,Drop plan components_outline,plan_schema,,False,False,,FAIL,FAIL,,E_UNKNOWN,1,

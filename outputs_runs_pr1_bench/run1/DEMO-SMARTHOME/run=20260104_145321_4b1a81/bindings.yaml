@@ -1,0 +1,72 @@
+app_name: automation_app
+component_bindings:
+- component: door_monitor
+  device_ref: door_sensor_main
+  layer: device
+- component: motion_detector
+  device_ref: edge_gateway_ha
+  layer: edge
+- component: lighting_controller
+  device_ref: edge_gateway_ha
+  layer: edge
+- component: automation_engine
+  device_ref: edge_gateway_ha
+  layer: edge
+- component: notification_service
+  device_ref: edge_gateway_ha
+  layer: edge
+- component: data_recorder
+  device_ref: cloud_automation_service
+  layer: cloud
+endpoints:
+- from_endpoint: ha://local
+  link_id: link_door_to_engine
+  to_endpoint: ha://local
+- from_endpoint: ha://local
+  link_id: link_motion_to_engine
+  to_endpoint: ha://local
+- from_endpoint: http://<SECRET_HA_HOST>:8123/api/services/light/turn_on
+  link_id: link_engine_to_light
+  to_endpoint: http://<SECRET_HA_HOST>:8123/api/services/light/turn_on
+- from_endpoint: https://api.pushover.net/1/messages.json?token=<SECRET_PUSHOVER_TOKEN>
+  link_id: link_engine_to_notify
+  to_endpoint: https://api.pushover.net/1/messages.json?token=<SECRET_PUSHOVER_TOKEN>
+- from_endpoint: https://<SECRET_CLOUD_DB>/write?db=smarthome&precision=s
+  link_id: link_engine_to_storage
+  to_endpoint: https://<SECRET_CLOUD_DB>/write?db=smarthome&precision=s
+placements:
+- component_id: door_monitor
+  device_ref: door_sensor_main
+  layer: device
+- component_id: motion_detector
+  device_ref: edge_gateway_ha
+  layer: edge
+- component_id: lighting_controller
+  device_ref: edge_gateway_ha
+  layer: edge
+- component_id: automation_engine
+  device_ref: edge_gateway_ha
+  layer: edge
+- component_id: notification_service
+  device_ref: edge_gateway_ha
+  layer: edge
+- component_id: data_recorder
+  device_ref: cloud_automation_service
+  layer: cloud
+transports:
+- link_id: link_door_to_engine
+  protocol: MQTT
+  qos: at_least_once
+- link_id: link_motion_to_engine
+  protocol: HTTP
+  qos: best_effort
+- link_id: link_engine_to_light
+  protocol: HTTP
+  qos: best_effort
+- link_id: link_engine_to_notify
+  protocol: HTTP
+  qos: best_effort
+- link_id: link_engine_to_storage
+  protocol: HTTP
+  qos: best_effort
+version: 0.1.0

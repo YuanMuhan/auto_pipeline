@@ -1,0 +1,2 @@
+eval_path,case_id,run_id,output_dir,status,status_static,status_runtime,pass,fail_codes,error_code_top1,duration_ms_total,attempts_avg,attempts_total,attempts_by_stage,llm_calls,cache_hits,cache_misses,tokens_total,provider,model,prompt_tier,temperature,repair_enabled,ir_attempts,bindings_attempts,rules_hash,catalog_hashes
+pr2_sanity_out\.tmp_pr2_sanity\20260104_153638\eval_boundary.json,DEMO-MONITORING,,,FAIL,FAIL,SKIP,0,E_BOUNDARY,E_BOUNDARY,0,1.0,1,"{""ir"": 1}",,,,,,,,,,1,,,
