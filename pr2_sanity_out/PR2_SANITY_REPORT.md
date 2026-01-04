@@ -1,8 +1,0 @@
-# PR2 Sanity Report
-
-- C1_rules_source: PASS (rules_source=yaml, hash=477af2e4c423e9f8ac2603f6814562cc5efe0d6ddd24c8cfbdac784025672076)
-- C1_md_hash_warning: WARN (未自动验证 md 改动; 依赖 yaml 优先级生效)
-- C2_description_ignore: PASS (description not blocked)
-- C3_boundary_regex: PASS ([FailureRecord(code='E_BOUNDARY', stage='ir', checker='BoundaryChecker', message="Forbidden keyword 'https' at components[0].config.url", details={'path': 'components[0].config.url', 'match': 'https', 'rule': 'forbidden_keywords'}), FailureRecord(code='E_BOUNDARY', stage='ir', checker='BoundaryChecker', message='Forbidden pattern matched at components[0].config.url: https://example.com', details={'path': 'components[0].config.url', 'match': 'https://example.com', 'rule': 'forbidden_regex'})])
-- C4_alias_normalize: PASS (type normalized to RuleEngine)
-- C5_boundary_aggregated: PASS ([('E_BOUNDARY', '2')])
