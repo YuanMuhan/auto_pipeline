@@ -1,0 +1,271 @@
+{
+  "app_name": "smart_home_security_automation",
+  "version": "1.0",
+  "components": [
+    {
+      "id": "door_sensor_main",
+      "type": "sensor",
+      "capabilities": [
+        "sense",
+        "detect_open_close"
+      ],
+      "metadata": {
+        "layer": "device",
+        "description": "主卧门磁传感器"
+      }
+    },
+    {
+      "id": "motion_sensor_living",
+      "type": "sensor",
+      "capabilities": [
+        "sense",
+        "detect_motion"
+      ],
+      "metadata": {
+        "layer": "device",
+        "description": "客厅人体传感器"
+      }
+    },
+    {
+      "id": "smart_light_living",
+      "type": "actuator",
+      "capabilities": [
+        "actuate",
+        "turn_on_off"
+      ],
+      "metadata": {
+        "layer": "device",
+        "description": "客厅智能灯"
+      }
+    },
+    {
+      "id": "edge_gateway_ha",
+      "type": "gateway",
+      "capabilities": [
+        "collect",
+        "filter",
+        "decide",
+        "control"
+      ],
+      "metadata": {
+        "layer": "edge",
+        "description": "边缘网关，负责事件收集、规则判断和设备控制"
+      }
+    },
+    {
+      "id": "cloud_automation_service",
+      "type": "server",
+      "capabilities": [
+        "analyze",
+        "decide",
+        "notify",
+        "manage"
+      ],
+      "metadata": {
+        "layer": "cloud",
+        "description": "云端自动化服务，处理高级规则、通知和模式管理"
+      }
+    },
+    {
+      "id": "cloud_storage_service",
+      "type": "server",
+      "capabilities": [
+        "store",
+        "query",
+        "aggregate"
+      ],
+      "metadata": {
+        "layer": "cloud",
+        "description": "云端存储服务，存储历史记录和系统状态"
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "link_door_to_edge",
+      "from": "door_sensor_main",
+      "to": "edge_gateway_ha",
+      "data_type": "sensor_reading",
+      "contract": {
+        "type": "object",
+        "properties": {
+          "sensor_id": "string",
+          "state": "string",
+          "timestamp": "string"
+        }
+      },
+      "frequency": "real-time"
+    },
+    {
+      "id": "link_motion_to_edge",
+      "from": "motion_sensor_living",
+      "to": "edge_gateway_ha",
+      "data_type": "sensor_reading",
+      "contract": {
+        "type": "object",
+        "properties": {
+          "sensor_id": "string",
+          "motion_detected": "boolean",
+          "timestamp": "string"
+        }
+      },
+      "frequency": "real-time"
+    },
+    {
+      "id": "link_edge_to_light",
+      "from": "edge_gateway_ha",
+      "to": "smart_light_living",
+      "data_type": "command",
+      "contract": {
+        "type": "object",
+        "properties": {
+          "action": "string",
+          "target": "string",
+          "parameters": "object"
+        }
+      },
+      "frequency": "on-demand"
+    },
+    {
+      "id": "link_edge_to_cloud_events",
+      "from": "edge_gateway_ha",
+      "to": "cloud_automation_service",
+      "data_type": "event",
+      "contract": {
+        "type": "object",
+        "properties": {
+          "event_type": "string",
+          "source": "string",
+          "payload": "object",
+          "timestamp": "string"
+        }
+      },
+      "frequency": "real-time"
+    },
+    {
+      "id": "link_edge_to_cloud_storage",
+      "from": "edge_gateway_ha",
+      "to": "cloud_storage_service",
+      "data_type": "sensor_reading",
+      "contract": {
+        "type": "object",
+        "properties": {
+          "measurement": "string",
+          "tags": "object",
+          "fields": "object",
+          "timestamp": "string"
+        }
+      },
+      "frequency": "periodic"
+    },
+    {
+      "id": "link_cloud_automation_to_notify",
+      "from": "cloud_automation_service",
+      "to": "cloud_automation_service",
+      "data_type": "notification",
+      "contract": {
+        "type": "object",
+        "properties": {
+          "priority": "string",
+          "message": "string",
+          "recipient": "string"
+        }
+      },
+      "frequency": "on-demand"
+    },
+    {
+      "id": "link_cloud_automation_to_storage_query",
+      "from": "cloud_automation_service",
+      "to": "cloud_storage_service",
+      "data_type": "query",
+      "contract": {
+        "type": "object",
+        "properties": {
+          "query": "string",
+          "parameters": "object"
+        }
+      },
+      "frequency": "on-demand"
+    },
+    {
+      "id": "link_cloud_storage_to_automation_response",
+      "from": "cloud_storage_service",
+      "to": "cloud_automation_service",
+      "data_type": "query_result",
+      "contract": {
+        "type": "object",
+        "properties": {
+          "data": "array",
+          "status": "string"
+        }
+      },
+      "frequency": "on-demand"
+    }
+  ],
+  "logic": {
+    "modes": {
+      "home_mode": {
+        "description": "在家模式：夜间人体感应开灯",
+        "rules": [
+          {
+            "condition": "time_between(\"22:00\", \"06:00\") AND motion_detected",
+            "action": "turn_on_light"
+          },
+          {
+            "condition": "no_motion_for(\"5m\")",
+            "action": "turn_off_light"
+          }
+        ]
+      },
+      "away_mode": {
+        "description": "离家模式：任何门磁触发均告警",
+        "rules": [
+          {
+            "condition": "door_state_changed",
+            "action": "send_notification_alert"
+          },
+          {
+            "condition": "motion_detected",
+            "action": "send_high_priority_alert"
+          }
+        ]
+      },
+      "security_mode": {
+        "description": "安防模式：双重传感器联动",
+        "rules": [
+          {
+            "condition": "door_opened AND motion_detected",
+            "action": "trigger_alarm_and_record"
+          },
+          {
+            "condition": "consecutive_anomalies > 3",
+            "action": "notify_emergency_contact"
+          }
+        ]
+      }
+    },
+    "fault_handling": [
+      {
+        "condition": "sensor_offline",
+        "action": "use_fallback_policy",
+        "fallback_policy": "use_last_known_state_or_default"
+      }
+    ]
+  },
+  "metadata": {
+    "description": "智能家居安防自动化系统IR，实现传感器联动、模式化规则和异常处理。",
+    "category": "smart_home_automation",
+    "priority": "high",
+    "latency_requirements": {
+      "sensor_event_response": "<500ms",
+      "notification_push": "<2s"
+    },
+    "data_volume": {
+      "sensor_event_stream": "10-50 events/min",
+      "status_query": "low_frequency"
+    }
+  },
+  "description": "智能家居安防自动化系统：门磁和人体传感器联动夜间照明，异常情况实时通知，支持离家模式和安防策略",
+  "schemas": [],
+  "policies": []
+}

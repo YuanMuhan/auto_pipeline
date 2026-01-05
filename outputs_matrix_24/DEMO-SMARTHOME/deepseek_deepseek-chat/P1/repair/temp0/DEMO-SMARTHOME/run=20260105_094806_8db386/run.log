@@ -1,0 +1,19 @@
+[2026-01-05T09:48:06.182226] [INFO] Starting pipeline for case: DEMO-SMARTHOME
+[2026-01-05T09:48:06.183586] [INFO] Step 1: Loading user problem and device info
+[2026-01-05T09:48:06.183960] [INFO] Successfully loaded input files
+[2026-01-05T09:48:06.189989] [INFO] Step 2: Generating Plan (Planner Agent)
+[2026-01-05T09:48:06.200584] [INFO] Saved Plan to .\outputs_matrix_24\DEMO-SMARTHOME\deepseek_deepseek-chat\P1\repair\temp0\DEMO-SMARTHOME\run=20260105_094806_8db386\plan.json
+[2026-01-05T09:48:06.200711] [INFO] Step 3: Generating IR (IR Agent)
+[2026-01-05T09:48:06.200770] [INFO] IR generation attempt 1/3
+[2026-01-05T09:48:38.144213] [INFO] [LLM] stage=generate_ir cache=MISS key=d389c10d time=31.930s, usage={'prompt_tokens': 2892, 'completion_tokens': 925, 'total_tokens': 3817, 'prompt_tokens_details': {'cached_tokens': 2880}, 'prompt_cache_hit_tokens': 2880, 'prompt_cache_miss_tokens': 12}
+[2026-01-05T09:48:38.164869] [WARNING] IR component catalog check failed: IR component types not in catalog: binary_sensor, motion_sensor, actuator_light, gateway_homeassistant, server_automation, server_database
+[2026-01-05T09:48:38.165005] [INFO] IR generation attempt 2/3
+[2026-01-05T09:49:22.810006] [INFO] [LLM] stage=repair_ir cache=MISS key=45668db9 time=44.637s, usage={'prompt_tokens': 1991, 'completion_tokens': 1323, 'total_tokens': 3314, 'prompt_tokens_details': {'cached_tokens': 832}, 'prompt_cache_hit_tokens': 832, 'prompt_cache_miss_tokens': 1159}
+[2026-01-05T09:49:22.830257] [WARNING] IR component catalog check failed: IR component types not in catalog: sensor, sensor, actuator, gateway, server, server
+[2026-01-05T09:49:22.830400] [INFO] IR generation attempt 3/3
+[2026-01-05T09:50:07.486286] [INFO] [LLM] stage=repair_ir cache=MISS key=7cb1b81a time=44.649s, usage={'prompt_tokens': 1958, 'completion_tokens': 1323, 'total_tokens': 3281, 'prompt_tokens_details': {'cached_tokens': 832}, 'prompt_cache_hit_tokens': 832, 'prompt_cache_miss_tokens': 1126}
+[2026-01-05T09:50:07.506643] [WARNING] IR component catalog check failed: IR component types not in catalog: binary_sensor, binary_sensor, light, automation, storage
+[2026-01-05T09:50:07.506758] [ERROR] IR generation failed after 3 attempts
+[2026-01-05T09:50:07.506827] [ERROR] Pipeline failed at stage ir: IR component types not in catalog: binary_sensor, binary_sensor, light, automation, storage
+[2026-01-05T09:50:07.508060] [INFO] Saved failure evaluation to .\outputs_matrix_24\DEMO-SMARTHOME\deepseek_deepseek-chat\P1\repair\temp0\DEMO-SMARTHOME\run=20260105_094806_8db386\eval.json
+[2026-01-05T09:50:07.508123] [INFO] Step 9: Saving run log

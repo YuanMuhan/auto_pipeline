@@ -1,0 +1,21 @@
+[2026-01-05T16:40:55.378029] [INFO] Starting pipeline for case: DEMO-SMARTHOME
+[2026-01-05T16:40:55.379520] [INFO] Step 1: Loading user problem and device info
+[2026-01-05T16:40:55.379904] [INFO] Successfully loaded input files
+[2026-01-05T16:40:55.385290] [INFO] Step 2: Generating Plan (Planner Agent)
+[2026-01-05T16:40:55.395430] [INFO] Saved Plan to .\outputs_matrix_24_openai\DEMO-SMARTHOME\openai_gpt-4o-mini\P2\repair\temp0\DEMO-SMARTHOME\run=20260105_164055_da92f6\plan.json
+[2026-01-05T16:40:55.395533] [INFO] Step 3: Generating IR (IR Agent)
+[2026-01-05T16:40:55.395590] [INFO] IR generation attempt 1/3
+[2026-01-05T16:41:11.024952] [INFO] [LLM] stage=generate_ir cache=MISS key=fa4e3ee8 time=15.618s, usage={'prompt_tokens': 2683, 'completion_tokens': 708, 'total_tokens': 3391, 'prompt_tokens_details': {'cached_tokens': 0, 'audio_tokens': 0}, 'completion_tokens_details': {'reasoning_tokens': 0, 'audio_tokens': 0, 'accepted_prediction_tokens': 0, 'rejected_prediction_tokens': 0}}
+[2026-01-05T16:41:11.041129] [INFO] IR validation passed
+[2026-01-05T16:41:11.045967] [INFO] Saved IR to .\outputs_matrix_24_openai\DEMO-SMARTHOME\openai_gpt-4o-mini\P2\repair\temp0\DEMO-SMARTHOME\run=20260105_164055_da92f6\ir.yaml
+[2026-01-05T16:41:11.046158] [INFO] Step 4: Generating Bindings (Bindings Agent)
+[2026-01-05T16:41:11.046228] [INFO] Bindings generation attempt 1/3
+[2026-01-05T16:41:20.467082] [INFO] [LLM] stage=generate_bindings cache=MISS key=dfdfea64 time=9.408s, usage={'prompt_tokens': 3170, 'completion_tokens': 469, 'total_tokens': 3639, 'prompt_tokens_details': {'cached_tokens': 0, 'audio_tokens': 0}, 'completion_tokens_details': {'reasoning_tokens': 0, 'audio_tokens': 0, 'accepted_prediction_tokens': 0, 'rejected_prediction_tokens': 0}}
+[2026-01-05T16:41:20.475993] [WARNING] Bindings schema validation failed: Bindings missing required fields: component_bindings
+[2026-01-05T16:41:20.476106] [INFO] Bindings generation attempt 2/3
+[2026-01-05T16:41:29.759537] [INFO] [LLM] stage=repair_bindings cache=MISS key=d24e36b6 time=9.279s, usage={'prompt_tokens': 1196, 'completion_tokens': 572, 'total_tokens': 1768, 'prompt_tokens_details': {'cached_tokens': 0, 'audio_tokens': 0}, 'completion_tokens_details': {'reasoning_tokens': 0, 'audio_tokens': 0, 'accepted_prediction_tokens': 0, 'rejected_prediction_tokens': 0}}
+[2026-01-05T16:41:29.772613] [WARNING] Endpoint legality check failed: Endpoint legality check failed: invalid endpoints not in DeviceInfo: mqtt://ha_broker/homeassistant/storage, mqtt://ha_broker/homeassistant/events, mqtt://ha_broker/homeassistant/services/light/turn_on
+[2026-01-05T16:41:29.772726] [INFO] Bindings generation attempt 3/3
+[2026-01-05T16:41:30.871251] [ERROR] Pipeline failed at stage bindings: OpenAI API request failed: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)>
+[2026-01-05T16:41:30.872512] [INFO] Saved failure evaluation to .\outputs_matrix_24_openai\DEMO-SMARTHOME\openai_gpt-4o-mini\P2\repair\temp0\DEMO-SMARTHOME\run=20260105_164055_da92f6\eval.json
+[2026-01-05T16:41:30.872584] [INFO] Step 9: Saving run log

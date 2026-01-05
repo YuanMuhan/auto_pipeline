@@ -1,0 +1,10 @@
+{
+  "id": "gold",
+  "title": "test unknown type pass",
+  "target": "demo",
+  "context": "",
+  "triggers": [],
+  "expected_behavior": [],
+  "outputs": [],
+  "constraints": []
+}

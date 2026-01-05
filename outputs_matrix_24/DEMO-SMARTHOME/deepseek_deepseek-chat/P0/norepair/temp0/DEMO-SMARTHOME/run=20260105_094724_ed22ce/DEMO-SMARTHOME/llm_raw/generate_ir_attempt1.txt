@@ -1,0 +1,165 @@
+components:
+  - id: door_sensor
+    type: data_source
+    capabilities:
+      - sense
+      - collect
+    metadata:
+      sensor_type: binary_sensor
+      monitored_state: open_close
+  - id: motion_sensor
+    type: data_source
+    capabilities:
+      - sense
+      - collect
+    metadata:
+      sensor_type: motion_sensor
+      monitored_state: motion_detection
+  - id: smart_light
+    type: actuator
+    capabilities:
+      - actuate
+    metadata:
+      actuator_type: light
+  - id: edge_gateway
+    type: processor
+    capabilities:
+      - filter
+      - aggregate
+      - decide
+      - route
+    metadata:
+      function: event_processing_and_automation
+  - id: cloud_automation_service
+    type: controller
+    capabilities:
+      - analyze
+      - decide
+      - notify
+    metadata:
+      function: rule_engine_and_notification
+  - id: cloud_storage_service
+    type: storage
+    capabilities:
+      - store
+      - query
+    metadata:
+      storage_type: time_series_database
+
+links:
+  - id: door_state_to_edge
+    from: door_sensor
+    to: edge_gateway
+    data_type: sensor_event
+    contract:
+      event_type: state_change
+      sensor_id: door_sensor
+    frequency: real-time
+  - id: motion_state_to_edge
+    from: motion_sensor
+    to: edge_gateway
+    data_type: sensor_event
+    contract:
+      event_type: state_change
+      sensor_id: motion_sensor
+    frequency: real-time
+  - id: edge_to_light_control
+    from: edge_gateway
+    to: smart_light
+    data_type: command
+    contract:
+      command_type: light_control
+    frequency: on-demand
+  - id: edge_events_to_cloud
+    from: edge_gateway
+    to: cloud_automation_service
+    data_type: processed_event
+    contract:
+      event_category: security_or_automation
+    frequency: real-time
+  - id: cloud_to_storage_write
+    from: cloud_automation_service
+    to: cloud_storage_service
+    data_type: historical_record
+    contract:
+      record_type: event_log
+    frequency: periodic
+  - id: cloud_notification_out
+    from: cloud_automation_service
+    to: external_notification_service
+    data_type: notification
+    contract:
+      notification_type: alert_or_fault
+    frequency: on-demand
+  - id: status_query_to_edge
+    from: cloud_automation_service
+    to: edge_gateway
+    data_type: query_request
+    contract:
+      query_type: system_status
+    frequency: on-demand
+  - id: status_response_from_edge
+    from: edge_gateway
+    to: cloud_automation_service
+    data_type: query_response
+    contract:
+      response_type: system_status_summary
+    frequency: on-demand
+  - id: history_query_to_storage
+    from: cloud_automation_service
+    to: cloud_storage_service
+    data_type: query_request
+    contract:
+      query_type: historical_data
+    frequency: on-demand
+  - id: history_response_from_storage
+    from: cloud_storage_service
+    to: cloud_automation_service
+    data_type: query_response
+    contract:
+      response_type: historical_data_set
+    frequency: on-demand
+
+logic:
+  operational_modes:
+    home_mode:
+      description: 在家模式：夜间人体感应开灯
+      condition: mode == "home"
+      rules:
+        - rule: night_light_on
+          condition: time_window(22:00-06:00) AND motion_sensor.state == "active"
+          action: send_command(smart_light, "turn_on")
+        - rule: night_light_off
+          condition: motion_sensor.state == "inactive" for duration(5_minutes)
+          action: send_command(smart_light, "turn_off")
+    away_mode:
+      description: 离家模式：任何门磁触发均告警
+      condition: mode == "away"
+      rules:
+        - rule: door_trigger_alert
+          condition: door_sensor.state == "open"
+          action: send_notification("door_opened_alert", high_priority)
+        - rule: motion_trigger_high_alert
+          condition: motion_sensor.state == "active"
+          action: send_notification("motion_detected_alert", critical_priority)
+    security_mode:
+      description: 安防模式：双重传感器联动
+      condition: mode == "security"
+      rules:
+        - rule: dual_sensor_alarm
+          condition: door_sensor.state == "open" AND motion_sensor.state == "active"
+          action: trigger_alarm("intrusion_detected") AND start_recording
+        - rule: consecutive_anomaly_escalation
+          condition: dual_sensor_alarm triggered multiple_times within short_window
+          action: notify_emergency_contact
+  fault_handling:
+    - condition: sensor_offline(door_sensor) OR sensor_offline(motion_sensor)
+      action: send_notification("sensor_fault", medium_priority) AND apply_degraded_strategy
+    - condition: edge_gateway_unreachable
+      action: escalate_to_cloud_fallback
+
+metadata:
+  description: 智能家居安防自动化系统中间表示
+  version: "1.0"
+  system_category: smart_home_automation
+  priority: high

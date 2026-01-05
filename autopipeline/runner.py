@@ -815,6 +815,13 @@ class PipelineRunner:
         eval_result["pipeline"] = {"stages": self.pipeline_stats, "config": cfg}
         eval_result["validators"] = self.validator_results
         eval_result["failures_flat"] = [f for res in self.validator_results.values() for f in res.get("failures", [])]
+        # Unknown component types stats (open catalog mode)
+        cat_metrics = self.validator_results.get("ir_component_catalog", {}).get("metrics", {}) if self.validator_results else {}
+        if cat_metrics:
+            if "unknown_types_count" in cat_metrics:
+                eval_result["unknown_component_types_count"] = cat_metrics.get("unknown_types_count", 0)
+            if "unknown_types" in cat_metrics:
+                eval_result["unknown_component_types"] = cat_metrics.get("unknown_types", [])
 
         eval_file = os.path.join(self.output_dir, "eval.json")
         save_json(eval_result, eval_file)

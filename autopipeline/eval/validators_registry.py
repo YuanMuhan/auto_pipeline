@@ -32,7 +32,7 @@ def build_validators(base_dir: str, enable_catalog: bool = True, enable_semantic
     )
     coverage_checker = CoverageChecker()
     endpoint_checker = EndpointChecker()
-    component_catalog_checker = ComponentCatalogChecker(base_dir)
+    component_catalog_checker = ComponentCatalogChecker(base_dir, strict=False)
     device_info_catalog_checker = DeviceInfoCatalogChecker(base_dir)
     ir_interface_checker = IRInterfaceChecker(component_catalog_checker)
     endpoint_matching_checker = EndpointMatchingChecker(load_endpoint_types(base_dir)["data"])

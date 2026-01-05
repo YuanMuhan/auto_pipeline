@@ -1,0 +1,24 @@
+[2026-01-05T16:38:34.172023] [INFO] Starting pipeline for case: DEMO-MONITORING
+[2026-01-05T16:38:34.173418] [INFO] Step 1: Loading user problem and device info
+[2026-01-05T16:38:34.173780] [INFO] Successfully loaded input files
+[2026-01-05T16:38:34.178941] [INFO] Step 2: Generating Plan (Planner Agent)
+[2026-01-05T16:38:34.184949] [INFO] Saved Plan to .\outputs_matrix_24_openai\DEMO-MONITORING\openai_gpt-4o-mini\P1\repair\temp0\DEMO-MONITORING\run=20260105_163834_96327d\plan.json
+[2026-01-05T16:38:34.185056] [INFO] Step 3: Generating IR (IR Agent)
+[2026-01-05T16:38:34.185110] [INFO] IR generation attempt 1/3
+[2026-01-05T16:38:39.496727] [INFO] [LLM] stage=generate_ir cache=MISS key=71dedb71 time=5.307s, usage={'prompt_tokens': 1628, 'completion_tokens': 212, 'total_tokens': 1840, 'prompt_tokens_details': {'cached_tokens': 0, 'audio_tokens': 0}, 'completion_tokens_details': {'reasoning_tokens': 0, 'audio_tokens': 0, 'accepted_prediction_tokens': 0, 'rejected_prediction_tokens': 0}}
+[2026-01-05T16:38:39.505971] [INFO] IR validation passed
+[2026-01-05T16:38:39.508120] [INFO] Saved IR to .\outputs_matrix_24_openai\DEMO-MONITORING\openai_gpt-4o-mini\P1\repair\temp0\DEMO-MONITORING\run=20260105_163834_96327d\ir.yaml
+[2026-01-05T16:38:39.508223] [INFO] Step 4: Generating Bindings (Bindings Agent)
+[2026-01-05T16:38:39.508285] [INFO] Bindings generation attempt 1/3
+[2026-01-05T16:38:44.513103] [INFO] [LLM] stage=generate_bindings cache=MISS key=f735084a time=4.986s, usage={'prompt_tokens': 1944, 'completion_tokens': 216, 'total_tokens': 2160, 'prompt_tokens_details': {'cached_tokens': 0, 'audio_tokens': 0}, 'completion_tokens_details': {'reasoning_tokens': 0, 'audio_tokens': 0, 'accepted_prediction_tokens': 0, 'rejected_prediction_tokens': 0}}
+[2026-01-05T16:38:44.519519] [WARNING] Bindings schema validation failed: Bindings missing required fields: component_bindings
+[2026-01-05T16:38:44.519611] [INFO] Bindings generation attempt 2/3
+[2026-01-05T16:38:48.708665] [INFO] [LLM] stage=repair_bindings cache=MISS key=621f8112 time=4.187s, usage={'prompt_tokens': 1050, 'completion_tokens': 226, 'total_tokens': 1276, 'prompt_tokens_details': {'cached_tokens': 0, 'audio_tokens': 0}, 'completion_tokens_details': {'reasoning_tokens': 0, 'audio_tokens': 0, 'accepted_prediction_tokens': 0, 'rejected_prediction_tokens': 0}}
+[2026-01-05T16:38:48.717094] [WARNING] Endpoint legality check failed: Endpoint legality check failed: invalid endpoints not in DeviceInfo: message_bus/publish/sensors/temp_sensor_01/data, <SECRET_CLOUD_API>/ingest, message_bus/subscribe/sensors/temp_sensor_01/data
+[2026-01-05T16:38:48.717227] [INFO] Bindings generation attempt 3/3
+[2026-01-05T16:38:58.093112] [INFO] [LLM] stage=repair_bindings cache=MISS key=a8f29b7e time=9.373s, usage={'prompt_tokens': 1096, 'completion_tokens': 227, 'total_tokens': 1323, 'prompt_tokens_details': {'cached_tokens': 0, 'audio_tokens': 0}, 'completion_tokens_details': {'reasoning_tokens': 0, 'audio_tokens': 0, 'accepted_prediction_tokens': 0, 'rejected_prediction_tokens': 0}}
+[2026-01-05T16:38:58.101649] [WARNING] Endpoint legality check failed: Endpoint legality check failed: invalid endpoints not in DeviceInfo: message_bus/publish/sensors/temp_sensor_01/data, message_bus/subscribe/sensors/temp_sensor_01/data, message_bus/subscribe/cloud_server_01/data
+[2026-01-05T16:38:58.101763] [ERROR] Bindings generation failed after 3 attempts
+[2026-01-05T16:38:58.101846] [ERROR] Pipeline failed at stage bindings: Endpoint legality check failed: invalid endpoints not in DeviceInfo: message_bus/publish/sensors/temp_sensor_01/data, message_bus/subscribe/sensors/temp_sensor_01/data, message_bus/subscribe/cloud_server_01/data
+[2026-01-05T16:38:58.103285] [INFO] Saved failure evaluation to .\outputs_matrix_24_openai\DEMO-MONITORING\openai_gpt-4o-mini\P1\repair\temp0\DEMO-MONITORING\run=20260105_163834_96327d\eval.json
+[2026-01-05T16:38:58.103386] [INFO] Step 9: Saving run log

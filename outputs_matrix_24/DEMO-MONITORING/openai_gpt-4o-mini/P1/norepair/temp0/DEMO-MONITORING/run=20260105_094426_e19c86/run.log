@@ -1,0 +1,13 @@
+[2026-01-05T09:44:27.025259] [INFO] Starting pipeline for case: DEMO-MONITORING
+[2026-01-05T09:44:27.025882] [INFO] Step 1: Loading user problem and device info
+[2026-01-05T09:44:27.026300] [INFO] Successfully loaded input files
+[2026-01-05T09:44:27.031983] [INFO] Step 2: Generating Plan (Planner Agent)
+[2026-01-05T09:44:27.038355] [INFO] Saved Plan to .\outputs_matrix_24\DEMO-MONITORING\openai_gpt-4o-mini\P1\norepair\temp0\DEMO-MONITORING\run=20260105_094426_e19c86\plan.json
+[2026-01-05T09:44:27.038448] [INFO] Step 3: Generating IR (IR Agent)
+[2026-01-05T09:44:27.038506] [INFO] IR generation attempt 1/3
+[2026-01-05T09:44:30.215614] [INFO] [LLM] stage=generate_ir cache=MISS key=71dedb71 time=3.172s, usage={'prompt_tokens': 1628, 'completion_tokens': 202, 'total_tokens': 1830, 'prompt_tokens_details': {'cached_tokens': 1024, 'audio_tokens': 0}, 'completion_tokens_details': {'reasoning_tokens': 0, 'audio_tokens': 0, 'accepted_prediction_tokens': 0, 'rejected_prediction_tokens': 0}}
+[2026-01-05T09:44:30.224643] [WARNING] IR component catalog check failed: IR component types not in catalog: data_source, storage
+[2026-01-05T09:44:30.224781] [ERROR] IR generation failed after 3 attempts
+[2026-01-05T09:44:30.224863] [ERROR] Pipeline failed at stage ir: IR component types not in catalog: data_source, storage
+[2026-01-05T09:44:30.226303] [INFO] Saved failure evaluation to .\outputs_matrix_24\DEMO-MONITORING\openai_gpt-4o-mini\P1\norepair\temp0\DEMO-MONITORING\run=20260105_094426_e19c86\eval.json
+[2026-01-05T09:44:30.226393] [INFO] Step 9: Saving run log

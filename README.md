@@ -49,8 +49,14 @@ python -m autopipeline run --case DEMO-SMARTHOME --llm-provider mock
 ```
 python -m autopipeline bench --case-ids DEMO-MONITORING,DEMO-SMARTHOME --llm-provider mock --out-root outputs_bench
 ```
-- 产物：`outputs_bench/summary.csv`、`summary_by_error.csv`、`plots/`（如已安装 matplotlib）  
-- 开关：`--no-repair`（单次生成，无 Repair）、`--no-catalog`（仅 schema，不做 catalog 校验）、`--runtime-check`（docker compose config）  
+- 产物：`outputs_bench/summary.csv`、`summary_by_error.csv`、`plots/`（如已安装 matplotlib）
+- 开关：`--no-repair`（单次生成，无 Repair）、`--no-catalog`（仅 schema，不做 catalog 校验）、`--runtime-check`（docker compose config）
+
+5) 周报出图（基于 bench 聚合产物）  
+```
+python -m autopipeline.bench.weekly_plots --matrix-root outputs_matrix --out-dir outputs_matrix/weekly_plots
+```
+- 生成固定图：静态 PASS 率、Attempts 分布、语义警告、错误分布（若有）、成本（tokens/time），以及 `WEEKLY_FIGURES.md`
 - `--tag` 可将结果写入 `outputs_bench/<tag>/` 便于对比实验。
 
 ## 输入约束

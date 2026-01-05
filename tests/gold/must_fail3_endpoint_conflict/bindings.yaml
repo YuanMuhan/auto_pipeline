@@ -1,0 +1,15 @@
+app_name: gold_app
+version: "1.0"
+placements:
+  - component_id: c1
+    layer: edge
+transports:
+  - link_id: l1
+    protocol: mqtt
+endpoints:
+  - link_id: l1
+    from_endpoint: ep_pub_missing_payload
+    to_endpoint: ep_pub_missing_payload
+component_bindings:
+  - component: c1
+    endpoint_id: ep_pub_missing_payload

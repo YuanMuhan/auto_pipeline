@@ -1,0 +1,156 @@
+app_name: smart_home_security_automation
+version: "1.0"
+components:
+  - id: door_sensor_main
+    type: data_source
+    capabilities:
+      - sense
+      - collect
+    metadata:
+      layer: device
+      sensor_type: binary_sensor
+  - id: motion_sensor_living
+    type: data_source
+    capabilities:
+      - sense
+      - collect
+    metadata:
+      layer: device
+      sensor_type: motion_sensor
+  - id: smart_light_living
+    type: actuator
+    capabilities:
+      - actuate
+    metadata:
+      layer: device
+      actuator_type: light
+  - id: edge_gateway_ha
+    type: controller
+    capabilities:
+      - aggregate
+      - analyze
+      - decide
+    metadata:
+      layer: edge
+      controller_type: gateway
+  - id: cloud_automation_service
+    type: processor
+    capabilities:
+      - analyze
+      - decide
+      - notify
+    metadata:
+      layer: cloud
+      service_type: automation_server
+  - id: cloud_storage_service
+    type: storage
+    capabilities:
+      - store
+      - query
+    metadata:
+      layer: cloud
+      storage_type: time_series_db
+links:
+  - id: door_state_to_edge
+    from: door_sensor_main
+    to: edge_gateway_ha
+    data_type: sensor_reading
+    contract:
+      data_field: state
+      value_type: binary
+    frequency: real-time
+  - id: motion_state_to_edge
+    from: motion_sensor_living
+    to: edge_gateway_ha
+    data_type: sensor_reading
+    contract:
+      data_field: state
+      value_type: binary
+    frequency: real-time
+  - id: edge_to_light_control
+    from: edge_gateway_ha
+    to: smart_light_living
+    data_type: command
+    contract:
+      action: turn_on_off
+    frequency: on-demand
+  - id: edge_events_to_cloud
+    from: edge_gateway_ha
+    to: cloud_automation_service
+    data_type: event
+    contract:
+      event_types:
+        - sensor_trigger
+        - mode_change
+        - system_fault
+    frequency: real-time
+  - id: edge_history_to_storage
+    from: edge_gateway_ha
+    to: cloud_storage_service
+    data_type: aggregated_data
+    contract:
+      data_fields:
+        - sensor_state
+        - timestamp
+        - mode
+    frequency: periodic
+  - id: cloud_alert_notification
+    from: cloud_automation_service
+    to: external_notification_sink
+    data_type: notification
+    contract:
+      priority_levels:
+        - info
+        - warning
+        - alert
+    frequency: on-demand
+  - id: cloud_query_to_storage
+    from: cloud_automation_service
+    to: cloud_storage_service
+    data_type: query
+    contract:
+      query_type: historical
+    frequency: on-demand
+  - id: storage_response_to_cloud
+    from: cloud_storage_service
+    to: cloud_automation_service
+    data_type: query_result
+    frequency: on-demand
+logic:
+  modes:
+    home_mode:
+      description: 在家模式：夜间人体感应开灯
+      rules:
+        - condition: time_window(22:00-06:00) AND motion_detected
+          action: turn_on_light
+        - condition: no_motion_for(5_minutes)
+          action: turn_off_light
+    away_mode:
+      description: 离家模式：任何门磁触发均告警
+      rules:
+        - condition: door_state_changed
+          action: send_notification_immediate
+        - condition: motion_detected
+          action: send_high_priority_alert
+    security_mode:
+      description: 安防模式：双重传感器联动
+      rules:
+        - condition: door_open AND motion_detected
+          action: trigger_alarm_and_record
+        - condition: consecutive_anomalies
+          action: notify_emergency_contact
+  fault_handling:
+    - condition: sensor_offline
+      action: use_backup_policy_and_notify
+metadata:
+  description: 智能家居安防自动化系统IR，支持门磁和人体传感器联动夜间照明、异常通知、离家模式和安防策略。
+  category: smart_home_automation
+  priority: high
+  latency_constraints:
+    sensor_event_response: "<500ms"
+    notification_push: "<2s"
+  data_volume:
+    sensor_event_stream: "10-50 events/min"
+    status_query: low_frequency
+  reliability: high_availability_with_degradation
+  security: authentication_for_away_mode_and_encryption

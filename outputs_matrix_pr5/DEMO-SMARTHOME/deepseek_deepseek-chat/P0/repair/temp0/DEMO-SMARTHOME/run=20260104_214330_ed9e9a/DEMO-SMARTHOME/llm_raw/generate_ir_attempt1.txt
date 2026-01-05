@@ -1,0 +1,148 @@
+components:
+  - id: door_sensor
+    type: data_source
+    capabilities:
+      - sense
+      - collect
+    metadata:
+      sensor_type: binary_sensor
+      monitored_state: open_close
+  - id: motion_sensor
+    type: data_source
+    capabilities:
+      - sense
+      - collect
+    metadata:
+      sensor_type: motion_sensor
+      monitored_state: motion_detection
+  - id: smart_light
+    type: actuator
+    capabilities:
+      - actuate
+    metadata:
+      actuator_type: light
+  - id: edge_gateway
+    type: processor
+    capabilities:
+      - filter
+      - aggregate
+      - decide
+      - route
+    metadata:
+      function: event_processing_and_automation
+  - id: cloud_automation_service
+    type: controller
+    capabilities:
+      - analyze
+      - decide
+      - notify
+    metadata:
+      function: rule_engine_and_notification
+  - id: cloud_storage_service
+    type: storage
+    capabilities:
+      - store
+      - query
+      - aggregate
+    metadata:
+      storage_type: time_series_database
+
+links:
+  - id: door_state_to_edge
+    from: door_sensor
+    to: edge_gateway
+    data_type: sensor_event
+    contract:
+      event_type: state_change
+      sensor_id: door_sensor
+    frequency: real-time
+  - id: motion_state_to_edge
+    from: motion_sensor
+    to: edge_gateway
+    data_type: sensor_event
+    contract:
+      event_type: state_change
+      sensor_id: motion_sensor
+    frequency: real-time
+  - id: edge_to_light_control
+    from: edge_gateway
+    to: smart_light
+    data_type: command
+    contract:
+      command_type: light_control
+      parameters: [state, brightness]
+    frequency: on-demand
+  - id: edge_events_to_cloud
+    from: edge_gateway
+    to: cloud_automation_service
+    data_type: processed_event
+    contract:
+      event_category: security_or_automation
+      includes: sensor_data, context, rule_match
+    frequency: real-time
+  - id: cloud_to_storage_write
+    from: cloud_automation_service
+    to: cloud_storage_service
+    data_type: historical_record
+    contract:
+      record_type: event_log
+      fields: [timestamp, event_type, sensor_id, severity, action_taken]
+    frequency: periodic
+  - id: cloud_notification_out
+    from: cloud_automation_service
+    to: external_system
+    data_type: notification
+    contract:
+      notification_type: alert
+      priority: [low, medium, high, critical]
+    frequency: on-demand
+  - id: storage_query_to_cloud
+    from: cloud_storage_service
+    to: cloud_automation_service
+    data_type: query_result
+    contract:
+      query_type: status_or_history
+    frequency: on-demand
+
+logic:
+  operational_modes:
+    home_mode:
+      condition: "user_presence == home"
+      rules:
+        - rule: "nighttime_lighting"
+          condition: "time_window(22:00-06:00) AND motion_sensor.state == active"
+          action: "smart_light.turn_on"
+        - rule: "light_timeout"
+          condition: "motion_sensor.state == inactive FOR 5_minutes"
+          action: "smart_light.turn_off"
+    away_mode:
+      condition: "user_presence == away"
+      rules:
+        - rule: "door_trigger_alert"
+          condition: "door_sensor.state == open"
+          action: "cloud_automation_service.send_notification(priority: medium)"
+        - rule: "motion_high_alert"
+          condition: "motion_sensor.state == active"
+          action: "cloud_automation_service.send_notification(priority: high)"
+    security_mode:
+      condition: "system_mode == security"
+      rules:
+        - rule: "dual_sensor_alarm"
+          condition: "door_sensor.state == open AND motion_sensor.state == active"
+          action: "cloud_automation_service.trigger_alarm AND cloud_automation_service.initiate_recording"
+        - rule: "escalate_continuous_anomaly"
+          condition: "COUNT(anomaly_events) > threshold WITHIN time_window"
+          action: "cloud_automation_service.notify_emergency_contact"
+  fault_handling:
+    sensor_offline:
+      action: "cloud_automation_service.send_fault_notification"
+      fallback: "use_last_known_state OR ignore_for_decision"
+  system_queries:
+    status_query: "cloud_automation_service.query_system_status FROM external_system"
+    history_query: "cloud_storage_service.query_historical_events"
+
+metadata:
+  description: "智能家居安防自动化系统中间表示。实现基于门磁和人体传感器的夜间照明、离家告警、安防模式联动及异常通知。"
+  version: "1.0"
+  system_category: smart_home_automation
+  priority: high

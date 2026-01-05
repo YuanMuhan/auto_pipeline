@@ -1,0 +1,24 @@
+[2026-01-05T16:39:08.156391] [INFO] Starting pipeline for case: DEMO-MONITORING
+[2026-01-05T16:39:08.157975] [INFO] Step 1: Loading user problem and device info
+[2026-01-05T16:39:08.158372] [INFO] Successfully loaded input files
+[2026-01-05T16:39:08.163130] [INFO] Step 2: Generating Plan (Planner Agent)
+[2026-01-05T16:39:08.169820] [INFO] Saved Plan to .\outputs_matrix_24_openai\DEMO-MONITORING\openai_gpt-4o-mini\P2\repair\temp0\DEMO-MONITORING\run=20260105_163908_bf9f52\plan.json
+[2026-01-05T16:39:08.169935] [INFO] Step 3: Generating IR (IR Agent)
+[2026-01-05T16:39:08.170008] [INFO] IR generation attempt 1/3
+[2026-01-05T16:39:12.803625] [INFO] [LLM] stage=generate_ir cache=MISS key=dba8fea3 time=4.628s, usage={'prompt_tokens': 1485, 'completion_tokens': 268, 'total_tokens': 1753, 'prompt_tokens_details': {'cached_tokens': 0, 'audio_tokens': 0}, 'completion_tokens_details': {'reasoning_tokens': 0, 'audio_tokens': 0, 'accepted_prediction_tokens': 0, 'rejected_prediction_tokens': 0}}
+[2026-01-05T16:39:12.814166] [INFO] IR validation passed
+[2026-01-05T16:39:12.817091] [INFO] Saved IR to .\outputs_matrix_24_openai\DEMO-MONITORING\openai_gpt-4o-mini\P2\repair\temp0\DEMO-MONITORING\run=20260105_163908_bf9f52\ir.yaml
+[2026-01-05T16:39:12.817218] [INFO] Step 4: Generating Bindings (Bindings Agent)
+[2026-01-05T16:39:12.817301] [INFO] Bindings generation attempt 1/3
+[2026-01-05T16:39:17.942818] [INFO] [LLM] stage=generate_bindings cache=MISS key=05d95793 time=5.107s, usage={'prompt_tokens': 1836, 'completion_tokens': 224, 'total_tokens': 2060, 'prompt_tokens_details': {'cached_tokens': 0, 'audio_tokens': 0}, 'completion_tokens_details': {'reasoning_tokens': 0, 'audio_tokens': 0, 'accepted_prediction_tokens': 0, 'rejected_prediction_tokens': 0}}
+[2026-01-05T16:39:17.948633] [WARNING] Bindings schema validation failed: Bindings missing required fields: component_bindings
+[2026-01-05T16:39:17.948704] [INFO] Bindings generation attempt 2/3
+[2026-01-05T16:39:26.574111] [INFO] [LLM] stage=repair_bindings cache=MISS key=3416ccca time=8.623s, usage={'prompt_tokens': 913, 'completion_tokens': 202, 'total_tokens': 1115, 'prompt_tokens_details': {'cached_tokens': 0, 'audio_tokens': 0}, 'completion_tokens_details': {'reasoning_tokens': 0, 'audio_tokens': 0, 'accepted_prediction_tokens': 0, 'rejected_prediction_tokens': 0}}
+[2026-01-05T16:39:26.581263] [WARNING] Bindings schema validation failed: Bindings schema validation failed: 'endpoints' is a required property
+[2026-01-05T16:39:26.581341] [INFO] Bindings generation attempt 3/3
+[2026-01-05T16:39:32.168592] [INFO] [LLM] stage=repair_bindings cache=MISS key=ae234431 time=5.585s, usage={'prompt_tokens': 888, 'completion_tokens': 300, 'total_tokens': 1188, 'prompt_tokens_details': {'cached_tokens': 0, 'audio_tokens': 0}, 'completion_tokens_details': {'reasoning_tokens': 0, 'audio_tokens': 0, 'accepted_prediction_tokens': 0, 'rejected_prediction_tokens': 0}}
+[2026-01-05T16:39:32.177596] [WARNING] Bindings schema validation failed: Bindings schema validation failed: 'link_id' is a required property
+[2026-01-05T16:39:32.177687] [ERROR] Bindings generation failed after 3 attempts
+[2026-01-05T16:39:32.177747] [ERROR] Pipeline failed at stage bindings: Bindings schema validation failed: 'link_id' is a required property
+[2026-01-05T16:39:32.178923] [INFO] Saved failure evaluation to .\outputs_matrix_24_openai\DEMO-MONITORING\openai_gpt-4o-mini\P2\repair\temp0\DEMO-MONITORING\run=20260105_163908_bf9f52\eval.json
+[2026-01-05T16:39:32.179012] [INFO] Step 9: Saving run log

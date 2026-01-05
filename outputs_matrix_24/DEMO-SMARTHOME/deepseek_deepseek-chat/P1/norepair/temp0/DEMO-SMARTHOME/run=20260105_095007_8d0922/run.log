@@ -1,0 +1,13 @@
+[2026-01-05T09:50:07.585045] [INFO] Starting pipeline for case: DEMO-SMARTHOME
+[2026-01-05T09:50:07.586137] [INFO] Step 1: Loading user problem and device info
+[2026-01-05T09:50:07.586582] [INFO] Successfully loaded input files
+[2026-01-05T09:50:07.592430] [INFO] Step 2: Generating Plan (Planner Agent)
+[2026-01-05T09:50:07.602863] [INFO] Saved Plan to .\outputs_matrix_24\DEMO-SMARTHOME\deepseek_deepseek-chat\P1\norepair\temp0\DEMO-SMARTHOME\run=20260105_095007_8d0922\plan.json
+[2026-01-05T09:50:07.602967] [INFO] Step 3: Generating IR (IR Agent)
+[2026-01-05T09:50:07.603026] [INFO] IR generation attempt 1/3
+[2026-01-05T09:50:44.068239] [INFO] [LLM] stage=generate_ir cache=MISS key=d389c10d time=36.454s, usage={'prompt_tokens': 2892, 'completion_tokens': 1059, 'total_tokens': 3951, 'prompt_tokens_details': {'cached_tokens': 2880}, 'prompt_cache_hit_tokens': 2880, 'prompt_cache_miss_tokens': 12}
+[2026-01-05T09:50:44.091782] [WARNING] IR component catalog check failed: IR component types not in catalog: data_source, data_source, actuator, storage
+[2026-01-05T09:50:44.091883] [ERROR] IR generation failed after 3 attempts
+[2026-01-05T09:50:44.091956] [ERROR] Pipeline failed at stage ir: IR component types not in catalog: data_source, data_source, actuator, storage
+[2026-01-05T09:50:44.093026] [INFO] Saved failure evaluation to .\outputs_matrix_24\DEMO-SMARTHOME\deepseek_deepseek-chat\P1\norepair\temp0\DEMO-SMARTHOME\run=20260105_095007_8d0922\eval.json
+[2026-01-05T09:50:44.093100] [INFO] Step 9: Saving run log

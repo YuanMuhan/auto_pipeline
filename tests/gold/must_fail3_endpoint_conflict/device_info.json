@@ -1,0 +1,16 @@
+{
+  "devices": [
+    {
+      "id": "dev1",
+      "interfaces": {
+        "endpoints": [
+          {
+            "id": "ep_pub_missing_payload",
+            "type": "mqtt_pub",
+            "address": "mqtt://broker/topic"
+          }
+        ]
+      }
+    }
+  ]
+}

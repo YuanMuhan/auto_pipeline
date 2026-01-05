@@ -12,9 +12,10 @@ import re
 
 
 class ComponentCatalogChecker:
-    def __init__(self, base_dir: str):
+    def __init__(self, base_dir: str, strict: bool = False):
         self.loader = ProfileLoader(base_dir)
         self.types: Set[str] = self.loader.list_types()
+        self.strict = strict
         alias_path = os.path.join(base_dir, "catalog", "type_aliases.yaml")
         if os.path.exists(alias_path):
             self.aliases = yaml.safe_load(open(alias_path, "r", encoding="utf-8")) or {}
@@ -61,6 +62,7 @@ class ComponentCatalogChecker:
         components = ir_data.get("components", ir_data.get("entities", []))
         failures: List = []
         warnings: List[str] = []
+        metrics: Dict[str, Any] = {}
 
         warnings.extend(self.alias_warnings)
         # Normalize aliases
@@ -75,15 +77,22 @@ class ComponentCatalogChecker:
                     warnings.append(f"normalized component {comp.get('id')} type {ctype} -> {new_type}")
                 comp["type"] = new_type
 
-        invalid = []
+        invalid: List[str] = []
+        invalid_entries: List[Dict[str, Any]] = []
         for comp in components:
             ctype = comp.get("type")
             if ctype not in self.types:
                 invalid.append(ctype)
+                invalid_entries.append({"id": comp.get("id"), "type": ctype})
         if invalid:
-            failures.append(failure(ErrorCode.E_CATALOG_COMPONENT, "ir", "ComponentCatalogChecker",
-                                    f"IR component types not in catalog: {', '.join(filter(None, invalid))}",
-                                    {"invalid_types": invalid}))
+            metrics["unknown_types"] = invalid_entries
+            metrics["unknown_types_count"] = len(invalid_entries)
+            msg = f"IR component types not in catalog: {', '.join(filter(None, invalid))}"
+            if self.strict:
+                failures.append(failure(ErrorCode.E_CATALOG_COMPONENT, "ir", "ComponentCatalogChecker", msg,
+                                        {"invalid_types": invalid}))
+            else:
+                warnings.append(f"{msg} (open mode: treated as warning)")
 
         comp_map = {c.get("id"): c for c in components}
 
@@ -91,6 +100,8 @@ class ComponentCatalogChecker:
             cid = comp.get("id")
             ctype = comp.get("type")
             if ctype not in self.types:
+                # open mode: no profile to validate interfaces
+                warnings.append(f"component {cid} type '{ctype}' has no catalog spec; skip port validation")
                 continue
             interfaces = self.loader.get_interfaces(ctype)
             for field in ["uses", "inputs", "outputs", "ports"]:
@@ -149,5 +160,5 @@ class ComponentCatalogChecker:
             "pass": len(failures) == 0,
             "failures": failures,
             "warnings": warnings,
-            "metrics": {}
+            "metrics": metrics
         }

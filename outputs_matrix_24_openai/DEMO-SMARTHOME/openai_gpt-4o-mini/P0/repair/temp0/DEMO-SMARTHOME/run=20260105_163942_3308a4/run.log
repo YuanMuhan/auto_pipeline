@@ -1,0 +1,21 @@
+[2026-01-05T16:39:42.278376] [INFO] Starting pipeline for case: DEMO-SMARTHOME
+[2026-01-05T16:39:42.280319] [INFO] Step 1: Loading user problem and device info
+[2026-01-05T16:39:42.280813] [INFO] Successfully loaded input files
+[2026-01-05T16:39:42.286378] [INFO] Step 2: Generating Plan (Planner Agent)
+[2026-01-05T16:39:42.295463] [INFO] Saved Plan to .\outputs_matrix_24_openai\DEMO-SMARTHOME\openai_gpt-4o-mini\P0\repair\temp0\DEMO-SMARTHOME\run=20260105_163942_3308a4\plan.json
+[2026-01-05T16:39:42.295563] [INFO] Step 3: Generating IR (IR Agent)
+[2026-01-05T16:39:42.295655] [INFO] IR generation attempt 1/3
+[2026-01-05T16:39:52.363580] [INFO] [LLM] stage=generate_ir cache=MISS key=082728a9 time=10.058s, usage={'prompt_tokens': 2585, 'completion_tokens': 575, 'total_tokens': 3160, 'prompt_tokens_details': {'cached_tokens': 0, 'audio_tokens': 0}, 'completion_tokens_details': {'reasoning_tokens': 0, 'audio_tokens': 0, 'accepted_prediction_tokens': 0, 'rejected_prediction_tokens': 0}}
+[2026-01-05T16:39:52.378471] [INFO] IR validation passed
+[2026-01-05T16:39:52.382690] [INFO] Saved IR to .\outputs_matrix_24_openai\DEMO-SMARTHOME\openai_gpt-4o-mini\P0\repair\temp0\DEMO-SMARTHOME\run=20260105_163942_3308a4\ir.yaml
+[2026-01-05T16:39:52.382831] [INFO] Step 4: Generating Bindings (Bindings Agent)
+[2026-01-05T16:39:52.382936] [INFO] Bindings generation attempt 1/3
+[2026-01-05T16:40:01.474622] [INFO] [LLM] stage=generate_bindings cache=MISS key=9590cdc8 time=9.079s, usage={'prompt_tokens': 2960, 'completion_tokens': 531, 'total_tokens': 3491, 'prompt_tokens_details': {'cached_tokens': 0, 'audio_tokens': 0}, 'completion_tokens_details': {'reasoning_tokens': 0, 'audio_tokens': 0, 'accepted_prediction_tokens': 0, 'rejected_prediction_tokens': 0}}
+[2026-01-05T16:40:01.484167] [WARNING] Bindings schema validation failed: Bindings missing required fields: component_bindings
+[2026-01-05T16:40:01.484278] [INFO] Bindings generation attempt 2/3
+[2026-01-05T16:40:08.638693] [INFO] [LLM] stage=repair_bindings cache=MISS key=bce0f1e7 time=7.150s, usage={'prompt_tokens': 1509, 'completion_tokens': 586, 'total_tokens': 2095, 'prompt_tokens_details': {'cached_tokens': 0, 'audio_tokens': 0}, 'completion_tokens_details': {'reasoning_tokens': 0, 'audio_tokens': 0, 'accepted_prediction_tokens': 0, 'rejected_prediction_tokens': 0}}
+[2026-01-05T16:40:08.650426] [WARNING] Endpoint legality check failed: Endpoint legality check failed: invalid endpoints not in DeviceInfo: data_interface://cloud_storage, data_interface://cloud_service, data_interface://notification_service
+[2026-01-05T16:40:08.650537] [INFO] Bindings generation attempt 3/3
+[2026-01-05T16:40:14.703397] [ERROR] Pipeline failed at stage bindings: OpenAI API request failed: Remote end closed connection without response
+[2026-01-05T16:40:14.704761] [INFO] Saved failure evaluation to .\outputs_matrix_24_openai\DEMO-SMARTHOME\openai_gpt-4o-mini\P0\repair\temp0\DEMO-SMARTHOME\run=20260105_163942_3308a4\eval.json
+[2026-01-05T16:40:14.704846] [INFO] Step 9: Saving run log

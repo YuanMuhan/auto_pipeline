@@ -1,0 +1,45 @@
+app_name: Smart Home Temperature Monitoring
+version: 1.0
+components:
+  - id: temp_sensor_01
+    type: data_source
+    capabilities:
+      - sense
+      - collect
+    metadata:
+      description: Temperature sensor data output
+  - id: edge_gateway_01
+    type: processor
+    capabilities:
+      - filter
+      - aggregate
+      - store
+    metadata:
+      description: Processes and filters data from sensors
+  - id: cloud_server_01
+    type: storage
+    capabilities:
+      - store
+      - analyze
+      - visualize
+      - alert
+    metadata:
+      description: Cloud analytics server for data storage and analysis
+links:
+  - id: link_sensor_to_gateway
+    from: temp_sensor_01
+    to: edge_gateway_01
+    data_type: sensor_reading
+    frequency: real-time
+  - id: link_gateway_to_cloud
+    from: edge_gateway_01
+    to: cloud_server_01
+    data_type: processed_data
+    frequency: periodic
+logic:
+  rules:
+    - if: temperature exceeds threshold
+      then: trigger alert
+metadata:
+  description: IR for smart home temperature monitoring system with cloud analytics
+  case_id: DEMO-MONITORING

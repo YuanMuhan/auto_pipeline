@@ -1,0 +1,13 @@
+[2026-01-04T21:41:34.908987] [INFO] Starting pipeline for case: DEMO-MONITORING
+[2026-01-04T21:41:34.910156] [INFO] Step 1: Loading user problem and device info
+[2026-01-04T21:41:34.910521] [INFO] Successfully loaded input files
+[2026-01-04T21:41:34.915488] [INFO] Step 2: Generating Plan (Planner Agent)
+[2026-01-04T21:41:34.921543] [INFO] Saved Plan to .\outputs_matrix_pr5\DEMO-MONITORING\deepseek_deepseek-chat\P0\norepair\temp0\DEMO-MONITORING\run=20260104_214134_fd2764\plan.json
+[2026-01-04T21:41:34.921652] [INFO] Step 3: Generating IR (IR Agent)
+[2026-01-04T21:41:34.921737] [INFO] IR generation attempt 1/3
+[2026-01-04T21:41:46.295722] [INFO] [LLM] stage=generate_ir cache=MISS key=4d0698d4 time=11.368s, usage={'prompt_tokens': 1461, 'completion_tokens': 327, 'total_tokens': 1788, 'prompt_tokens_details': {'cached_tokens': 1408}, 'prompt_cache_hit_tokens': 1408, 'prompt_cache_miss_tokens': 53}
+[2026-01-04T21:41:46.307158] [WARNING] IR component catalog check failed: IR component types not in catalog: data_source, storage
+[2026-01-04T21:41:46.307253] [ERROR] IR generation failed after 3 attempts
+[2026-01-04T21:41:46.307326] [ERROR] Pipeline failed at stage ir: IR component types not in catalog: data_source, storage
+[2026-01-04T21:41:46.308735] [INFO] Saved failure evaluation to .\outputs_matrix_pr5\DEMO-MONITORING\deepseek_deepseek-chat\P0\norepair\temp0\DEMO-MONITORING\run=20260104_214134_fd2764\eval.json
+[2026-01-04T21:41:46.308820] [INFO] Step 9: Saving run log

@@ -1,0 +1,10 @@
+{
+  "id": "gold",
+  "title": "unused endpoint should not fail",
+  "target": "demo",
+  "context": "",
+  "triggers": [],
+  "expected_behavior": [],
+  "outputs": [],
+  "constraints": []
+}

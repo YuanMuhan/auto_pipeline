@@ -1,0 +1,91 @@
+{
+  "placements": [
+    {
+      "component_id": "door_sensor_main",
+      "layer": "device",
+      "device_ref": "door_sensor_main"
+    },
+    {
+      "component_id": "motion_sensor_living",
+      "layer": "device",
+      "device_ref": "motion_sensor_living"
+    },
+    {
+      "component_id": "edge_gateway_ha",
+      "layer": "edge",
+      "device_ref": "edge_gateway_ha"
+    },
+    {
+      "component_id": "cloud_automation_service",
+      "layer": "cloud",
+      "device_ref": "cloud_automation_service"
+    },
+    {
+      "component_id": "cloud_storage_service",
+      "layer": "cloud",
+      "device_ref": "cloud_storage_service"
+    },
+    {
+      "component_id": "smart_light_living",
+      "layer": "device",
+      "device_ref": "smart_light_living"
+    }
+  ],
+  "transports": [
+    {
+      "link_id": "door_sensor_to_gateway",
+      "protocol": "MQTT",
+      "qos": "at_least_once"
+    },
+    {
+      "link_id": "motion_sensor_to_gateway",
+      "protocol": "MQTT",
+      "qos": "at_least_once"
+    },
+    {
+      "link_id": "gateway_to_cloud_service",
+      "protocol": "HTTP",
+      "qos": "best_effort"
+    },
+    {
+      "link_id": "cloud_service_to_storage",
+      "protocol": "HTTP",
+      "qos": "best_effort"
+    },
+    {
+      "link_id": "cloud_service_to_light",
+      "protocol": "HTTP",
+      "qos": "best_effort"
+    }
+  ],
+  "endpoints": [
+    {
+      "link_id": "door_sensor_to_gateway",
+      "from_endpoint": "ha://local",
+      "to_endpoint": "mqtt://ha_broker/homeassistant/events/#"
+    },
+    {
+      "link_id": "motion_sensor_to_gateway",
+      "from_endpoint": "ha://local",
+      "to_endpoint": "mqtt://ha_broker/homeassistant/events/#"
+    },
+    {
+      "link_id": "gateway_to_cloud_service",
+      "from_endpoint": "mqtt://ha_broker/homeassistant/commands",
+      "to_endpoint": "https://<SECRET_CLOUD_API>/api/v1/events"
+    },
+    {
+      "link_id": "cloud_service_to_storage",
+      "from_endpoint": "https://<SECRET_CLOUD_API>/api/v1/events",
+      "to_endpoint": "https://<SECRET_CLOUD_DB>/write?db=smarthome&precision=s"
+    },
+    {
+      "link_id": "cloud_service_to_light",
+      "from_endpoint": "https://<SECRET_CLOUD_API>/api/v1/events",
+      "to_endpoint": "http://<SECRET_HA_HOST>:8123/api/services/light/turn_on"
+    }
+  ],
+  "deployment": {
+    "orchestrator": "docker-compose"
+  }
+}

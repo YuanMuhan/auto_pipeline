@@ -1,0 +1,10 @@
+[2026-01-05T09:44:16.412097] [INFO] Starting pipeline for case: DEMO-MONITORING
+[2026-01-05T09:44:16.412543] [INFO] Step 1: Loading user problem and device info
+[2026-01-05T09:44:16.412940] [INFO] Successfully loaded input files
+[2026-01-05T09:44:16.418089] [INFO] Step 2: Generating Plan (Planner Agent)
+[2026-01-05T09:44:16.424385] [INFO] Saved Plan to .\outputs_matrix_24\DEMO-MONITORING\openai_gpt-4o-mini\P0\norepair\temp0\DEMO-MONITORING\run=20260105_094416_a19b49\plan.json
+[2026-01-05T09:44:16.424494] [INFO] Step 3: Generating IR (IR Agent)
+[2026-01-05T09:44:16.424559] [INFO] IR generation attempt 1/3
+[2026-01-05T09:44:16.617935] [ERROR] Pipeline failed at stage ir: OpenAI API request failed: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)>
+[2026-01-05T09:44:16.619154] [INFO] Saved failure evaluation to .\outputs_matrix_24\DEMO-MONITORING\openai_gpt-4o-mini\P0\norepair\temp0\DEMO-MONITORING\run=20260105_094416_a19b49\eval.json
+[2026-01-05T09:44:16.619219] [INFO] Step 9: Saving run log

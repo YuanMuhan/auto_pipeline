@@ -1,0 +1,228 @@
+{
+  "case_id": "DEMO-SMARTHOME",
+  "timestamp": "2026-01-04T21:46:15.591455",
+  "overall_status": "FAIL",
+  "overall_static_status": "FAIL",
+  "overall_runtime_status": "SKIP",
+  "stages_passed": [
+    "plan"
+  ],
+  "checks": {},
+  "metrics": {
+    "total_duration_ms": 28368,
+    "total_attempts": 3,
+    "attempts_by_stage": {
+      "inputs": 1,
+      "plan": 1,
+      "ir": 1
+    }
+  },
+  "validators": {
+    "user_problem_schema": {
+      "pass": true,
+      "failures": [],
+      "warnings": [
+        "UserProblem soft-missing fields: id, title, target"
+      ],
+      "metrics": {},
+      "status": "PASS",
+      "skipped": false
+    },
+    "device_info_schema": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {},
+      "status": "PASS",
+      "skipped": false
+    },
+    "device_info_catalog": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {},
+      "status": "PASS",
+      "skipped": false
+    },
+    "plan_schema": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {},
+      "status": "PASS",
+      "skipped": false
+    },
+    "ir_schema": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {},
+      "status": "PASS",
+      "skipped": false
+    },
+    "ir_boundary": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {},
+      "status": "PASS",
+      "skipped": false
+    },
+    "ir_component_catalog": {
+      "pass": false,
+      "failures": [
+        {
+          "code": "E_CATALOG_COMPONENT",
+          "stage": "ir",
+          "checker": "ComponentCatalogChecker",
+          "message": "IR component types not in catalog: data_source, data_source, actuator, storage",
+          "details": {
+            "invalid_types": [
+              "data_source",
+              "data_source",
+              "actuator",
+              "storage"
+            ]
+          }
+        }
+      ],
+      "warnings": [
+        "alias target not resolved: RuleEngine (candidates=[])",
+        "alias target not resolved: RuleEngine (candidates=[])",
+        "alias target not resolved: RuleEngine (candidates=[])",
+        "alias target not resolved: StateTracker (candidates=[])",
+        "normalized component edge_gateway type controller -> RuleEngine",
+        "normalized component cloud_automation_service type controller -> RuleEngine",
+        "component edge_gateway has no explicit ports; skipping port validation",
+        "component cloud_automation_service has no explicit ports; skipping port validation",
+        "link door_state_to_edge missing explicit ports; skipping port validation",
+        "link motion_state_to_edge missing explicit ports; skipping port validation",
+        "link edge_light_control missing explicit ports; skipping port validation",
+        "link edge_events_to_cloud missing explicit ports; skipping port validation",
+        "link cloud_notification missing explicit ports; skipping port validation",
+        "link cloud_data_to_storage missing explicit ports; skipping port validation",
+        "link storage_query missing explicit ports; skipping port validation",
+        "link sensor_health_to_edge missing explicit ports; skipping port validation",
+        "link sensor_health_to_edge_2 missing explicit ports; skipping port validation"
+      ],
+      "metrics": {},
+      "status": "FAIL",
+      "skipped": false
+    }
+  },
+  "failures_flat": [
+    {
+      "code": "E_CATALOG_COMPONENT",
+      "stage": "ir",
+      "checker": "ComponentCatalogChecker",
+      "message": "IR component types not in catalog: data_source, data_source, actuator, storage",
+      "details": {
+        "invalid_types": [
+          "data_source",
+          "data_source",
+          "actuator",
+          "storage"
+        ]
+      }
+    }
+  ],
+  "pipeline": {
+    "stages": {
+      "inputs": {
+        "pass": true,
+        "duration_ms": 6,
+        "attempts": 1
+      },
+      "plan": {
+        "pass": true,
+        "duration_ms": 9,
+        "attempts": 1
+      },
+      "ir": {
+        "pass": false,
+        "duration_ms": 28353,
+        "attempts": 1
+      }
+    },
+    "config": {
+      "provider": "deepseek",
+      "model": "deepseek-chat",
+      "temperature": 0.0,
+      "max_tokens": null,
+      "cache_enabled": false,
+      "prompt_tier": "P0",
+      "seed": 0,
+      "enable_repair": false,
+      "enable_catalog": true,
+      "runtime_check": false,
+      "cache_dir": ".cache/llm",
+      "run_id": "run=20260104_214547_2f3f7a",
+      "output_dir": ".\\outputs_matrix_pr5\\DEMO-SMARTHOME\\deepseek_deepseek-chat\\P0\\norepair\\temp0\\DEMO-SMARTHOME\\run=20260104_214547_2f3f7a",
+      "inputs": {
+        "user_problem_path": "inputs\\user_problem.json",
+        "device_info_path": "inputs\\device_info.json"
+      },
+      "semantic_warnings": true
+    }
+  },
+  "llm": {
+    "provider": "deepseek",
+    "model": "deepseek-chat",
+    "temperature": 0.0,
+    "cache_dir": ".cache/llm",
+    "cache_enabled": false,
+    "calls_total": 1,
+    "calls_by_stage": {
+      "generate_ir": 1
+    },
+    "cache_hits": 0,
+    "cache_misses": 1,
+    "usage_tokens_total": 3518,
+    "prompt_template_hashes": {
+      "ir_agent": "3b139c640d31d720bf2f7bb0d8b90fdd86a204c2e47586907d82349103f1816a"
+    },
+    "prompt_resolved_hashes": {
+      "ir_agent": "0c3154271a4b5ce21ad4a9445c1d3efc3170f75ca7df2ceed4f024727f28110b"
+    },
+    "prompt_injections": {
+      "catalog_types_hash": "7c0d7d6f58c2913592087dd9b3df67c63fc952388dc74d0606b92393079423a7",
+      "endpoint_types_hash": "f7254349ed46bebfcce4f42c6e1ad57cb6d856e1c234d5aa4747451d26b72164",
+      "rules_bundle_hash": "da37953ebf7e85a683b02a6ff8178eab41a34f1fed4ddb1663c9e38e8db5008e",
+      "schema_required_hash": "92f48a7255d950725fa7f42ae07871e07d94b908de5c96001620c102c3db62ad"
+    },
+    "rules_hash": "477af2e4c423e9f8ac2603f6814562cc5efe0d6ddd24c8cfbdac784025672076",
+    "schema_hashes": {
+      "plan_schema": "8d8399a603d1b200692b2f75170ce1bbf742b5051503966cfee3aae1fcedcd9c",
+      "ir_schema": "d1b20ea900cec23d6966c056a65ba93f30671c40bfe3737fa7fdaaa48d330fbb",
+      "bindings_schema": "16e635d1178c71dabaf7ed996785e535b597198dbc2545cfa0372db633c0a640"
+    },
+    "raw_paths": {
+      "generate_ir": [
+        "outputs_matrix_pr5\\DEMO-SMARTHOME\\deepseek_deepseek-chat\\P0\\norepair\\temp0\\DEMO-SMARTHOME\\run=20260104_214547_2f3f7a\\DEMO-SMARTHOME\\llm_raw\\generate_ir_attempt1.txt"
+      ]
+    },
+    "rules_source": "yaml"
+  },
+  "rules_version": {
+    "ir_rules_hash": "047ca0d25ee6a7cd98cdd4e68af932f2f456879fc9ac62b28ebb8d99f1327bda",
+    "bindings_rules_hash": "047ca0d25ee6a7cd98cdd4e68af932f2f456879fc9ac62b28ebb8d99f1327bda",
+    "ir_required_fields": 4,
+    "ir_forbidden_keywords": 12,
+    "bindings_required_fields": 2,
+    "bindings_forbidden_keywords": 0,
+    "rules_source": "yaml"
+  },
+  "catalog_hashes": {
+    "components_index_hash": "ba26c264fb48b9445d957bac399bb436826407143176f3fb0fad1dffd876fe78",
+    "endpoint_types_hash": "5f566bd637fe54bc64c37b48c279b10e38490d8ce2a4b152cb5cfb68594be6e2"
+  },
+  "input_validation": [
+    "UserProblem warning: UserProblem soft-missing fields: id, title, target"
+  ],
+  "error": {
+    "stage": "ir",
+    "message": "IR component types not in catalog: data_source, data_source, actuator, storage",
+    "attempts": 1,
+    "code": "E_CATALOG_COMPONENT"
+  }
+}

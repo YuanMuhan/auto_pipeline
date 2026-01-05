@@ -1,0 +1,9 @@
+cases: [DEMO-MONITORING, DEMO-SMARTHOME]
+models:
+  - provider: openai
+    model: gpt-4o-mini
+prompt_tiers: [P0, P1, P2]
+repair: [true, false]
+temperatures: [0]
+runtime_check: false
+repeat: 1

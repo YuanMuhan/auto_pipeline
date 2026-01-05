@@ -1,0 +1,122 @@
+{
+  "app_name": "automation_app",
+  "version": "0.1.0",
+  "placements": [
+    {
+      "component_id": "door_monitor",
+      "layer": "device",
+      "device_ref": "door_sensor_main"
+    },
+    {
+      "component_id": "motion_detector",
+      "layer": "edge",
+      "device_ref": "edge_gateway_ha"
+    },
+    {
+      "component_id": "lighting_controller",
+      "layer": "edge",
+      "device_ref": "edge_gateway_ha"
+    },
+    {
+      "component_id": "automation_engine",
+      "layer": "edge",
+      "device_ref": "edge_gateway_ha"
+    },
+    {
+      "component_id": "notification_service",
+      "layer": "edge",
+      "device_ref": "edge_gateway_ha"
+    },
+    {
+      "component_id": "data_recorder",
+      "layer": "cloud",
+      "device_ref": "cloud_automation_service"
+    }
+  ],
+  "transports": [
+    {
+      "link_id": "link_door_to_engine",
+      "protocol": "MQTT",
+      "qos": "at_least_once"
+    },
+    {
+      "link_id": "link_motion_to_engine",
+      "protocol": "HTTP",
+      "qos": "best_effort"
+    },
+    {
+      "link_id": "link_engine_to_light",
+      "protocol": "HTTP",
+      "qos": "best_effort"
+    },
+    {
+      "link_id": "link_engine_to_notify",
+      "protocol": "HTTP",
+      "qos": "best_effort"
+    },
+    {
+      "link_id": "link_engine_to_storage",
+      "protocol": "HTTP",
+      "qos": "best_effort"
+    }
+  ],
+  "endpoints": [
+    {
+      "link_id": "link_door_to_engine",
+      "from_endpoint": "ha://local",
+      "to_endpoint": "ha://local"
+    },
+    {
+      "link_id": "link_motion_to_engine",
+      "from_endpoint": "ha://local",
+      "to_endpoint": "ha://local"
+    },
+    {
+      "link_id": "link_engine_to_light",
+      "from_endpoint": "http://<SECRET_HA_HOST>:8123/api/services/light/turn_on",
+      "to_endpoint": "http://<SECRET_HA_HOST>:8123/api/services/light/turn_on"
+    },
+    {
+      "link_id": "link_engine_to_notify",
+      "from_endpoint": "https://api.pushover.net/1/messages.json?token=<SECRET_PUSHOVER_TOKEN>",
+      "to_endpoint": "https://api.pushover.net/1/messages.json?token=<SECRET_PUSHOVER_TOKEN>"
+    },
+    {
+      "link_id": "link_engine_to_storage",
+      "from_endpoint": "https://<SECRET_CLOUD_DB>/write?db=smarthome&precision=s",
+      "to_endpoint": "https://<SECRET_CLOUD_DB>/write?db=smarthome&precision=s"
+    }
+  ],
+  "component_bindings": [
+    {
+      "component": "door_monitor",
+      "layer": "device",
+      "device_ref": "door_sensor_main"
+    },
+    {
+      "component": "motion_detector",
+      "layer": "edge",
+      "device_ref": "edge_gateway_ha"
+    },
+    {
+      "component": "lighting_controller",
+      "layer": "edge",
+      "device_ref": "edge_gateway_ha"
+    },
+    {
+      "component": "automation_engine",
+      "layer": "edge",
+      "device_ref": "edge_gateway_ha"
+    },
+    {
+      "component": "notification_service",
+      "layer": "edge",
+      "device_ref": "edge_gateway_ha"
+    },
+    {
+      "component": "data_recorder",
+      "layer": "cloud",
+      "device_ref": "cloud_automation_service"
+    }
+  ]
+}

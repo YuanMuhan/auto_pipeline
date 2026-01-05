@@ -1,0 +1,21 @@
+{
+  "devices": [
+    {
+      "id": "dev1",
+      "interfaces": {
+        "endpoints": [
+          {
+            "id": "used_ep",
+            "type": "http",
+            "address": "http://dev1/api",
+            "payload_schema": {}
+          },
+          {
+            "id": "unused_ep_with_missing",
+            "type": "http"
+          }
+        ]
+      }
+    }
+  ]
+}

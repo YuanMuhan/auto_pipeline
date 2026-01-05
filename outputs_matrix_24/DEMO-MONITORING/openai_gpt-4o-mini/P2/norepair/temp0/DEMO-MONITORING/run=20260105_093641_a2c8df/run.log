@@ -1,0 +1,10 @@
+[2026-01-05T09:36:41.374198] [INFO] Starting pipeline for case: DEMO-MONITORING
+[2026-01-05T09:36:41.375403] [INFO] Step 1: Loading user problem and device info
+[2026-01-05T09:36:41.375727] [INFO] Successfully loaded input files
+[2026-01-05T09:36:41.380467] [INFO] Step 2: Generating Plan (Planner Agent)
+[2026-01-05T09:36:41.386335] [INFO] Saved Plan to .\outputs_matrix_24\DEMO-MONITORING\openai_gpt-4o-mini\P2\norepair\temp0\DEMO-MONITORING\run=20260105_093641_a2c8df\plan.json
+[2026-01-05T09:36:41.386457] [INFO] Step 3: Generating IR (IR Agent)
+[2026-01-05T09:36:41.386533] [INFO] IR generation attempt 1/3
+[2026-01-05T09:36:41.390304] [ERROR] Pipeline failed at stage ir: OPENAI_API_KEY is not set for openai provider
+[2026-01-05T09:36:41.391553] [INFO] Saved failure evaluation to .\outputs_matrix_24\DEMO-MONITORING\openai_gpt-4o-mini\P2\norepair\temp0\DEMO-MONITORING\run=20260105_093641_a2c8df\eval.json
+[2026-01-05T09:36:41.391630] [INFO] Step 9: Saving run log

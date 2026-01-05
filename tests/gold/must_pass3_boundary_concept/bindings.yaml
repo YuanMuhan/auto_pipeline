@@ -1,0 +1,15 @@
+app_name: gold_app
+version: "1.0"
+placements:
+  - component_id: c1
+    layer: cloud
+transports:
+  - link_id: l1
+    protocol: http
+endpoints:
+  - link_id: l1
+    from_endpoint: ep1
+    to_endpoint: ep1
+component_bindings:
+  - component: c1
+    endpoint_id: ep1

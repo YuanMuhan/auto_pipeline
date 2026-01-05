@@ -188,6 +188,12 @@ class ArtifactEvaluator:
                 "bindings_rules_hash": self.rules_bundle["bindings"]["hash"],
             },
         }
+        cat_metrics = self.validator_results.get("ir_component_catalog", {}).get("metrics", {}) if self.validator_results else {}
+        if cat_metrics:
+            if "unknown_types_count" in cat_metrics:
+                eval_result["unknown_component_types_count"] = cat_metrics.get("unknown_types_count", 0)
+            if "unknown_types" in cat_metrics:
+                eval_result["unknown_component_types"] = cat_metrics.get("unknown_types", [])
         return eval_result
 
 

@@ -1,0 +1,143 @@
+{
+  "components": [
+    {
+      "id": "door_sensor_main",
+      "type": "data_source",
+      "capabilities": [
+        "detect_open_close",
+        "collect"
+      ]
+    },
+    {
+      "id": "motion_sensor_living",
+      "type": "data_source",
+      "capabilities": [
+        "detect_motion",
+        "collect"
+      ]
+    },
+    {
+      "id": "smart_light_living",
+      "type": "actuator",
+      "capabilities": [
+        "turn_on_off"
+      ]
+    },
+    {
+      "id": "edge_gateway_ha",
+      "type": "controller",
+      "capabilities": [
+        "event_bus",
+        "state_management"
+      ]
+    },
+    {
+      "id": "cloud_automation_service",
+      "type": "processor",
+      "capabilities": [
+        "rule_engine",
+        "notification"
+      ]
+    },
+    {
+      "id": "cloud_storage_service",
+      "type": "storage",
+      "capabilities": [
+        "store",
+        "query"
+      ]
+    }
+  ],
+  "links": [
+    {
+      "id": "door_sensor_to_gateway",
+      "from": "door_sensor_main",
+      "to": "edge_gateway_ha",
+      "data_type": "event",
+      "frequency": "real-time"
+    },
+    {
+      "id": "motion_sensor_to_gateway",
+      "from": "motion_sensor_living",
+      "to": "edge_gateway_ha",
+      "data_type": "event",
+      "frequency": "real-time"
+    },
+    {
+      "id": "gateway_to_cloud_service",
+      "from": "edge_gateway_ha",
+      "to": "cloud_automation_service",
+      "data_type": "command",
+      "frequency": "real-time"
+    },
+    {
+      "id": "cloud_service_to_storage",
+      "from": "cloud_automation_service",
+      "to": "cloud_storage_service",
+      "data_type": "data",
+      "frequency": "periodic"
+    },
+    {
+      "id": "cloud_service_to_notification",
+      "from": "cloud_automation_service",
+      "to": "cloud_automation_service",
+      "data_type": "notification",
+      "frequency": "on-demand"
+    },
+    {
+      "id": "cloud_storage_to_gateway",
+      "from": "cloud_storage_service",
+      "to": "edge_gateway_ha",
+      "data_type": "query",
+      "frequency": "on-demand"
+    }
+  ],
+  "logic": {
+    "home_mode": {
+      "description": "在家模式：夜间人体感应开灯",
+      "rules": [
+        {
+          "condition": "time_between",
+          "parameters": {
+            "start": "22:00",
+            "end": "06:00"
+          },
+          "action": "turn_on_light"
+        },
+        {
+          "condition": "no_motion_for",
+          "parameters": {
+            "duration": "5_minutes"
+          },
+          "action": "turn_off_light"
+        }
+      ]
+    },
+    "away_mode": {
+      "description": "离家模式：任何门磁触发均告警",
+      "rules": [
+        {
+          "condition": "door_open",
+          "action": "send_notification"
+        },
+        {
+          "condition": "motion_detected",
+          "action": "high_priority_alert"
+        }
+      ]
+    },
+    "security_mode": {
+      "description": "安防模式：双重传感器联动",
+      "rules": [
+        {
+          "condition": "door_open AND motion_detected",
+          "action": "trigger_alarm"
+        }
+      ]
+    }
+  },
+  "metadata": {
+    "description": "智能家居安防自动化系统 IR",
+    "version": "1.0"
+  }
+}

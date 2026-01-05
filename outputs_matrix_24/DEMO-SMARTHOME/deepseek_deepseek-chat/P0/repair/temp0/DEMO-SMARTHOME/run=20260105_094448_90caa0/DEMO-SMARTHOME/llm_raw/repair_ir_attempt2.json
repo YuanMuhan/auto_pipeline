@@ -1,0 +1,190 @@
+{
+  "components": [
+    {
+      "id": "door_sensor",
+      "type": "sensor",
+      "capabilities": [
+        "sense",
+        "collect"
+      ],
+      "metadata": {
+        "sensor_type": "binary_sensor",
+        "monitored_state": "open_close"
+      }
+    },
+    {
+      "id": "motion_sensor",
+      "type": "sensor",
+      "capabilities": [
+        "sense",
+        "collect"
+      ],
+      "metadata": {
+        "sensor_type": "motion_sensor",
+        "monitored_state": "motion_detection"
+      }
+    },
+    {
+      "id": "smart_light",
+      "type": "actuator",
+      "capabilities": [
+        "actuate"
+      ],
+      "metadata": {
+        "actuator_type": "light"
+      }
+    },
+    {
+      "id": "edge_gateway",
+      "type": "rule_engine",
+      "capabilities": [
+        "filter",
+        "aggregate",
+        "decide",
+        "route"
+      ],
+      "metadata": {
+        "function": "event_processing_and_automation"
+      }
+    },
+    {
+      "id": "cloud_automation_service",
+      "type": "rule_engine",
+      "capabilities": [
+        "analyze",
+        "decide",
+        "notify",
+        "manage"
+      ],
+      "metadata": {
+        "function": "rule_engine_and_notification"
+      }
+    },
+    {
+      "id": "cloud_storage_service",
+      "type": "storage",
+      "capabilities": [
+        "store",
+        "query",
+        "aggregate"
+      ],
+      "metadata": {
+        "storage_type": "time_series_database"
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "door_state_to_edge",
+      "from": "door_sensor",
+      "to": "edge_gateway",
+      "data_type": "sensor_reading",
+      "contract": {
+        "state": "open/closed",
+        "frequency": "real-time"
+      }
+    },
+    {
+      "id": "motion_state_to_edge",
+      "from": "motion_sensor",
+      "to": "edge_gateway",
+      "data_type": "sensor_reading",
+      "contract": {
+        "state": "motion_detected/clear",
+        "frequency": "real-time"
+      }
+    },
+    {
+      "id": "edge_to_light_control",
+      "from": "edge_gateway",
+      "to": "smart_light",
+      "data_type": "command",
+      "contract": {
+        "action": "turn_on/turn_off",
+        "frequency": "on-demand"
+      }
+    },
+    {
+      "id": "edge_events_to_cloud",
+      "from": "edge_gateway",
+      "to": "cloud_automation_service",
+      "data_type": "event",
+      "contract": {
+        "event_type": "sensor_event/state_change",
+        "frequency": "real-time"
+      }
+    },
+    {
+      "id": "cloud_to_storage_write",
+      "from": "cloud_automation_service",
+      "to": "cloud_storage_service",
+      "data_type": "aggregated_data",
+      "contract": {
+        "content": "event_history_system_status",
+        "frequency": "periodic"
+      }
+    },
+    {
+      "id": "storage_to_cloud_query",
+      "from": "cloud_storage_service",
+      "to": "cloud_automation_service",
+      "data_type": "query_result",
+      "contract": {
+        "content": "historical_data",
+        "frequency": "on-demand"
+      }
+    },
+    {
+      "id": "cloud_notification_out",
+      "from": "cloud_automation_service",
+      "to": "external_notification_service",
+      "data_type": "notification",
+      "contract": {
+        "priority": "info/alert/critical",
+        "frequency": "on-demand"
+      }
+    }
+  ],
+  "logic": {
+    "operational_modes": {
+      "home_mode": {
+        "condition": "time_window 22:00-06:00 AND system_mode = \"home\"",
+        "actions": [
+          "IF motion_sensor.state = \"motion_detected\" THEN send command \"turn_on\" to smart_light",
+          "IF motion_sensor.state = \"clear\" FOR 5 minutes THEN send command \"turn_off\" to smart_light"
+        ]
+      },
+      "away_mode": {
+        "condition": "system_mode = \"away\"",
+        "actions": [
+          "IF door_sensor.state = \"open\" THEN send high_priority event to cloud_automation_service",
+          "IF motion_sensor.state = \"motion_detected\" THEN send critical_priority event to cloud_automation_service"
+        ]
+      },
+      "security_mode": {
+        "condition": "system_mode = \"security\"",
+        "actions": [
+          "IF door_sensor.state = \"open\" AND motion_sensor.state = \"motion_detected\" THEN send critical_priority event to cloud_automation_service AND trigger local_alert"
+        ]
+      }
+    },
+    "fault_handling": [
+      "IF sensor_offline THEN send fault_notification to cloud_automation_service",
+      "IF sensor_fault THEN use backup_inference_logic"
+    ]
+  },
+  "metadata": {
+    "description": "Logical IR for a smart home security automation system integrating door and motion sensors with lighting control and cloud notification.",
+    "version": "1.0",
+    "system_modes": [
+      "home_mode",
+      "away_mode",
+      "security_mode"
+    ]
+  },
+  "app_name": "automation_app",
+  "description": "智能家居安防自动化系统：门磁和人体传感器联动夜间照明，异常情况实时通知，支持离家模式和安防策略",
+  "version": "0.1.0",
+  "schemas": [],
+  "policies": []
+}

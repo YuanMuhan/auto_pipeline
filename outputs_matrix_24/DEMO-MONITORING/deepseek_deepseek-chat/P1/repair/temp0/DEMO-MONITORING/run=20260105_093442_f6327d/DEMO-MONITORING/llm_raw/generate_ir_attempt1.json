@@ -1,0 +1,81 @@
+{
+  "app_name": "smart_home_temperature_monitoring",
+  "version": "1.0",
+  "components": [
+    {
+      "id": "temp_sensor_01",
+      "type": "data_source",
+      "capabilities": [
+        "sense",
+        "collect"
+      ],
+      "metadata": {
+        "layer": "device",
+        "data_type": "temperature_reading"
+      }
+    },
+    {
+      "id": "edge_gateway_01",
+      "type": "processor",
+      "capabilities": [
+        "filter",
+        "aggregate",
+        "buffer"
+      ],
+      "metadata": {
+        "layer": "edge"
+      }
+    },
+    {
+      "id": "cloud_server_01",
+      "type": "storage",
+      "capabilities": [
+        "store",
+        "analyze",
+        "visualize",
+        "alert"
+      ],
+      "metadata": {
+        "layer": "cloud"
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "sensor_to_edge",
+      "from": "temp_sensor_01",
+      "to": "edge_gateway_01",
+      "data_type": "sensor_reading",
+      "frequency": "real-time",
+      "contract": {
+        "schema": {
+          "temperature": "number",
+          "ts": "string"
+        }
+      }
+    },
+    {
+      "id": "edge_to_cloud",
+      "from": "edge_gateway_01",
+      "to": "cloud_server_01",
+      "data_type": "aggregated_data",
+      "frequency": "periodic",
+      "contract": {
+        "schema": {
+          "aggregated_readings": "array",
+          "window_start": "string",
+          "window_end": "string"
+        }
+      }
+    }
+  ],
+  "logic": {
+    "alert_condition": "temperature_exceeds_threshold",
+    "aggregation_window": "configurable_period",
+    "data_retention_policy": "long_term"
+  },
+  "metadata": {
+    "description": "Smart home temperature monitoring system with cloud analytics",
+    "case_id": "DEMO-MONITORING"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "devices": [
+    {
+      "id": "dev1",
+      "interfaces": {
+        "endpoints": [
+          {
+            "id": "ep1",
+            "type": "http",
+            "address": "http://example.com/api",
+            "payload_schema": {}
+          }
+        ]
+      }
+    }
+  ]
+}

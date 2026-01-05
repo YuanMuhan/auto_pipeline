@@ -1,0 +1,19 @@
+[2026-01-04T21:42:36.961499] [INFO] Starting pipeline for case: DEMO-MONITORING
+[2026-01-04T21:42:36.963205] [INFO] Step 1: Loading user problem and device info
+[2026-01-04T21:42:36.963631] [INFO] Successfully loaded input files
+[2026-01-04T21:42:36.969723] [INFO] Step 2: Generating Plan (Planner Agent)
+[2026-01-04T21:42:36.976623] [INFO] Saved Plan to .\outputs_matrix_pr5\DEMO-MONITORING\deepseek_deepseek-chat\P2\repair\temp0\DEMO-MONITORING\run=20260104_214236_a18bb2\plan.json
+[2026-01-04T21:42:36.976763] [INFO] Step 3: Generating IR (IR Agent)
+[2026-01-04T21:42:36.976840] [INFO] IR generation attempt 1/3
+[2026-01-04T21:42:47.880141] [INFO] [LLM] stage=generate_ir cache=MISS key=1aa893e3 time=10.898s, usage={'prompt_tokens': 1572, 'completion_tokens': 312, 'total_tokens': 1884, 'prompt_tokens_details': {'cached_tokens': 384}, 'prompt_cache_hit_tokens': 384, 'prompt_cache_miss_tokens': 1188}
+[2026-01-04T21:42:47.890513] [WARNING] IR component catalog check failed: IR component types not in catalog: data_source, storage
+[2026-01-04T21:42:47.890607] [INFO] IR generation attempt 2/3
+[2026-01-04T21:43:03.627330] [INFO] [LLM] stage=repair_ir cache=MISS key=4ec18042 time=15.733s, usage={'prompt_tokens': 1084, 'completion_tokens': 484, 'total_tokens': 1568, 'prompt_tokens_details': {'cached_tokens': 64}, 'prompt_cache_hit_tokens': 64, 'prompt_cache_miss_tokens': 1020}
+[2026-01-04T21:43:03.636965] [WARNING] IR component catalog check failed: IR component types not in catalog: sensor, database
+[2026-01-04T21:43:03.637045] [INFO] IR generation attempt 3/3
+[2026-01-04T21:43:19.955885] [INFO] [LLM] stage=repair_ir cache=MISS key=9098ba22 time=16.316s, usage={'prompt_tokens': 1082, 'completion_tokens': 484, 'total_tokens': 1566, 'prompt_tokens_details': {'cached_tokens': 640}, 'prompt_cache_hit_tokens': 640, 'prompt_cache_miss_tokens': 442}
+[2026-01-04T21:43:19.968498] [WARNING] IR component catalog check failed: IR component types not in catalog: Sensor
+[2026-01-04T21:43:19.968619] [ERROR] IR generation failed after 3 attempts
+[2026-01-04T21:43:19.968702] [ERROR] Pipeline failed at stage ir: IR component types not in catalog: Sensor
+[2026-01-04T21:43:19.971096] [INFO] Saved failure evaluation to .\outputs_matrix_pr5\DEMO-MONITORING\deepseek_deepseek-chat\P2\repair\temp0\DEMO-MONITORING\run=20260104_214236_a18bb2\eval.json
+[2026-01-04T21:43:19.971209] [INFO] Step 9: Saving run log

@@ -1,0 +1,13 @@
+[2026-01-05T09:54:05.388643] [INFO] Starting pipeline for case: DEMO-SMARTHOME
+[2026-01-05T09:54:05.390352] [INFO] Step 1: Loading user problem and device info
+[2026-01-05T09:54:05.390884] [INFO] Successfully loaded input files
+[2026-01-05T09:54:05.398121] [INFO] Step 2: Generating Plan (Planner Agent)
+[2026-01-05T09:54:05.414647] [INFO] Saved Plan to .\outputs_matrix_24\DEMO-SMARTHOME\openai_gpt-4o-mini\P2\repair\temp0\DEMO-SMARTHOME\run=20260105_095405_2056ee\plan.json
+[2026-01-05T09:54:05.414753] [INFO] Step 3: Generating IR (IR Agent)
+[2026-01-05T09:54:05.414810] [INFO] IR generation attempt 1/3
+[2026-01-05T09:54:11.783660] [INFO] [LLM] stage=generate_ir cache=MISS key=fa4e3ee8 time=6.358s, usage={'prompt_tokens': 2683, 'completion_tokens': 580, 'total_tokens': 3263, 'prompt_tokens_details': {'cached_tokens': 0, 'audio_tokens': 0}, 'completion_tokens_details': {'reasoning_tokens': 0, 'audio_tokens': 0, 'accepted_prediction_tokens': 0, 'rejected_prediction_tokens': 0}}
+[2026-01-05T09:54:11.800802] [WARNING] IR schema validation failed: IR schema validation failed: 1.0 is not of type 'string'
+[2026-01-05T09:54:11.800910] [INFO] IR generation attempt 2/3
+[2026-01-05T09:54:11.883126] [ERROR] Pipeline failed at stage ir: OpenAI API request failed: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)>
+[2026-01-05T09:54:11.885065] [INFO] Saved failure evaluation to .\outputs_matrix_24\DEMO-SMARTHOME\openai_gpt-4o-mini\P2\repair\temp0\DEMO-SMARTHOME\run=20260105_095405_2056ee\eval.json
+[2026-01-05T09:54:11.885155] [INFO] Step 9: Saving run log

@@ -1,0 +1,8 @@
+{
+  "app_name": "gold_app",
+  "description": "unused endpoint incomplete should not fail",
+  "version": "1.0",
+  "problem_type": "test",
+  "components_outline": [{"id": "c1"}],
+  "links_outline": [{"id": "l1"}]
+}

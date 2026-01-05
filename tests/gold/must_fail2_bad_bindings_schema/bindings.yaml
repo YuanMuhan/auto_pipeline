@@ -1,0 +1,3 @@
+app_name: gold_app
+version: "1.0"
+# missing placements/transports/endpoints/component_bindings -> schema fail

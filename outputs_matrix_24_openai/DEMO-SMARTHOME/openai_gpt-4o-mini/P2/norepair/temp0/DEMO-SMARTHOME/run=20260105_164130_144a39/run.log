@@ -1,0 +1,13 @@
+[2026-01-05T16:41:30.946935] [INFO] Starting pipeline for case: DEMO-SMARTHOME
+[2026-01-05T16:41:30.948159] [INFO] Step 1: Loading user problem and device info
+[2026-01-05T16:41:30.948640] [INFO] Successfully loaded input files
+[2026-01-05T16:41:30.954502] [INFO] Step 2: Generating Plan (Planner Agent)
+[2026-01-05T16:41:30.964807] [INFO] Saved Plan to .\outputs_matrix_24_openai\DEMO-SMARTHOME\openai_gpt-4o-mini\P2\norepair\temp0\DEMO-SMARTHOME\run=20260105_164130_144a39\plan.json
+[2026-01-05T16:41:30.964924] [INFO] Step 3: Generating IR (IR Agent)
+[2026-01-05T16:41:30.965002] [INFO] IR generation attempt 1/3
+[2026-01-05T16:41:40.438873] [INFO] [LLM] stage=generate_ir cache=MISS key=fa4e3ee8 time=9.462s, usage={'prompt_tokens': 2683, 'completion_tokens': 710, 'total_tokens': 3393, 'prompt_tokens_details': {'cached_tokens': 0, 'audio_tokens': 0}, 'completion_tokens_details': {'reasoning_tokens': 0, 'audio_tokens': 0, 'accepted_prediction_tokens': 0, 'rejected_prediction_tokens': 0}}
+[2026-01-05T16:41:40.454162] [WARNING] IR schema validation failed: IR schema validation failed: 1.0 is not of type 'string'
+[2026-01-05T16:41:40.454255] [ERROR] IR generation failed after 3 attempts
+[2026-01-05T16:41:40.454322] [ERROR] Pipeline failed at stage ir: IR schema validation failed: 1.0 is not of type 'string'
+[2026-01-05T16:41:40.455324] [INFO] Saved failure evaluation to .\outputs_matrix_24_openai\DEMO-SMARTHOME\openai_gpt-4o-mini\P2\norepair\temp0\DEMO-SMARTHOME\run=20260105_164130_144a39\eval.json
+[2026-01-05T16:41:40.455419] [INFO] Step 9: Saving run log

@@ -1,0 +1,10 @@
+app_name: gold_app
+version: "1.0"
+components:
+  - id: c1
+    type: rule_engine
+    description: "handles mqtt messages logically"
+links:
+  - id: l1
+    from: c1
+    to: c1

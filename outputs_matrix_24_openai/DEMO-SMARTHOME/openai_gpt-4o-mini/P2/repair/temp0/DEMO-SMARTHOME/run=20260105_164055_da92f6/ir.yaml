@@ -1,0 +1,106 @@
+app_name: smart_home_security_automation
+components:
+- capabilities:
+  - detect_open_close
+  - battery_powered
+  id: door_sensor_main
+  metadata:
+    description: 主卧门磁传感器
+  type: data_source
+- capabilities:
+  - detect_motion
+  - illuminance_sensing
+  - battery_powered
+  id: motion_sensor_living
+  metadata:
+    description: 客厅人体传感器
+  type: data_source
+- capabilities:
+  - turn_on_off
+  - dimming
+  - color_temp
+  id: smart_light_living
+  metadata:
+    description: 客厅智能灯
+  type: actuator
+- capabilities:
+  - event_bus
+  - automation
+  - state_management
+  id: edge_gateway_ha
+  metadata:
+    description: Home Assistant 边缘网关
+  type: RuleEngine
+- capabilities:
+  - rule_engine
+  - notification
+  - data_storage
+  - analytics
+  id: cloud_automation_service
+  metadata:
+    description: 云端自动化服务
+  type: RuleEngine
+- capabilities:
+  - time_series_db
+  - query
+  - aggregation
+  id: cloud_storage_service
+  metadata:
+    description: 云端存储服务
+  type: storage
+description: 智能家居安防自动化系统：门磁和人体传感器联动夜间照明，异常情况实时通知，支持离家模式和安防策略
+links:
+- data_type: sensor_reading
+  frequency: real-time
+  from: door_sensor_main
+  id: link_door_sensor_to_gateway
+  to: edge_gateway_ha
+- data_type: sensor_reading
+  frequency: real-time
+  from: motion_sensor_living
+  id: link_motion_sensor_to_gateway
+  to: edge_gateway_ha
+- data_type: command
+  frequency: real-time
+  from: edge_gateway_ha
+  id: link_gateway_to_light
+  to: smart_light_living
+- data_type: event
+  frequency: real-time
+  from: edge_gateway_ha
+  id: link_gateway_to_cloud_service
+  to: cloud_automation_service
+- data_type: data_storage
+  frequency: periodic
+  from: cloud_automation_service
+  id: link_cloud_service_to_storage
+  to: cloud_storage_service
+logic:
+  away_mode:
+    description: 离家模式：任何门磁触发均告警
+    rules:
+    - action: 立即发送推送通知
+      condition: 门磁状态变化
+    - action: 高优先级警报
+      condition: 人体传感器触发
+  home_mode:
+    description: 在家模式：夜间人体感应开灯
+    rules:
+    - action: 开灯
+      condition: 时间段 22:00-06:00 且检测到人体活动
+    - action: 关灯
+      condition: 无人体活动超过5分钟
+  security_mode:
+    description: 安防模式：双重传感器联动
+    rules:
+    - action: 触发警报 + 录像
+      condition: 门磁打开 AND 人体检测
+    - action: 通知紧急联系人
+      condition: 连续异常
+metadata:
+  category: smart_home_automation
+  description: 智能家居安防自动化系统
+  priority: high
+policies: []
+schemas: []
+version: 1.0

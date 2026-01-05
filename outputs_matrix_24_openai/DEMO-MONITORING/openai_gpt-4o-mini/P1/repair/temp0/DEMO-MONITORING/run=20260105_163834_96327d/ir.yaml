@@ -1,0 +1,42 @@
+app_name: monitoring_app
+components:
+- capabilities:
+  - sense
+  - collect
+  id: temp_sensor_01
+  type: data_source
+- capabilities:
+  - filter
+  - aggregate
+  - analyze
+  - store
+  id: edge_gateway_01
+  type: RuleEngine
+- capabilities:
+  - store
+  - analyze
+  - visualize
+  - alert
+  id: cloud_server_01
+  type: storage
+description: Smart home temperature monitoring system with cloud analytics
+links:
+- data_type: sensor_reading
+  frequency: real-time
+  from: temp_sensor_01
+  id: sensor_to_gateway
+  to: edge_gateway_01
+- data_type: processed_data
+  frequency: periodic
+  from: edge_gateway_01
+  id: gateway_to_cloud
+  to: cloud_server_01
+logic:
+  aggregation_window: 5_minutes
+  alert_condition: temperature_exceeds_threshold
+metadata:
+  description: Smart home temperature monitoring system with cloud analytics
+  version: '1.0'
+policies: []
+schemas: []
+version: 0.1.0

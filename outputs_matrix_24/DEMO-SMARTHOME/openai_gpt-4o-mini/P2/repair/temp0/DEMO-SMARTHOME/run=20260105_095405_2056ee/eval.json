@@ -1,0 +1,192 @@
+{
+  "case_id": "DEMO-SMARTHOME",
+  "timestamp": "2026-01-05T09:54:11.883298",
+  "overall_status": "FAIL",
+  "overall_static_status": "FAIL",
+  "overall_runtime_status": "SKIP",
+  "stages_passed": [
+    "plan"
+  ],
+  "checks": {},
+  "metrics": {
+    "total_duration_ms": 6491,
+    "total_attempts": 3,
+    "attempts_by_stage": {
+      "inputs": 1,
+      "plan": 1,
+      "ir": 1
+    }
+  },
+  "validators": {
+    "user_problem_schema": {
+      "pass": true,
+      "failures": [],
+      "warnings": [
+        "UserProblem soft-missing fields: id, title, target"
+      ],
+      "metrics": {},
+      "status": "PASS",
+      "skipped": false
+    },
+    "device_info_schema": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {},
+      "status": "PASS",
+      "skipped": false
+    },
+    "device_info_catalog": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {},
+      "status": "PASS",
+      "skipped": false
+    },
+    "plan_schema": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {},
+      "status": "PASS",
+      "skipped": false
+    },
+    "ir_schema": {
+      "pass": false,
+      "failures": [
+        {
+          "code": "E_SCHEMA_IR",
+          "stage": "ir",
+          "checker": "SchemaChecker",
+          "message": "IR schema validation failed: 1.0 is not of type 'string'",
+          "details": {
+            "path": [
+              "metadata",
+              "version"
+            ]
+          }
+        }
+      ],
+      "warnings": [],
+      "metrics": {},
+      "status": "FAIL",
+      "skipped": false
+    }
+  },
+  "failures_flat": [
+    {
+      "code": "E_SCHEMA_IR",
+      "stage": "ir",
+      "checker": "SchemaChecker",
+      "message": "IR schema validation failed: 1.0 is not of type 'string'",
+      "details": {
+        "path": [
+          "metadata",
+          "version"
+        ]
+      }
+    }
+  ],
+  "pipeline": {
+    "stages": {
+      "inputs": {
+        "pass": true,
+        "duration_ms": 7,
+        "attempts": 1
+      },
+      "plan": {
+        "pass": true,
+        "duration_ms": 16,
+        "attempts": 1
+      },
+      "ir": {
+        "pass": false,
+        "duration_ms": 6468,
+        "attempts": 1
+      }
+    },
+    "config": {
+      "provider": "openai",
+      "model": "gpt-4o-mini",
+      "temperature": 0.0,
+      "max_tokens": null,
+      "cache_enabled": false,
+      "prompt_tier": "P2",
+      "seed": 0,
+      "enable_repair": true,
+      "enable_catalog": true,
+      "runtime_check": false,
+      "cache_dir": ".cache/llm",
+      "run_id": "run=20260105_095405_2056ee",
+      "output_dir": ".\\outputs_matrix_24\\DEMO-SMARTHOME\\openai_gpt-4o-mini\\P2\\repair\\temp0\\DEMO-SMARTHOME\\run=20260105_095405_2056ee",
+      "inputs": {
+        "user_problem_path": "inputs\\user_problem.json",
+        "device_info_path": "inputs\\device_info.json"
+      },
+      "semantic_warnings": true
+    }
+  },
+  "llm": {
+    "provider": "openai",
+    "model": "gpt-4o-mini",
+    "temperature": 0.0,
+    "cache_dir": ".cache/llm",
+    "cache_enabled": false,
+    "calls_total": 1,
+    "calls_by_stage": {
+      "generate_ir": 1
+    },
+    "cache_hits": 0,
+    "cache_misses": 2,
+    "usage_tokens_total": 3263,
+    "prompt_template_hashes": {
+      "ir_agent": "f23037e24867c7ac95105ee260ae0a16301687a8c6c233c7fd1a1880e337893d",
+      "repair_agent": "976d73555d933054b27066ffae3819ae2c8611c03ea2042dffd01e6e5c903ba8"
+    },
+    "prompt_resolved_hashes": {
+      "ir_agent": "21937dd377e0e617f15634bfc0e39f46644faa675e98c4fddc91c18751f78ec6",
+      "repair_agent": "718ca3089ac34b9b7aca8ad6228b30e4f7fd3d129dcbcf4d2c7d67a84c17d83d"
+    },
+    "prompt_injections": {
+      "catalog_types_hash": "7c0d7d6f58c2913592087dd9b3df67c63fc952388dc74d0606b92393079423a7",
+      "endpoint_types_hash": "f7254349ed46bebfcce4f42c6e1ad57cb6d856e1c234d5aa4747451d26b72164",
+      "rules_bundle_hash": "da37953ebf7e85a683b02a6ff8178eab41a34f1fed4ddb1663c9e38e8db5008e",
+      "schema_required_hash": "92f48a7255d950725fa7f42ae07871e07d94b908de5c96001620c102c3db62ad"
+    },
+    "rules_hash": "477af2e4c423e9f8ac2603f6814562cc5efe0d6ddd24c8cfbdac784025672076",
+    "schema_hashes": {
+      "plan_schema": "8d8399a603d1b200692b2f75170ce1bbf742b5051503966cfee3aae1fcedcd9c",
+      "ir_schema": "d1b20ea900cec23d6966c056a65ba93f30671c40bfe3737fa7fdaaa48d330fbb",
+      "bindings_schema": "16e635d1178c71dabaf7ed996785e535b597198dbc2545cfa0372db633c0a640"
+    },
+    "raw_paths": {
+      "generate_ir": [
+        "outputs_matrix_24\\DEMO-SMARTHOME\\openai_gpt-4o-mini\\P2\\repair\\temp0\\DEMO-SMARTHOME\\run=20260105_095405_2056ee\\DEMO-SMARTHOME\\llm_raw\\generate_ir_attempt1.txt"
+      ]
+    },
+    "rules_source": "yaml"
+  },
+  "rules_version": {
+    "ir_rules_hash": "047ca0d25ee6a7cd98cdd4e68af932f2f456879fc9ac62b28ebb8d99f1327bda",
+    "bindings_rules_hash": "047ca0d25ee6a7cd98cdd4e68af932f2f456879fc9ac62b28ebb8d99f1327bda",
+    "ir_required_fields": 4,
+    "ir_forbidden_keywords": 12,
+    "bindings_required_fields": 2,
+    "bindings_forbidden_keywords": 0,
+    "rules_source": "yaml"
+  },
+  "catalog_hashes": {
+    "components_index_hash": "ba26c264fb48b9445d957bac399bb436826407143176f3fb0fad1dffd876fe78",
+    "endpoint_types_hash": "5f566bd637fe54bc64c37b48c279b10e38490d8ce2a4b152cb5cfb68594be6e2"
+  },
+  "input_validation": [
+    "UserProblem warning: UserProblem soft-missing fields: id, title, target"
+  ],
+  "error": {
+    "stage": "ir",
+    "message": "OpenAI API request failed: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)>",
+    "attempts": 1,
+    "code": "E_UNKNOWN"
+  }
+}

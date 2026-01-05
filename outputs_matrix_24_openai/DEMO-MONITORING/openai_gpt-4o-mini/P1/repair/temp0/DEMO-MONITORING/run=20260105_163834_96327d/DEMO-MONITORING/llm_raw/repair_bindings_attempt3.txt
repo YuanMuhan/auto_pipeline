@@ -1,0 +1,29 @@
+placements:
+- component_id: temp_sensor_01
+  layer: device
+  device_ref: temp_sensor_01
+- component_id: edge_gateway_01
+  layer: edge
+  device_ref: edge_gateway_01
+- component_id: cloud_server_01
+  layer: cloud
+  device_ref: cloud_server_01
+transports:
+- link_id: sensor_to_gateway
+  protocol: message_bus
+  qos: at_least_once
+- link_id: gateway_to_cloud
+  protocol: data_interface
+  qos: best_effort
+endpoints:
+- link_id: sensor_to_gateway
+  from_endpoint: message_bus/publish/sensors/temp_sensor_01/data
+  to_endpoint: message_bus/subscribe/sensors/temp_sensor_01/data
+- link_id: gateway_to_cloud
+  from_endpoint: message_bus/subscribe/sensors/temp_sensor_01/data
+  to_endpoint: message_bus/subscribe/cloud_server_01/data
+component_bindings: []
+deployment:
+  orchestrator: docker-compose
+app_name: monitoring_app
+version: 0.1.0

@@ -1,0 +1,87 @@
+{
+  "app_name": "SmartHomeTemperatureMonitoring",
+  "version": "1.0",
+  "components": [
+    {
+      "id": "temp_sensor_01",
+      "type": "sensor",
+      "capabilities": [
+        "sense",
+        "collect"
+      ],
+      "metadata": {
+        "layer": "device",
+        "data_type": "temperature_reading"
+      }
+    },
+    {
+      "id": "edge_gateway_01",
+      "type": "RuleEngine",
+      "capabilities": [
+        "filter",
+        "aggregate",
+        "process"
+      ],
+      "metadata": {
+        "layer": "edge"
+      }
+    },
+    {
+      "id": "cloud_server_01",
+      "type": "database",
+      "capabilities": [
+        "store",
+        "analyze",
+        "visualize",
+        "alert"
+      ],
+      "metadata": {
+        "layer": "cloud"
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "sensor_to_edge",
+      "from": "temp_sensor_01",
+      "to": "edge_gateway_01",
+      "data_type": "sensor_reading",
+      "contract": {
+        "type": "object",
+        "properties": {
+          "temperature": {
+            "type": "number"
+          },
+          "ts": {
+            "type": "string"
+          }
+        }
+      },
+      "frequency": "periodic"
+    },
+    {
+      "id": "edge_to_cloud",
+      "from": "edge_gateway_01",
+      "to": "cloud_server_01",
+      "data_type": "aggregated_reading",
+      "frequency": "periodic"
+    }
+  ],
+  "logic": {
+    "description": "Collect temperature data, process at edge, store and analyze in cloud.",
+    "rules": [
+      {
+        "condition": "temperature_anomaly_detected",
+        "action": "trigger_alert",
+        "target": "cloud_server_01"
+      }
+    ]
+  },
+  "metadata": {
+    "description": "Smart home temperature monitoring system with cloud analytics",
+    "case_id": "DEMO-MONITORING"
+  },
+  "description": "Smart home temperature monitoring system with cloud analytics",
+  "schemas": [],
+  "policies": []
+}

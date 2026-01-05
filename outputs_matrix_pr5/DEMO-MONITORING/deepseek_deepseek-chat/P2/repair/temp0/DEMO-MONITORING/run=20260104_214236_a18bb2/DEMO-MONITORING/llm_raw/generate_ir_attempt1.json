@@ -1,0 +1,77 @@
+{
+  "app_name": "SmartHomeTemperatureMonitoring",
+  "version": 1.0,
+  "components": [
+    {
+      "id": "temp_sensor_01",
+      "type": "data_source",
+      "capabilities": [
+        "sense",
+        "collect"
+      ],
+      "metadata": {
+        "layer": "device",
+        "data_type": "temperature_reading"
+      }
+    },
+    {
+      "id": "edge_gateway_01",
+      "type": "processor",
+      "capabilities": [
+        "filter",
+        "aggregate",
+        "process"
+      ],
+      "metadata": {
+        "layer": "edge"
+      }
+    },
+    {
+      "id": "cloud_server_01",
+      "type": "storage",
+      "capabilities": [
+        "store",
+        "analyze",
+        "visualize",
+        "alert"
+      ],
+      "metadata": {
+        "layer": "cloud"
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "sensor_to_edge_data_flow",
+      "from": "temp_sensor_01",
+      "to": "edge_gateway_01",
+      "data_type": "sensor_reading",
+      "contract": {
+        "temperature": "number",
+        "ts": "string"
+      },
+      "frequency": "periodic"
+    },
+    {
+      "id": "edge_to_cloud_data_flow",
+      "from": "edge_gateway_01",
+      "to": "cloud_server_01",
+      "data_type": "aggregated_reading",
+      "frequency": "periodic"
+    }
+  ],
+  "logic": {
+    "description": "Collect temperature data, process at edge, store and analyze in cloud.",
+    "rules": [
+      {
+        "condition": "temperature_reading exceeds threshold",
+        "action": "generate_alert",
+        "target": "cloud_server_01"
+      }
+    ]
+  },
+  "metadata": {
+    "description": "Smart home temperature monitoring system with cloud analytics",
+    "case_id": "DEMO-MONITORING"
+  }
+}
