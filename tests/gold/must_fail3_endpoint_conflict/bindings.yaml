@@ -3,6 +3,7 @@ version: "1.0"
 placements:
   - component_id: c1
     layer: edge
+    device_ref: dev1
 transports:
   - link_id: l1
     protocol: mqtt

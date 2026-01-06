@@ -1,0 +1,8 @@
+{
+  "app_name": "synth_boundary",
+  "description": "synthetic forbidden regex hit",
+  "version": "1.0",
+  "problem_type": "test",
+  "components_outline": [{"id": "c1", "type": "rule_engine"}],
+  "links_outline": [{"id": "l1"}]
+}

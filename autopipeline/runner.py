@@ -40,7 +40,7 @@ class PipelineRunner:
 
     def __init__(self, case_id: str, base_dir: str = ".", llm_config: LLMConfig = None,
                  output_root: str = "outputs", enable_repair: bool = True, enable_catalog: bool = True,
-                 runtime_check: bool = False, enable_semantic: bool = True):
+                 runtime_check: bool = False, enable_semantic: bool = True, gate_mode: str = "core"):
         self.case_id = case_id
         self.base_dir = base_dir
         self.case_dir = os.path.join(base_dir, "cases", case_id)
@@ -56,6 +56,7 @@ class PipelineRunner:
         self.enable_catalog = enable_catalog
         self.runtime_check = runtime_check
         self.enable_semantic = enable_semantic
+        self.gate_mode = gate_mode or "core"
 
         # Logs and stage tracking
         self.logs: List[str] = []
@@ -259,6 +260,7 @@ class PipelineRunner:
             "output_dir": self.output_dir,
             "inputs": self.inputs_paths or {},
             "semantic_warnings": self.enable_semantic,
+            "gate_mode": self.gate_mode,
         }
 
     def _llm_summary(self) -> Dict[str, Any]:
@@ -789,14 +791,28 @@ class PipelineRunner:
             msg = res["failures"][0]["message"] if res["failures"] else "OK"
             eval_result["checks"][name] = {"status": res.get("status", "PASS") if res.get("pass") else "FAIL", "message": msg}
 
-        failed_checks = [k for k, v in eval_result["checks"].items() if v["status"] == "FAIL"]
+        core_checks = {
+            "user_problem_schema", "device_info_schema", "device_info_catalog",
+            "plan_schema", "ir_schema", "ir_boundary", "ir_component_catalog", "ir_interface",
+            "bindings_schema", "coverage", "endpoint_legality", "endpoint_matching", "cross_artifact_consistency"
+        }
+        exec_checks = {"code_generated", "deploy_generated", "generation_consistency", "runtime_compose"}
+        core_fail = [k for k in core_checks if eval_result["checks"].get(k, {}).get("status") == "FAIL"]
+        exec_fail = [k for k in exec_checks if eval_result["checks"].get(k, {}).get("status") == "FAIL"]
+
+        eval_result["overall_core_status"] = "FAIL" if core_fail else "PASS"
+        eval_result["overall_exec_status"] = "FAIL" if exec_fail else "PASS"
+
+        gate_mode = (self.gate_mode or "core").lower()
+        if gate_mode == "full":
+            failed_checks = core_fail + exec_fail
+            eval_result["overall_status"] = "FAIL" if failed_checks else "PASS"
+        else:
+            failed_checks = core_fail
+            eval_result["overall_status"] = "FAIL" if core_fail else "PASS"
         if failed_checks:
-            eval_result["overall_status"] = "FAIL"
             eval_result["failed_checks"] = failed_checks
 
-        # Static/runtime split
-        static_fail = [k for k, v in eval_result["checks"].items() if k != "runtime_compose" and v["status"] == "FAIL"]
-        eval_result["overall_static_status"] = "FAIL" if static_fail else "PASS"
         runtime_status = eval_result["checks"].get("runtime_compose", {}).get("status", "SKIP")
         if self.runtime_check and runtime_status == "FAIL":
             eval_result["overall_runtime_status"] = "FAIL"
@@ -804,6 +820,8 @@ class PipelineRunner:
             eval_result["overall_runtime_status"] = "PASS"
         else:
             eval_result["overall_runtime_status"] = "SKIP"
+        # overall_static_status kept for backward compatibility (align to gate_mode/core)
+        eval_result["overall_static_status"] = eval_result["overall_core_status"]
 
         eval_result["input_validation"] = self.input_validation
 

@@ -14,18 +14,20 @@ class ArtifactEvaluator:
     """Lightweight evaluator to run validators on an existing run_dir."""
 
     def __init__(self, base_dir: str = ".", runtime_check: bool = False, enable_catalog: bool = True,
-                 enable_semantic: bool = True):
+                 enable_semantic: bool = True, gate_mode: str = "core", catalog_strict: bool = False):
         self.base_dir = base_dir
         self.runtime_check = runtime_check
         self.enable_catalog = enable_catalog
         self.enable_semantic = enable_semantic
+        self.gate_mode = gate_mode or "core"
         self.validator_results: Dict[str, Dict[str, Any]] = {}
         self.failures_flat: List[Dict[str, Any]] = []
         self.pipeline_stats: Dict[str, Dict[str, Any]] = {}
         self.stages_passed: List[str] = []
         self.input_validation: List[str] = []
 
-        v = build_validators(base_dir, enable_catalog=enable_catalog, enable_semantic=enable_semantic)
+        v = build_validators(base_dir, enable_catalog=enable_catalog, enable_semantic=enable_semantic,
+                             catalog_strict=catalog_strict)
         self.rules_bundle = v["rules_bundle"]
         self.schema_checker = v["schema_checker"]
         self.boundary_checker = v["boundary_checker"]
@@ -169,14 +171,32 @@ class ArtifactEvaluator:
         for name, res in self.validator_results.items():
             msg = res["failures"][0]["message"] if res["failures"] else "OK"
             checks[name] = {"status": res.get("status", "PASS") if res.get("pass") else "FAIL", "message": msg}
-        failed = [k for k, v in checks.items() if v["status"] == "FAIL"]
-        overall = "FAIL" if failed else "PASS"
-        overall_static = "FAIL" if any(k != "runtime_compose" for k in failed) else "PASS"
-        overall_runtime = checks.get("runtime_compose", {}).get("status", "SKIP")
+
+        core_checks = {
+            "user_problem_schema", "device_info_schema", "device_info_catalog",
+            "plan_schema", "ir_schema", "ir_boundary", "ir_component_catalog", "ir_interface",
+            "bindings_schema", "coverage", "endpoint_legality", "endpoint_matching", "cross_artifact_consistency"
+        }
+        exec_checks = {"code_generated", "deploy_generated", "generation_consistency", "runtime_compose"}
+        core_fail = [k for k in core_checks if checks.get(k, {}).get("status") == "FAIL"]
+        exec_fail = [k for k in exec_checks if checks.get(k, {}).get("status") == "FAIL"]
+
+        overall_core = "FAIL" if core_fail else "PASS"
+        overall_exec = "FAIL" if exec_fail else "PASS"
+        gate_mode = (self.gate_mode or "core").lower()
+        if gate_mode == "full":
+            overall = "FAIL" if (core_fail or exec_fail) else "PASS"
+        else:
+            overall = overall_core
+
+        runtime_status = checks.get("runtime_compose", {}).get("status", "SKIP")
+        overall_runtime = runtime_status
         eval_result = {
             "case_id": run_dir.name,
             "overall_status": overall,
-            "overall_static_status": overall_static,
+            "overall_static_status": overall,  # backward compat
+            "overall_core_status": overall_core,
+            "overall_exec_status": overall_exec,
             "overall_runtime_status": overall_runtime,
             "checks": checks,
             "validators": self.validator_results,
@@ -197,6 +217,8 @@ class ArtifactEvaluator:
         return eval_result
 
 
-def evaluate_run_dir(run_dir: Path, base_dir: str = ".", runtime_check: bool = False, enable_catalog: bool = True) -> Dict[str, Any]:
-    ev = ArtifactEvaluator(base_dir=base_dir, runtime_check=runtime_check, enable_catalog=enable_catalog)
+def evaluate_run_dir(run_dir: Path, base_dir: str = ".", runtime_check: bool = False, enable_catalog: bool = True,
+                     gate_mode: str = "core", catalog_strict: bool = False) -> Dict[str, Any]:
+    ev = ArtifactEvaluator(base_dir=base_dir, runtime_check=runtime_check, enable_catalog=enable_catalog,
+                           gate_mode=gate_mode, catalog_strict=catalog_strict)
     return ev.evaluate(run_dir)

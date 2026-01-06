@@ -1,9 +1,8 @@
-app_name: gold_app
+app_name: synth_boundary
 version: "1.0"
 placements:
   - component_id: c1
     layer: cloud
-    device_ref: dev1
 transports:
   - link_id: l1
     protocol: http

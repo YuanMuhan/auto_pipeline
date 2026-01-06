@@ -1,0 +1,11 @@
+app_name: synth_boundary
+version: "1.0"
+components:
+  - id: c1
+    type: rule_engine
+    config:
+      url: "http://forbidden.example.com/api"
+links:
+  - id: l1
+    from: c1
+    to: c1

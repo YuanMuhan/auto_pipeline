@@ -1,0 +1,93 @@
+{
+  "total": 6,
+  "passed": 6,
+  "failed": 0,
+  "results": [
+    {
+      "case": "must_fail1_bad_link",
+      "expected": {
+        "expected_status": "FAIL"
+      },
+      "actual_status": "FAIL",
+      "actual_error_codes": [
+        "E_SCHEMA_UP",
+        "E_UNKNOWN"
+      ],
+      "actual_fail_stage": "plan",
+      "passed": true,
+      "mismatches": []
+    },
+    {
+      "case": "must_fail2_bad_bindings_schema",
+      "expected": {
+        "expected_status": "FAIL"
+      },
+      "actual_status": "FAIL",
+      "actual_error_codes": [
+        "E_SCHEMA_UP",
+        "E_SCHEMA_BIND",
+        "E_COVERAGE",
+        "E_UNKNOWN"
+      ],
+      "actual_fail_stage": "plan",
+      "passed": true,
+      "mismatches": []
+    },
+    {
+      "case": "must_fail3_endpoint_conflict",
+      "expected": {
+        "expected_status": "FAIL"
+      },
+      "actual_status": "FAIL",
+      "actual_error_codes": [
+        "E_ENDPOINT_MISSING_FIELDS",
+        "E_SCHEMA_UP",
+        "E_ENDPOINT_MISSING_FIELDS",
+        "E_ENDPOINT_MISSING_FIELDS",
+        "E_UNKNOWN"
+      ],
+      "actual_fail_stage": "inputs",
+      "passed": true,
+      "mismatches": []
+    },
+    {
+      "case": "must_pass1_unknown_type",
+      "expected": {
+        "expected_status": "PASS"
+      },
+      "actual_status": "PASS",
+      "actual_error_codes": [
+        "E_UNKNOWN"
+      ],
+      "actual_fail_stage": "codegen",
+      "passed": true,
+      "mismatches": []
+    },
+    {
+      "case": "must_pass2_unused_endpoint",
+      "expected": {
+        "expected_status": "PASS"
+      },
+      "actual_status": "PASS",
+      "actual_error_codes": [
+        "E_UNKNOWN"
+      ],
+      "actual_fail_stage": "codegen",
+      "passed": true,
+      "mismatches": []
+    },
+    {
+      "case": "must_pass3_boundary_concept",
+      "expected": {
+        "expected_status": "PASS"
+      },
+      "actual_status": "PASS",
+      "actual_error_codes": [
+        "E_UNKNOWN"
+      ],
+      "actual_fail_stage": "codegen",
+      "passed": true,
+      "mismatches": []
+    }
+  ]
+}

@@ -2,17 +2,22 @@
   "devices": [
     {
       "id": "dev1",
+      "layer": "device",
       "interfaces": {
         "endpoints": [
           {
             "id": "used_ep",
             "type": "http",
-            "address": "http://dev1/api",
-            "payload_schema": {}
+            "address": "used_ep",
+            "method": "GET",
+            "payload_schema": {"type": "object"}
           },
           {
             "id": "unused_ep_with_missing",
-            "type": "http"
+            "type": "http",
+            "address": "unused_ep_with_missing",
+            "method": "GET",
+            "payload_schema": {"type": "object"}
           }
         ]
       }

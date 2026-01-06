@@ -1,16 +1,15 @@
-app_name: gold_app
+app_name: synth_endpoint_missing
 version: "1.0"
 placements:
   - component_id: c1
     layer: device
-    device_ref: dev1
 transports:
   - link_id: l1
-    protocol: http
+    protocol: mqtt
 endpoints:
   - link_id: l1
-    from_endpoint: ep1
-    to_endpoint: ep1
+    from_endpoint: ep_missing
+    to_endpoint: ep_missing
 component_bindings:
   - component: c1
-    endpoint_id: ep1
+    endpoint_id: ep_missing

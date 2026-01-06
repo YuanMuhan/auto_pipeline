@@ -4,5 +4,5 @@
   "version": "1.0",
   "problem_type": "test",
   "components_outline": [{"id": "c1"}],
-  "links_outline": [{"id": "l1"}]
+  "links_outline": [{"id": "l1", "from": "c1", "to": "c1"}]
 }

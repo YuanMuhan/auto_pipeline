@@ -2,6 +2,8 @@
   "id": "gold",
   "title": "boundary concept",
   "target": "demo",
+  "type": "custom",
+  "description": "must-pass boundary concept terms should not fail",
   "context": "",
   "triggers": [],
   "expected_behavior": [],

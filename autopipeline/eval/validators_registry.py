@@ -18,7 +18,8 @@ from autopipeline.catalog.render import load_endpoint_types, catalog_hashes
 from autopipeline.checkers.semantic_proxy_checker import SemanticProxyChecker
 
 
-def build_validators(base_dir: str, enable_catalog: bool = True, enable_semantic: bool = True) -> Dict[str, Any]:
+def build_validators(base_dir: str, enable_catalog: bool = True, enable_semantic: bool = True,
+                     catalog_strict: bool = False) -> Dict[str, Any]:
     """Construct all validators with a shared rules bundle."""
     rules_bundle = load_rules_bundle()
     schema_checker = SchemaChecker(
@@ -32,7 +33,7 @@ def build_validators(base_dir: str, enable_catalog: bool = True, enable_semantic
     )
     coverage_checker = CoverageChecker()
     endpoint_checker = EndpointChecker()
-    component_catalog_checker = ComponentCatalogChecker(base_dir, strict=False)
+    component_catalog_checker = ComponentCatalogChecker(base_dir, strict=catalog_strict)
     device_info_catalog_checker = DeviceInfoCatalogChecker(base_dir)
     ir_interface_checker = IRInterfaceChecker(component_catalog_checker)
     endpoint_matching_checker = EndpointMatchingChecker(load_endpoint_types(base_dir)["data"])

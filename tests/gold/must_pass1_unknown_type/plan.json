@@ -3,6 +3,6 @@
   "description": "plan for unknown type pass",
   "version": "1.0",
   "problem_type": "test",
-  "components_outline": [{"id": "c1"}],
-  "links_outline": [{"id": "l1"}]
+  "components_outline": [{"id": "c1", "type": "unknown_type"}],
+  "links_outline": [{"id": "l1", "from": "c1", "to": "c1"}]
 }

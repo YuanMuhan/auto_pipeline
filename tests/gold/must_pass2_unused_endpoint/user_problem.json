@@ -2,6 +2,8 @@
   "id": "gold",
   "title": "unused endpoint should not fail",
   "target": "demo",
+  "type": "custom",
+  "description": "must-pass unused endpoint should not fail",
   "context": "",
   "triggers": [],
   "expected_behavior": [],

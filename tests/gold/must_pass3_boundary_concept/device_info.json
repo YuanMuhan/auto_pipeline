@@ -2,13 +2,15 @@
   "devices": [
     {
       "id": "dev1",
+      "layer": "cloud",
       "interfaces": {
         "endpoints": [
           {
             "id": "ep1",
             "type": "http",
-            "address": "http://dev1/api",
-            "payload_schema": {}
+            "address": "ep1",
+            "method": "GET",
+            "payload_schema": {"type": "object"}
           }
         ]
       }

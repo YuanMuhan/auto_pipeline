@@ -2,13 +2,13 @@
   "devices": [
     {
       "id": "dev1",
-      "layer": "edge",
+      "layer": "device",
       "interfaces": {
         "endpoints": [
           {
-            "id": "ep_pub_missing_payload",
+            "id": "ep_missing",
             "type": "mqtt_pub",
-            "address": "ep_pub_missing_payload"
+            "address": "ep_missing"
           }
         ]
       }

@@ -1,5 +1,9 @@
 # Gate Map (Preflight Audit)
 
+## gate_mode 口径
+- core：schema_up/di/plan/ir/bind、boundary、catalog(unknown type warning)、ir_interface、coverage、endpoint_legality、endpoint_matching、cross_artifact。
+- full = core + code_generated + deploy_generated + generation_consistency + runtime_compose/py_compile/compose_exists（如启用）。
+
 ## Static gate汇总入口
 - 汇总位置：`autopipeline/runner.py::_run_evaluation`
 - `checks` 字段来源：`validator_results` 中的状态。`static_fail` 计算：所有 checks 中除 `runtime_compose` 外，`status=="FAIL"` 即视为静态失败。

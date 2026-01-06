@@ -2,6 +2,8 @@
   "id": "gold",
   "title": "test unknown type pass",
   "target": "demo",
+  "type": "custom",
+  "description": "golden must-pass with unknown component type",
   "context": "",
   "triggers": [],
   "expected_behavior": [],

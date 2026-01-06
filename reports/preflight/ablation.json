@@ -1,0 +1,327 @@
+{
+  "summaries": [
+    {
+      "mode": "gate_core",
+      "total": 3,
+      "pass": 0,
+      "fail": 3,
+      "top_errors": [
+        [
+          "E_SCHEMA_UP",
+          2
+        ],
+        [
+          "E_SCHEMA_BIND",
+          2
+        ],
+        [
+          "E_UNKNOWN",
+          2
+        ],
+        [
+          "E_BOUNDARY",
+          1
+        ],
+        [
+          "E_ENDPOINT_MISSING_FIELDS",
+          1
+        ]
+      ],
+      "top_checkers": [
+        [
+          "SchemaChecker",
+          6
+        ],
+        [
+          "GenerationConsistencyChecker",
+          3
+        ],
+        [
+          "EndpointMatchingChecker",
+          2
+        ],
+        [
+          "BoundaryChecker",
+          1
+        ],
+        [
+          "DeviceInfoCatalogChecker",
+          1
+        ]
+      ],
+      "rows": [
+        {
+          "run_dir": "outputs_preflight_synth\\synth_boundary_forbidden\\run=synthetic",
+          "case_id": "synth_boundary_forbidden",
+          "mode": "gate_core",
+          "status": "FAIL",
+          "top_error_codes": [
+            "E_SCHEMA_UP",
+            "E_BOUNDARY",
+            "E_SCHEMA_BIND",
+            "E_UNKNOWN"
+          ]
+        },
+        {
+          "run_dir": "outputs_preflight_synth\\synth_endpoint_missing_fields\\run=synthetic",
+          "case_id": "synth_endpoint_missing_fields",
+          "mode": "gate_core",
+          "status": "FAIL",
+          "top_error_codes": [
+            "E_ENDPOINT_MISSING_FIELDS"
+          ]
+        },
+        {
+          "run_dir": "outputs_preflight_synth\\synth_unknown_type\\run=synthetic",
+          "case_id": "synth_unknown_type",
+          "mode": "gate_core",
+          "status": "FAIL",
+          "top_error_codes": [
+            "E_SCHEMA_UP",
+            "E_SCHEMA_BIND",
+            "E_UNKNOWN"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "gate_full",
+      "total": 3,
+      "pass": 0,
+      "fail": 3,
+      "top_errors": [
+        [
+          "E_SCHEMA_UP",
+          2
+        ],
+        [
+          "E_SCHEMA_BIND",
+          2
+        ],
+        [
+          "E_UNKNOWN",
+          2
+        ],
+        [
+          "E_BOUNDARY",
+          1
+        ],
+        [
+          "E_ENDPOINT_MISSING_FIELDS",
+          1
+        ]
+      ],
+      "top_checkers": [
+        [
+          "SchemaChecker",
+          6
+        ],
+        [
+          "GenerationConsistencyChecker",
+          3
+        ],
+        [
+          "EndpointMatchingChecker",
+          2
+        ],
+        [
+          "BoundaryChecker",
+          1
+        ],
+        [
+          "DeviceInfoCatalogChecker",
+          1
+        ]
+      ],
+      "rows": [
+        {
+          "run_dir": "outputs_preflight_synth\\synth_boundary_forbidden\\run=synthetic",
+          "case_id": "synth_boundary_forbidden",
+          "mode": "gate_full",
+          "status": "FAIL",
+          "top_error_codes": [
+            "E_SCHEMA_UP",
+            "E_BOUNDARY",
+            "E_SCHEMA_BIND",
+            "E_UNKNOWN"
+          ]
+        },
+        {
+          "run_dir": "outputs_preflight_synth\\synth_endpoint_missing_fields\\run=synthetic",
+          "case_id": "synth_endpoint_missing_fields",
+          "mode": "gate_full",
+          "status": "FAIL",
+          "top_error_codes": [
+            "E_ENDPOINT_MISSING_FIELDS"
+          ]
+        },
+        {
+          "run_dir": "outputs_preflight_synth\\synth_unknown_type\\run=synthetic",
+          "case_id": "synth_unknown_type",
+          "mode": "gate_full",
+          "status": "FAIL",
+          "top_error_codes": [
+            "E_SCHEMA_UP",
+            "E_SCHEMA_BIND",
+            "E_UNKNOWN"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "catalog_open",
+      "total": 3,
+      "pass": 0,
+      "fail": 3,
+      "top_errors": [
+        [
+          "E_SCHEMA_UP",
+          2
+        ],
+        [
+          "E_SCHEMA_BIND",
+          2
+        ],
+        [
+          "E_UNKNOWN",
+          2
+        ],
+        [
+          "E_BOUNDARY",
+          1
+        ],
+        [
+          "E_ENDPOINT_MISSING_FIELDS",
+          1
+        ]
+      ],
+      "top_checkers": [
+        [
+          "SchemaChecker",
+          6
+        ],
+        [
+          "GenerationConsistencyChecker",
+          3
+        ],
+        [
+          "EndpointMatchingChecker",
+          2
+        ],
+        [
+          "BoundaryChecker",
+          1
+        ],
+        [
+          "DeviceInfoCatalogChecker",
+          1
+        ]
+      ],
+      "rows": [
+        {
+          "run_dir": "outputs_preflight_synth\\synth_boundary_forbidden\\run=synthetic",
+          "case_id": "synth_boundary_forbidden",
+          "mode": "catalog_open",
+          "status": "FAIL",
+          "top_error_codes": [
+            "E_SCHEMA_UP",
+            "E_BOUNDARY",
+            "E_SCHEMA_BIND",
+            "E_UNKNOWN"
+          ]
+        },
+        {
+          "run_dir": "outputs_preflight_synth\\synth_endpoint_missing_fields\\run=synthetic",
+          "case_id": "synth_endpoint_missing_fields",
+          "mode": "catalog_open",
+          "status": "FAIL",
+          "top_error_codes": [
+            "E_ENDPOINT_MISSING_FIELDS"
+          ]
+        },
+        {
+          "run_dir": "outputs_preflight_synth\\synth_unknown_type\\run=synthetic",
+          "case_id": "synth_unknown_type",
+          "mode": "catalog_open",
+          "status": "FAIL",
+          "top_error_codes": [
+            "E_SCHEMA_UP",
+            "E_SCHEMA_BIND",
+            "E_UNKNOWN"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "catalog_strict",
+      "total": 3,
+      "pass": 0,
+      "fail": 3,
+      "top_errors": [
+        [
+          "E_CATALOG_COMPONENT",
+          2
+        ],
+        [
+          "E_ENDPOINT_MISSING_FIELDS",
+          1
+        ]
+      ],
+      "top_checkers": [
+        [
+          "SchemaChecker",
+          6
+        ],
+        [
+          "ComponentCatalogChecker",
+          6
+        ],
+        [
+          "GenerationConsistencyChecker",
+          3
+        ],
+        [
+          "EndpointMatchingChecker",
+          2
+        ],
+        [
+          "BoundaryChecker",
+          1
+        ],
+        [
+          "DeviceInfoCatalogChecker",
+          1
+        ]
+      ],
+      "rows": [
+        {
+          "run_dir": "outputs_preflight_synth\\synth_boundary_forbidden\\run=synthetic",
+          "case_id": "synth_boundary_forbidden",
+          "mode": "catalog_strict",
+          "status": "FAIL",
+          "top_error_codes": [
+            "E_CATALOG_COMPONENT"
+          ]
+        },
+        {
+          "run_dir": "outputs_preflight_synth\\synth_endpoint_missing_fields\\run=synthetic",
+          "case_id": "synth_endpoint_missing_fields",
+          "mode": "catalog_strict",
+          "status": "FAIL",
+          "top_error_codes": [
+            "E_ENDPOINT_MISSING_FIELDS"
+          ]
+        },
+        {
+          "run_dir": "outputs_preflight_synth\\synth_unknown_type\\run=synthetic",
+          "case_id": "synth_unknown_type",
+          "mode": "catalog_strict",
+          "status": "FAIL",
+          "top_error_codes": [
+            "E_CATALOG_COMPONENT"
+          ]
+        }
+      ]
+    }
+  ]
+}

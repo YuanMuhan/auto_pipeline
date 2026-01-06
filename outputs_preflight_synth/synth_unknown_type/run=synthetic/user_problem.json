@@ -1,10 +1,9 @@
 {
-  "id": "gold",
-  "title": "endpoint conflict",
+  "id": "synth-unknown",
+  "title": "synthetic unknown type",
   "target": "demo",
   "type": "custom",
-  "description": "must-fail endpoint conflict",
-  "context": "",
+  "description": "synthetic must expose unknown type handling",
   "triggers": [],
   "expected_behavior": [],
   "outputs": [],

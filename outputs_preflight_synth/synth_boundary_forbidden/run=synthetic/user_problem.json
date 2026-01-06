@@ -1,0 +1,11 @@
+{
+  "id": "synth-boundary",
+  "title": "synthetic boundary regex hit",
+  "target": "demo",
+  "type": "custom",
+  "description": "contains forbidden url to trigger boundary",
+  "triggers": [],
+  "expected_behavior": [],
+  "outputs": [],
+  "constraints": []
+}
