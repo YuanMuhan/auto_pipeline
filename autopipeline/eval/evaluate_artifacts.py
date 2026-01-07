@@ -68,7 +68,22 @@ class ArtifactEvaluator:
         # Load artifacts
         plan = load_json(run_dir / "plan.json")
         ir = yaml.safe_load((run_dir / "ir.yaml").read_text(encoding="utf-8"))
-        bindings = yaml.safe_load((run_dir / "bindings.yaml").read_text(encoding="utf-8"))
+        # prefer normalized/official bindings
+        bindings = None
+        for name in ["bindings.yaml", "bindings_norm.yaml", "bindings_raw.yaml", "bindings_raw.txt"]:
+            p = run_dir / name
+            if p.exists():
+                try:
+                    if name.endswith(".txt"):
+                        bindings = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
+                    else:
+                        bindings = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
+                    break
+                except Exception:
+                    bindings = {}
+                    break
+        if bindings is None:
+            bindings = {}
         # Prefer inputs/ paths if present
         up_path = run_dir / "inputs" / "user_problem.json"
         di_path = run_dir / "inputs" / "device_info.json"
@@ -124,14 +139,14 @@ class ArtifactEvaluator:
             self._record_validator("ir_component_catalog", {"pass": True, "failures": [], "warnings": ["catalog skipped"], "status": "SKIP", "skipped": True})
             self._record_validator("ir_interface", {"pass": True, "failures": [], "warnings": ["catalog skipped"], "status": "SKIP", "skipped": True})
 
-        bind_res = self.schema_checker.validate_bindings(bindings)
+        bind_res = self.schema_checker.validate_bindings(bindings, gate_mode=self.gate_mode)
         self._check_and_record("bindings_schema", bind_res)
-        cov_res = self.coverage_checker.check_coverage(ir, bindings)
+        cov_res = self.coverage_checker.check_coverage(ir, bindings, gate_mode=self.gate_mode)
         self._check_and_record("coverage", cov_res)
         ep_res = self.endpoint_checker.check_endpoints(bindings, device_info)
         self._check_and_record("endpoint_legality", ep_res)
         if self.enable_catalog:
-            ep_match_res = self.endpoint_matching_checker.check(bindings, device_info)
+            ep_match_res = self.endpoint_matching_checker.check(bindings, device_info, gate_mode=self.gate_mode)
             self._check_and_record("endpoint_matching", ep_match_res)
         else:
             self._record_validator("endpoint_matching", {"pass": True, "failures": [], "warnings": ["catalog skipped"], "status": "SKIP", "skipped": True})

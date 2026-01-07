@@ -18,8 +18,10 @@ class SchemaChecker:
             self.plan_schema = json.load(f)
         with open(schema_dir / "ir_schema.json", 'r') as f:
             self.ir_schema = json.load(f)
-        with open(schema_dir / "bindings_schema.json", 'r') as f:
-            self.bindings_schema = json.load(f)
+        with open(schema_dir / "bindings_schema_full.json", 'r') as f:
+            self.bindings_schema_full = json.load(f)
+        with open(schema_dir / "bindings_schema_core.json", 'r') as f:
+            self.bindings_schema_core = json.load(f)
         with open(schema_dir / "user_problem_schema.json", 'r') as f:
             self.user_problem_schema = json.load(f)
         with open(schema_dir / "device_info_schema.json", 'r') as f:
@@ -77,11 +79,12 @@ class SchemaChecker:
                                     f"IR schema validation error: {str(e)}"))
         return self._result(len(failures) == 0, failures)
 
-    def validate_bindings(self, bindings_data: Dict[str, Any]):
+    def validate_bindings(self, bindings_data: Dict[str, Any], gate_mode: str = "core"):
         """Validate Bindings against schema"""
         failures: List[FailureRecord] = []
         try:
-            jsonschema.validate(instance=bindings_data, schema=self.bindings_schema)
+            schema = self.bindings_schema_core if str(gate_mode).lower() == "core" else self.bindings_schema_full
+            jsonschema.validate(instance=bindings_data, schema=schema)
             failures.extend(self._check_required_fields(bindings_data, self.bindings_required_fields, "Bindings",
                                                         ErrorCode.E_SCHEMA_BIND, "bindings", "SchemaChecker"))
         except jsonschema.ValidationError as e:

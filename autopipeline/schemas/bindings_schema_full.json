@@ -1,0 +1,66 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Bindings Schema (Full)",
+  "description": "Strict bindings schema (original)",
+  "type": "object",
+  "required": ["placements", "transports", "endpoints"],
+  "properties": {
+    "placements": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["component_id", "layer"],
+        "properties": {
+          "component_id": { "type": "string" },
+          "layer": { "type": "string" },
+          "device_ref": { "type": "string" },
+          "resources": { "type": "object" }
+        },
+        "additionalProperties": true
+      }
+    },
+    "transports": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["link_id", "protocol"],
+        "properties": {
+          "link_id": { "type": "string" },
+          "protocol": { "type": "string" },
+          "address": { "type": "string" },
+          "qos": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    },
+    "endpoints": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["link_id", "from_endpoint", "to_endpoint"],
+        "properties": {
+          "link_id": { "type": "string" },
+          "from_endpoint": { "type": "string" },
+          "to_endpoint": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    },
+    "component_bindings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["component", "endpoint_id"],
+        "properties": {
+          "component": { "type": "string" },
+          "endpoint_id": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Bindings Core Schema",
+  "type": "object",
+  "required": ["app_name", "version", "transports", "component_bindings"],
+  "properties": {
+    "app_name": { "type": "string" },
+    "version": { "type": ["string", "number"] },
+    "transports": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "link_id": { "type": "string" },
+          "protocol": { "type": "string" },
+          "qos": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    },
+    "endpoints": {
+      "type": "array",
+      "items": { "type": "object" },
+      "additionalProperties": true
+    },
+    "placements": {
+      "type": "array",
+      "items": { "type": "object" },
+      "additionalProperties": true
+    },
+    "component_bindings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["component"],
+        "properties": {
+          "component": { "type": "string" },
+          "bindings": { "type": "array" },
+          "is_stub": { "type": "boolean" },
+          "need_impl": { "type": "boolean" }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

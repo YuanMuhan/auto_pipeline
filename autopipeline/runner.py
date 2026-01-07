@@ -644,10 +644,25 @@ class PipelineRunner:
             except Exception:
                 pass
 
+            # Normalize and persist raw/norm
+            raw_path_yaml = os.path.join(self.output_dir, "bindings_raw.yaml")
+            try:
+                save_yaml(bindings_data, raw_path_yaml)
+            except Exception:
+                pass
+            from autopipeline.normalize.bindings_normalizer import normalize_bindings
+            bindings_norm, norm_actions = normalize_bindings(bindings_data, ir_data, device_info, gate_mode=self.gate_mode)
+            norm_path = os.path.join(self.output_dir, "bindings_norm.yaml")
+            try:
+                save_yaml(bindings_norm, norm_path)
+            except Exception:
+                pass
+            bindings_data = bindings_norm
+
             # Align with IR to avoid trivial mismatches
             self._align_bindings_with_ir(bindings_data, ir_data)
 
-            schema_res = self.schema_checker.validate_bindings(bindings_data)
+            schema_res = self.schema_checker.validate_bindings(bindings_data, gate_mode=self.gate_mode)
             self._record_validator("bindings_schema", schema_res)
             if not schema_res["pass"]:
                 last_error = self._failure_message(schema_res) or "Bindings schema failed"
@@ -655,7 +670,7 @@ class PipelineRunner:
                 self.log(f"Bindings schema validation failed: {last_error}", "WARNING")
                 continue
 
-            coverage_res = self.coverage_checker.check_coverage(ir_data, bindings_data)
+            coverage_res = self.coverage_checker.check_coverage(ir_data, bindings_data, gate_mode=self.gate_mode)
             self._record_validator("coverage", coverage_res)
             if not coverage_res["pass"]:
                 last_error = self._failure_message(coverage_res) or "Coverage failed"
@@ -672,7 +687,7 @@ class PipelineRunner:
                 continue
 
             if self.enable_catalog:
-                ep_match_res = self.endpoint_matching_checker.check(bindings_data, device_info)
+                ep_match_res = self.endpoint_matching_checker.check(bindings_data, device_info, gate_mode=self.gate_mode)
                 self._record_validator("endpoint_matching", ep_match_res)
                 if not ep_match_res["pass"]:
                     last_error = self._failure_message(ep_match_res) or "Endpoint matching failed"

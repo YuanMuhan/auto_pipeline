@@ -1,17 +1,17 @@
 {
   "success": {
-    "run_dir": "outputs_matrix_24_openai/DEMO-MONITORING/openai_gpt-4o-mini/P0/repair/temp0/DEMO-MONITORING/run=20260105_163810_efbacd",
+    "run_dir": "outputs_temp_fail/DEMO-MONITORING/run=20260107_191352_464575",
     "case": "DEMO-MONITORING",
     "provider": "openai",
     "core_status": "PASS",
-    "exec_status": "SKIP",
+    "exec_status": "PASS",
     "overall_status": "PASS",
     "top_errors": [],
-    "warnings_count": 29,
-    "tokens_total": 4892,
-    "calls_total": 3,
-    "total_duration_ms": 14585,
-    "attempts_total": 7,
+    "warnings_count": 28,
+    "tokens_total": 3492,
+    "calls_total": 2,
+    "total_duration_ms": 8211,
+    "attempts_total": 6,
     "artifacts": {
       "plan": true,
       "ir": true,
@@ -20,7 +20,7 @@
     },
     "eval": {
       "case_id": "DEMO-MONITORING",
-      "timestamp": "2026-01-05T16:38:25.230496",
+      "timestamp": "2026-01-07T19:14:00.743498",
       "checks": {
         "user_problem_schema": {
           "status": "PASS",
@@ -101,13 +101,13 @@
         "num_links": 2,
         "num_placements": 3,
         "num_layers": 3,
-        "total_duration_ms": 14585,
-        "total_attempts": 7,
+        "total_duration_ms": 8211,
+        "total_attempts": 6,
         "attempts_by_stage": {
           "inputs": 1,
           "plan": 1,
           "ir": 1,
-          "bindings": 2,
+          "bindings": 1,
           "codegen": 1,
           "deploy": 1
         }
@@ -132,7 +132,7 @@
         "bindings_forbidden_keywords": 0,
         "rules_source": "yaml"
       },
-      "bindings_hash": "e921587c265c9ad0dafb32b2421016e3b6453b0be37729775767d2caf842346d",
+      "bindings_hash": "aa9cd3c3e7ecf1f2ceae49c20534128720550846f536e805a768146d5455c67c",
       "catalog_hashes": {
         "components_index_hash": "ba26c264fb48b9445d957bac399bb436826407143176f3fb0fad1dffd876fe78",
         "endpoint_types_hash": "5f566bd637fe54bc64c37b48c279b10e38490d8ce2a4b152cb5cfb68594be6e2"
@@ -415,22 +415,6 @@
                 ],
                 "observed_layers": []
               }
-            },
-            {
-              "code": "W_RULES_TOO_STRICT_HINT",
-              "stage": "semantic",
-              "checker": "SemanticProxyChecker",
-              "message": "Repair attempts >1; constraints/prompt may be too strict or unstable",
-              "details": {
-                "attempts_by_stage": {
-                  "inputs": 1,
-                  "plan": 1,
-                  "ir": 1,
-                  "bindings": 2,
-                  "codegen": 1,
-                  "deploy": 1
-                }
-              }
             }
           ],
           "metrics": {},
@@ -453,23 +437,23 @@
         "stages": {
           "inputs": {
             "pass": true,
-            "duration_ms": 5,
+            "duration_ms": 23,
             "attempts": 1
           },
           "plan": {
             "pass": true,
-            "duration_ms": 6,
+            "duration_ms": 15,
             "attempts": 1
           },
           "ir": {
             "pass": true,
-            "duration_ms": 3984,
+            "duration_ms": 3975,
             "attempts": 1
           },
           "bindings": {
             "pass": true,
-            "duration_ms": 10586,
-            "attempts": 2
+            "duration_ms": 4194,
+            "attempts": 1
           },
           "codegen": {
             "pass": true,
@@ -483,7 +467,7 @@
           },
           "eval": {
             "pass": true,
-            "duration_ms": 18,
+            "duration_ms": 17,
             "attempts": 1
           }
         },
@@ -495,17 +479,18 @@
           "cache_enabled": false,
           "prompt_tier": "P0",
           "seed": 0,
-          "enable_repair": true,
+          "enable_repair": false,
           "enable_catalog": true,
           "runtime_check": false,
           "cache_dir": ".cache/llm",
-          "run_id": "run=20260105_163810_efbacd",
-          "output_dir": ".\\outputs_matrix_24_openai\\DEMO-MONITORING\\openai_gpt-4o-mini\\P0\\repair\\temp0\\DEMO-MONITORING\\run=20260105_163810_efbacd",
+          "run_id": "run=20260107_191352_464575",
+          "output_dir": ".\\outputs_temp_fail\\DEMO-MONITORING\\run=20260107_191352_464575",
           "inputs": {
             "user_problem_path": "inputs\\user_problem.json",
             "device_info_path": "inputs\\device_info.json"
           },
-          "semantic_warnings": true
+          "semantic_warnings": true,
+          "gate_mode": "core"
         }
       },
       "llm": {
@@ -514,24 +499,21 @@
         "temperature": 0.0,
         "cache_dir": ".cache/llm",
         "cache_enabled": false,
-        "calls_total": 3,
+        "calls_total": 2,
         "calls_by_stage": {
           "generate_ir": 1,
-          "generate_bindings": 1,
-          "repair_bindings": 1
+          "generate_bindings": 1
         },
         "cache_hits": 0,
-        "cache_misses": 3,
-        "usage_tokens_total": 4892,
+        "cache_misses": 2,
+        "usage_tokens_total": 3492,
         "prompt_template_hashes": {
           "ir_agent": "3b139c640d31d720bf2f7bb0d8b90fdd86a204c2e47586907d82349103f1816a",
-          "binding_agent": "3dcc279408d3061a13a0a10e5d3a3ad8fc7402989eadfce7dc341e3932a3db8a",
-          "repair_agent": "2240406411b902e7b35b1f40c8961e4e26dab8b1431a4635a90e00f32f131627"
+          "binding_agent": "3dcc279408d3061a13a0a10e5d3a3ad8fc7402989eadfce7dc341e3932a3db8a"
         },
         "prompt_resolved_hashes": {
           "ir_agent": "f0b7b48422f892a9ac42e8bfc7fe4bafb91f2f2c07bfc46f8c9923e9ad8fd4c0",
-          "binding_agent": "fb1b3c4738d14df2b67a00b0f377fc10aa00935f58db5e3b9e49958fbe1957cd",
-          "repair_agent": "1cef0bcf8385043f6dd5d1526da5d05fc9bd26026f95d1bfd25a382bbb18c020"
+          "binding_agent": "fb1b3c4738d14df2b67a00b0f377fc10aa00935f58db5e3b9e49958fbe1957cd"
         },
         "prompt_injections": {
           "catalog_types_hash": "7c0d7d6f58c2913592087dd9b3df67c63fc952388dc74d0606b92393079423a7",
@@ -547,19 +529,18 @@
         },
         "raw_paths": {
           "generate_ir": [
-            "outputs_matrix_24_openai\\DEMO-MONITORING\\openai_gpt-4o-mini\\P0\\repair\\temp0\\DEMO-MONITORING\\run=20260105_163810_efbacd\\DEMO-MONITORING\\llm_raw\\generate_ir_attempt1.txt"
+            "outputs_temp_fail\\DEMO-MONITORING\\run=20260107_191352_464575\\DEMO-MONITORING\\llm_raw\\generate_ir_attempt1.txt"
           ],
           "generate_bindings": [
-            "outputs_matrix_24_openai\\DEMO-MONITORING\\openai_gpt-4o-mini\\P0\\repair\\temp0\\DEMO-MONITORING\\run=20260105_163810_efbacd\\DEMO-MONITORING\\llm_raw\\generate_bindings_attempt1.txt"
-          ],
-          "repair_bindings": [
-            "outputs_matrix_24_openai\\DEMO-MONITORING\\openai_gpt-4o-mini\\P0\\repair\\temp0\\DEMO-MONITORING\\run=20260105_163810_efbacd\\DEMO-MONITORING\\llm_raw\\repair_bindings_attempt2.txt"
+            "outputs_temp_fail\\DEMO-MONITORING\\run=20260107_191352_464575\\DEMO-MONITORING\\llm_raw\\generate_bindings_attempt1.txt"
           ]
         },
         "rules_source": "yaml"
       },
       "generated_manifest_present": true,
       "generation_consistency_pass": true,
+      "overall_core_status": "PASS",
+      "overall_exec_status": "PASS",
       "input_validation": [
         "UserProblem warning: UserProblem soft-missing fields: id, title, target"
       ],
@@ -578,7 +559,7 @@
     "artifact_missing_bindings": false,
     "artifact_missing_bindings_reason": null,
     "synthetic_errors": [],
-    "score": 206.21499999999992,
+    "score": 362.58899999999994,
     "success_type": "soft-success",
     "bundle_dir": "reports/cases/bundles/success"
   },
@@ -901,7 +882,7 @@
       }
     ]
   },
-  "runs_scanned": 68,
+  "runs_scanned": 69,
   "filters": {
     "require_real_llm": true,
     "require_ir_for_failure": true,

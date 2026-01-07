@@ -360,7 +360,9 @@ def _write_compare_md(path: Path, success: Dict[str, Any], failure: Dict[str, An
 def _copy_bundle(src_dir: Path, bundle_dir: Path):
     ensure_dir(bundle_dir)
     to_copy = [
-        "plan.json", "ir.yaml", "bindings.yaml", "eval.json", "run.log", "docker-compose.yml"
+        "plan.json", "ir.yaml", "bindings.yaml", "bindings_raw.yaml", "bindings_raw.txt",
+        "bindings_norm.yaml", "bindings_patched.yaml", "bindings_repaired.yaml",
+        "eval.json", "run.log", "docker-compose.yml"
     ]
     for name in to_copy:
         src = src_dir / name

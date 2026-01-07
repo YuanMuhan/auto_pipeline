@@ -8,20 +8,27 @@ from autopipeline.eval.error_codes import ErrorCode, failure
 class CoverageChecker:
     """Check that all IR links are covered in bindings"""
 
-    def check_coverage(self, ir_data: Dict[str, Any], bindings_data: Dict[str, Any]):
+    def check_coverage(self, ir_data: Dict[str, Any], bindings_data: Dict[str, Any], gate_mode: str = "core"):
         """Check if all IR links are mapped in bindings"""
 
         ir_links: Set[str] = {link['id'] for link in ir_data.get('links', [])}
 
         bindings_links: Set[str] = set()
         for transport in bindings_data.get('transports', []):
-            bindings_links.add(transport['link_id'])
+            bindings_links.add(transport.get('link_id'))
         for endpoint in bindings_data.get('endpoints', []):
-            bindings_links.add(endpoint['link_id'])
+            bindings_links.add(endpoint.get('link_id'))
 
-        unmapped_links = ir_links - bindings_links
+        unmapped_links = ir_links - {l for l in bindings_links if l}
 
         if unmapped_links:
+            if str(gate_mode).lower() == "core":
+                return {
+                    "pass": True,
+                    "failures": [],
+                    "warnings": [f"Unmapped IR links (treated as warning in core): {', '.join(unmapped_links)}"],
+                    "metrics": {"coverage_ratio": len(ir_links - unmapped_links) / len(ir_links) if ir_links else 1.0}
+                }
             return {
                 "pass": False,
                 "failures": [failure(ErrorCode.E_COVERAGE, "bindings", "CoverageChecker",

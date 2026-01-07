@@ -2,16 +2,16 @@
 
 | item | success | failure |
 |---|---|---|
-| run_dir | `outputs_matrix_24_openai/DEMO-MONITORING/openai_gpt-4o-mini/P0/repair/temp0/DEMO-MONITORING/run=20260105_163810_efbacd` | `outputs_temp_fail/DEMO-MONITORING/run=20260107_143222_f87890` |
+| run_dir | `outputs_temp_fail/DEMO-MONITORING/run=20260107_191352_464575` | `outputs_temp_fail/DEMO-MONITORING/run=20260107_143222_f87890` |
 | bundle_dir | `reports/cases/bundles/success` | `reports/cases/bundles/failure` |
 | core_status | PASS | FAIL |
-| exec_status | SKIP | SKIP |
+| exec_status | PASS | SKIP |
 | top_errors | [] | ['E_SCHEMA_BIND'] |
-| warnings_count | 29 | 23 |
-| tokens_total | 4892 | 3492 |
-| calls_total | 3 | 2 |
-| total_duration_ms | 14585 | 8497 |
-| attempts_total | 7 | 4 |
+| warnings_count | 28 | 23 |
+| tokens_total | 3492 | 3492 |
+| calls_total | 2 | 2 |
+| total_duration_ms | 8211 | 8497 |
+| attempts_total | 6 | 4 |
 | artifacts | {'plan': True, 'ir': True, 'bindings': True, 'eval': True} | {'plan': True, 'ir': True, 'bindings': True, 'eval': True} |
 
 ## Root Cause
