@@ -625,7 +625,24 @@ class PipelineRunner:
                 last_error = str(e)
                 last_error_code = e.code
                 self.log(f"Bindings decode failed: {last_error}", "WARNING")
+                # persist raw text if available
+                if getattr(e, "raw_text", None):
+                    raw_path = os.path.join(self.output_dir, "bindings_raw.txt")
+                    with open(raw_path, "w", encoding="utf-8") as f:
+                        f.write(e.raw_text)
                 continue
+            except Exception as e:
+                last_error = str(e)
+                last_error_code = ErrorCode.E_UNKNOWN
+                self.log(f"Bindings generation unexpected error: {last_error}", "WARNING")
+                continue
+
+            # Always persist raw bindings before validation
+            raw_path_yaml = os.path.join(self.output_dir, "bindings_raw.yaml")
+            try:
+                save_yaml(bindings_data, raw_path_yaml)
+            except Exception:
+                pass
 
             # Align with IR to avoid trivial mismatches
             self._align_bindings_with_ir(bindings_data, ir_data)
