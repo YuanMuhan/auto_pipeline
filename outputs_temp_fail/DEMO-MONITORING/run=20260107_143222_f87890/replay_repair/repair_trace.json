@@ -1,0 +1,8 @@
+[
+  {
+    "strategy": "deterministic_patch",
+    "used_hints_count": 1,
+    "patch_actions_count": 5,
+    "artifact_written": "replay_repair\\bindings_patched_attempt1.yaml"
+  }
+]

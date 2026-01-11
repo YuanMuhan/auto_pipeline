@@ -1,0 +1,22 @@
+[2026-01-11T19:08:32.750283] [INFO] Starting pipeline for case: DEMO-SMARTHOME
+[2026-01-11T19:08:32.750842] [INFO] Step 1: Loading user problem and device info
+[2026-01-11T19:08:32.772472] [INFO] Successfully loaded input files
+[2026-01-11T19:08:32.780155] [INFO] Step 2: Generating Plan (Planner Agent)
+[2026-01-11T19:08:32.789868] [INFO] Saved Plan to .\outputs_temp_repair\DEMO-SMARTHOME\run=20260111_190832_1f76fd\plan.json
+[2026-01-11T19:08:32.789888] [INFO] Step 3: Generating IR (IR Agent)
+[2026-01-11T19:08:32.789898] [INFO] IR generation attempt 1/3
+[2026-01-11T19:08:39.396362] [INFO] [LLM] stage=generate_ir cache=MISS key=706ac988 time=6.585s, usage={'completion_tokens': 544, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0}, 'prompt_tokens': 2826, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0}, 'total_tokens': 3370}
+[2026-01-11T19:08:39.411563] [INFO] IR validation passed
+[2026-01-11T19:08:39.415534] [INFO] Saved IR to .\outputs_temp_repair\DEMO-SMARTHOME\run=20260111_190832_1f76fd\ir.yaml
+[2026-01-11T19:08:39.415554] [INFO] Step 4: Generating Bindings (Bindings Agent)
+[2026-01-11T19:08:39.415566] [INFO] Bindings generation attempt 1/3
+[2026-01-11T19:08:45.596834] [INFO] [LLM] stage=generate_bindings cache=MISS key=8356e4a5 time=6.157s, usage={'completion_tokens': 472, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0}, 'prompt_tokens': 3166, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0}, 'total_tokens': 3638}
+[2026-01-11T19:08:45.613219] [INFO] Bindings validation passed
+[2026-01-11T19:08:45.616945] [INFO] Saved Bindings to .\outputs_temp_repair\DEMO-SMARTHOME\run=20260111_190832_1f76fd\bindings.yaml
+[2026-01-11T19:08:45.628460] [INFO] Step 5: Generating code skeletons (CodeGen)
+[2026-01-11T19:08:45.681842] [INFO] Step 6: Generating docker-compose.yml (Deploy)
+[2026-01-11T19:08:45.682244] [INFO] Step 7: Running evaluation
+[2026-01-11T19:08:45.703902] [INFO] Saved evaluation to .\outputs_temp_repair\DEMO-SMARTHOME\run=20260111_190832_1f76fd\eval.json
+[2026-01-11T19:08:45.705264] [INFO] Saved report to outputs_temp_repair\DEMO-SMARTHOME\run=20260111_190832_1f76fd\report.md
+[2026-01-11T19:08:45.705276] [INFO] Pipeline completed in 12.95 seconds
+[2026-01-11T19:08:45.705279] [INFO] Step 9: Saving run log

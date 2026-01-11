@@ -1,6 +1,6 @@
 {
   "success": {
-    "run_dir": "outputs_temp_fail/DEMO-MONITORING/run=20260107_191352_464575",
+    "run_dir": "outputs_temp_fail/DEMO-MONITORING/run=20260111_105451_496556",
     "case": "DEMO-MONITORING",
     "provider": "openai",
     "core_status": "PASS",
@@ -10,7 +10,7 @@
     "warnings_count": 28,
     "tokens_total": 3492,
     "calls_total": 2,
-    "total_duration_ms": 8211,
+    "total_duration_ms": 7067,
     "attempts_total": 6,
     "artifacts": {
       "plan": true,
@@ -20,7 +20,7 @@
     },
     "eval": {
       "case_id": "DEMO-MONITORING",
-      "timestamp": "2026-01-07T19:14:00.743498",
+      "timestamp": "2026-01-11T10:54:59.286384",
       "checks": {
         "user_problem_schema": {
           "status": "PASS",
@@ -101,7 +101,7 @@
         "num_links": 2,
         "num_placements": 3,
         "num_layers": 3,
-        "total_duration_ms": 8211,
+        "total_duration_ms": 7067,
         "total_attempts": 6,
         "attempts_by_stage": {
           "inputs": 1,
@@ -437,7 +437,7 @@
         "stages": {
           "inputs": {
             "pass": true,
-            "duration_ms": 23,
+            "duration_ms": 24,
             "attempts": 1
           },
           "plan": {
@@ -447,12 +447,12 @@
           },
           "ir": {
             "pass": true,
-            "duration_ms": 3975,
+            "duration_ms": 3516,
             "attempts": 1
           },
           "bindings": {
             "pass": true,
-            "duration_ms": 4194,
+            "duration_ms": 3508,
             "attempts": 1
           },
           "codegen": {
@@ -467,7 +467,7 @@
           },
           "eval": {
             "pass": true,
-            "duration_ms": 17,
+            "duration_ms": 19,
             "attempts": 1
           }
         },
@@ -483,8 +483,8 @@
           "enable_catalog": true,
           "runtime_check": false,
           "cache_dir": ".cache/llm",
-          "run_id": "run=20260107_191352_464575",
-          "output_dir": ".\\outputs_temp_fail\\DEMO-MONITORING\\run=20260107_191352_464575",
+          "run_id": "run=20260111_105451_496556",
+          "output_dir": ".\\outputs_temp_fail\\DEMO-MONITORING\\run=20260111_105451_496556",
           "inputs": {
             "user_problem_path": "inputs\\user_problem.json",
             "device_info_path": "inputs\\device_info.json"
@@ -529,10 +529,10 @@
         },
         "raw_paths": {
           "generate_ir": [
-            "outputs_temp_fail\\DEMO-MONITORING\\run=20260107_191352_464575\\DEMO-MONITORING\\llm_raw\\generate_ir_attempt1.txt"
+            "outputs_temp_fail\\DEMO-MONITORING\\run=20260111_105451_496556\\DEMO-MONITORING\\llm_raw\\generate_ir_attempt1.txt"
           ],
           "generate_bindings": [
-            "outputs_temp_fail\\DEMO-MONITORING\\run=20260107_191352_464575\\DEMO-MONITORING\\llm_raw\\generate_bindings_attempt1.txt"
+            "outputs_temp_fail\\DEMO-MONITORING\\run=20260111_105451_496556\\DEMO-MONITORING\\llm_raw\\generate_bindings_attempt1.txt"
           ]
         },
         "rules_source": "yaml"
@@ -559,7 +559,7 @@
     "artifact_missing_bindings": false,
     "artifact_missing_bindings_reason": null,
     "synthetic_errors": [],
-    "score": 362.58899999999994,
+    "score": 363.73299999999995,
     "success_type": "soft-success",
     "bundle_dir": "reports/cases/bundles/success"
   },
@@ -882,7 +882,7 @@
       }
     ]
   },
-  "runs_scanned": 69,
+  "runs_scanned": 5,
   "filters": {
     "require_real_llm": true,
     "require_ir_for_failure": true,
@@ -892,7 +892,7 @@
     ]
   },
   "skipped_runs_summary": {
-    "no_failure_binding": 61
+    "no_failure_binding": 0
   },
   "fallback_no_failure_with_binding": false
 }

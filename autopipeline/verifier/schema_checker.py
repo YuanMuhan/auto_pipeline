@@ -22,6 +22,8 @@ class SchemaChecker:
             self.bindings_schema_full = json.load(f)
         with open(schema_dir / "bindings_schema_core.json", 'r') as f:
             self.bindings_schema_core = json.load(f)
+        with open(schema_dir / "placement_schema.json", 'r') as f:
+            self.placement_schema = json.load(f)
         with open(schema_dir / "user_problem_schema.json", 'r') as f:
             self.user_problem_schema = json.load(f)
         with open(schema_dir / "device_info_schema.json", 'r') as f:
@@ -94,6 +96,20 @@ class SchemaChecker:
         except Exception as e:
             failures.append(failure(ErrorCode.E_SCHEMA_BIND, "bindings", "SchemaChecker",
                                     f"Bindings schema validation error: {str(e)}"))
+        return self._result(len(failures) == 0, failures)
+
+    def validate_placement(self, placement_data: Dict[str, Any]):
+        """Validate Placement plan against schema"""
+        failures: List[FailureRecord] = []
+        try:
+            jsonschema.validate(instance=placement_data, schema=self.placement_schema)
+        except jsonschema.ValidationError as e:
+            failures.append(failure(ErrorCode.E_SCHEMA_PLACE, "placement", "SchemaChecker",
+                                    f"Placement schema validation failed: {e.message}",
+                                    {"path": list(e.path)}))
+        except Exception as e:
+            failures.append(failure(ErrorCode.E_SCHEMA_PLACE, "placement", "SchemaChecker",
+                                    f"Placement schema validation error: {str(e)}"))
         return self._result(len(failures) == 0, failures)
 
     def validate_user_problem(self, user_problem: Dict[str, Any]):

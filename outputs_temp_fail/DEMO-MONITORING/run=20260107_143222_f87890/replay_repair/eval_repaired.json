@@ -1,0 +1,383 @@
+{
+  "case_id": "replay_repair",
+  "overall_status": "PASS",
+  "overall_static_status": "PASS",
+  "overall_core_status": "PASS",
+  "overall_exec_status": "PASS",
+  "overall_runtime_status": "SKIP",
+  "checks": {
+    "user_problem_schema": {
+      "status": "PASS",
+      "message": "OK"
+    },
+    "device_info_schema": {
+      "status": "PASS",
+      "message": "OK"
+    },
+    "device_info_catalog": {
+      "status": "PASS",
+      "message": "OK"
+    },
+    "plan_schema": {
+      "status": "PASS",
+      "message": "OK"
+    },
+    "ir_schema": {
+      "status": "PASS",
+      "message": "OK"
+    },
+    "ir_boundary": {
+      "status": "PASS",
+      "message": "OK"
+    },
+    "ir_component_catalog": {
+      "status": "PASS",
+      "message": "OK"
+    },
+    "ir_interface": {
+      "status": "PASS",
+      "message": "OK"
+    },
+    "bindings_schema": {
+      "status": "PASS",
+      "message": "OK"
+    },
+    "coverage": {
+      "status": "PASS",
+      "message": "OK"
+    },
+    "endpoint_legality": {
+      "status": "PASS",
+      "message": "OK"
+    },
+    "endpoint_matching": {
+      "status": "PASS",
+      "message": "OK"
+    },
+    "cross_artifact_consistency": {
+      "status": "PASS",
+      "message": "OK"
+    },
+    "generation_consistency": {
+      "status": "PASS",
+      "message": "OK"
+    },
+    "semantic_proxy": {
+      "status": "PASS",
+      "message": "OK"
+    },
+    "code_generated": {
+      "status": "PASS",
+      "message": "OK"
+    },
+    "runtime_compose": {
+      "status": "SKIP",
+      "message": "OK"
+    }
+  },
+  "validators": {
+    "user_problem_schema": {
+      "pass": true,
+      "failures": [],
+      "warnings": [
+        "UserProblem soft-missing fields: id, title, target"
+      ],
+      "metrics": {},
+      "status": "PASS",
+      "skipped": false
+    },
+    "device_info_schema": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {},
+      "status": "PASS",
+      "skipped": false
+    },
+    "device_info_catalog": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {},
+      "status": "PASS",
+      "skipped": false
+    },
+    "plan_schema": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {},
+      "status": "PASS",
+      "skipped": false
+    },
+    "ir_schema": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {},
+      "status": "PASS",
+      "skipped": false
+    },
+    "ir_boundary": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {},
+      "status": "PASS",
+      "skipped": false
+    },
+    "ir_component_catalog": {
+      "pass": true,
+      "failures": [],
+      "warnings": [
+        "alias target not resolved: RuleEngine (candidates=[])",
+        "alias target not resolved: RuleEngine (candidates=[])",
+        "alias target not resolved: RuleEngine (candidates=[])",
+        "alias target not resolved: StateTracker (candidates=[])",
+        "IR component types not in catalog: data_source, storage (open mode: treated as warning)",
+        "component temp_sensor_01 type 'data_source' has no catalog spec; skip port validation",
+        "component edge_gateway_01 has no explicit ports; skipping port validation",
+        "component cloud_server_01 type 'storage' has no catalog spec; skip port validation",
+        "link sensor_to_gateway missing explicit ports; skipping port validation",
+        "link gateway_to_cloud missing explicit ports; skipping port validation"
+      ],
+      "metrics": {
+        "unknown_types": [
+          {
+            "id": "temp_sensor_01",
+            "type": "data_source"
+          },
+          {
+            "id": "cloud_server_01",
+            "type": "storage"
+          }
+        ],
+        "unknown_types_count": 2
+      },
+      "status": "PASS",
+      "skipped": false
+    },
+    "ir_interface": {
+      "pass": true,
+      "failures": [],
+      "warnings": [
+        "alias target not resolved: RuleEngine (candidates=[])",
+        "alias target not resolved: RuleEngine (candidates=[])",
+        "alias target not resolved: RuleEngine (candidates=[])",
+        "alias target not resolved: StateTracker (candidates=[])",
+        "IR component types not in catalog: data_source, storage (open mode: treated as warning)",
+        "component temp_sensor_01 type 'data_source' has no catalog spec; skip port validation",
+        "component edge_gateway_01 has no explicit ports; skipping port validation",
+        "component cloud_server_01 type 'storage' has no catalog spec; skip port validation",
+        "link sensor_to_gateway missing explicit ports; skipping port validation",
+        "link gateway_to_cloud missing explicit ports; skipping port validation"
+      ],
+      "metrics": {
+        "unknown_types": [
+          {
+            "id": "temp_sensor_01",
+            "type": "data_source"
+          },
+          {
+            "id": "cloud_server_01",
+            "type": "storage"
+          }
+        ],
+        "unknown_types_count": 2
+      },
+      "status": "PASS",
+      "skipped": false
+    },
+    "bindings_schema": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {},
+      "status": "PASS",
+      "skipped": false
+    },
+    "coverage": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {
+        "coverage_ratio": 1.0
+      },
+      "status": "PASS",
+      "skipped": false
+    },
+    "endpoint_legality": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {
+        "referenced": 3,
+        "invalid": 0
+      },
+      "status": "PASS",
+      "skipped": false
+    },
+    "endpoint_matching": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {},
+      "status": "PASS",
+      "skipped": false
+    },
+    "cross_artifact_consistency": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {},
+      "status": "PASS",
+      "skipped": false
+    },
+    "generation_consistency": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {},
+      "status": "PASS",
+      "skipped": false
+    },
+    "semantic_proxy": {
+      "pass": true,
+      "failures": [],
+      "warnings": [
+        {
+          "code": "W_UP_DI_DEVICE_NOT_FOUND",
+          "stage": "semantic",
+          "checker": "SemanticProxyChecker",
+          "message": "User problem mentions devices not found in device_info",
+          "details": {
+            "up_terms": [
+              "analytics",
+              "cloud",
+              "high frequency sensor readings",
+              "home",
+              "monitoring",
+              "real-time for alerts, periodic for storage",
+              "smart",
+              "system",
+              "temperature",
+              "with"
+            ],
+            "di_devices": [
+              "cloud analytics server",
+              "cloud_server_01",
+              "edge gateway",
+              "edge_gateway_01",
+              "temp_sensor_01",
+              "temperature sensor device"
+            ],
+            "unmatched": [
+              "analytics",
+              "cloud",
+              "high frequency sensor readings",
+              "home",
+              "monitoring",
+              "real-time for alerts, periodic for storage",
+              "smart",
+              "system",
+              "temperature",
+              "with"
+            ]
+          }
+        },
+        {
+          "code": "W_DI_UNUSED_ENDPOINTS",
+          "stage": "semantic",
+          "checker": "SemanticProxyChecker",
+          "message": "Most device_info endpoints are unused in bindings",
+          "details": {
+            "di_endpoints": 3,
+            "used_endpoints": 0,
+            "ratio": 0.0
+          }
+        },
+        {
+          "code": "W_PLAN_IR_MISMATCH",
+          "stage": "semantic",
+          "checker": "SemanticProxyChecker",
+          "message": "Plan and IR components diverge",
+          "details": {
+            "plan_refs": [
+              "data_processor",
+              "sensor_collector",
+              "storage_service"
+            ],
+            "ir_components": [
+              "temp_sensor_01",
+              "edge_gateway_01",
+              "cloud_server_01"
+            ],
+            "missing_in_ir": [
+              "data_processor",
+              "sensor_collector",
+              "storage_service"
+            ],
+            "unused_in_plan": [
+              "cloud_server_01",
+              "edge_gateway_01",
+              "temp_sensor_01"
+            ]
+          }
+        },
+        {
+          "code": "W_MULTI_LAYER_WEAK",
+          "stage": "semantic",
+          "checker": "SemanticProxyChecker",
+          "message": "Hints suggest multi-layer but artifacts show single/unknown layer",
+          "details": {
+            "hint_sources": [
+              "up",
+              "di"
+            ],
+            "observed_layers": []
+          }
+        }
+      ],
+      "metrics": {},
+      "status": "PASS",
+      "skipped": false
+    },
+    "code_generated": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {},
+      "status": "PASS",
+      "skipped": false
+    },
+    "runtime_compose": {
+      "pass": true,
+      "failures": [],
+      "warnings": [],
+      "metrics": {},
+      "status": "SKIP",
+      "skipped": true
+    }
+  },
+  "failures_flat": [],
+  "catalog_hashes": {
+    "components_index_hash": "ba26c264fb48b9445d957bac399bb436826407143176f3fb0fad1dffd876fe78",
+    "endpoint_types_hash": "5f566bd637fe54bc64c37b48c279b10e38490d8ce2a4b152cb5cfb68594be6e2"
+  },
+  "rules_version": {
+    "rules_source": "yaml",
+    "ir_rules_hash": "047ca0d25ee6a7cd98cdd4e68af932f2f456879fc9ac62b28ebb8d99f1327bda",
+    "bindings_rules_hash": "047ca0d25ee6a7cd98cdd4e68af932f2f456879fc9ac62b28ebb8d99f1327bda"
+  },
+  "unknown_component_types_count": 2,
+  "unknown_component_types": [
+    {
+      "id": "temp_sensor_01",
+      "type": "data_source"
+    },
+    {
+      "id": "cloud_server_01",
+      "type": "storage"
+    }
+  ]
+}

@@ -4,6 +4,7 @@ import os
 import time
 import subprocess
 import py_compile
+import yaml
 from datetime import datetime
 from typing import Dict, Any, Tuple, List
 
@@ -66,6 +67,7 @@ class PipelineRunner:
         self.failures_flat: List[Dict[str, Any]] = []
         self.pipeline_stats: Dict[str, Dict[str, Any]] = {}
         self.inputs_paths: Dict[str, str] = {}
+        self.repair_trace: List[Dict[str, Any]] = []
 
         # Initialize agents
         self.planner = PlannerAgent()
@@ -602,30 +604,47 @@ class PipelineRunner:
             bindings_data["version"] = ir_data.get("version")
     def _generate_and_validate_bindings(self, ir_data: Dict[str, Any],
                                         device_info: Dict[str, Any]) -> Tuple[Dict[str, Any], int]:
-        """Generate Bindings with auto-repair loop (max 3 attempts)"""
+        """Generate Bindings with error-aware repair loop (max 3 attempts)"""
 
         bindings_data = None
         last_error = ""
         last_error_code = ErrorCode.E_UNKNOWN
         attempts_used = 0
         max_attempts = 1 if not self.enable_repair else 3
+        stagnation_error = None
+        stagnation_count = 0
+        self.repair_trace = []
+
+        def _failure_hints_from(res: Dict[str, Any]) -> List[Dict[str, Any]]:
+            hints = []
+            for f in res.get("failures", []) or []:
+                hints.append({
+                    "code": f.get("code"),
+                    "checker": f.get("checker"),
+                    "path": f.get("details", {}).get("path") or f.get("details", {}).get("instance_path") or "",
+                    "missing": f.get("details", {}).get("missing") or f.get("details", {}).get("required") or "",
+                    "message": (f.get("message") or "").split("\n")[0],
+                })
+            return hints
+
         for attempt in range(1, max_attempts + 1):
             attempts_used = attempt
-            self.log(f"Bindings generation attempt {attempt}/3")
+            self.log(f"Bindings generation attempt {attempt}/{max_attempts}")
 
             try:
                 if attempt == 1:
                     bindings_data = self.bindings_agent.generate_bindings(ir_data, device_info,
                                                                           self.rules_ctx, self.schema_versions, attempt=attempt)
+                    current_strategy = "generate"
                 else:
                     bindings_data = self.repair_agent.repair_bindings(bindings_data, last_error,
                                                                       ir_data, device_info,
                                                                       self.rules_ctx, self.schema_versions, attempt=attempt)
+                    current_strategy = "regenerate"
             except LLMOutputFormatError as e:
                 last_error = str(e)
                 last_error_code = e.code
                 self.log(f"Bindings decode failed: {last_error}", "WARNING")
-                # persist raw text if available
                 if getattr(e, "raw_text", None):
                     raw_path = os.path.join(self.output_dir, "bindings_raw.txt")
                     with open(raw_path, "w", encoding="utf-8") as f:
@@ -645,11 +664,6 @@ class PipelineRunner:
                 pass
 
             # Normalize and persist raw/norm
-            raw_path_yaml = os.path.join(self.output_dir, "bindings_raw.yaml")
-            try:
-                save_yaml(bindings_data, raw_path_yaml)
-            except Exception:
-                pass
             from autopipeline.normalize.bindings_normalizer import normalize_bindings
             bindings_norm, norm_actions = normalize_bindings(bindings_data, ir_data, device_info, gate_mode=self.gate_mode)
             norm_path = os.path.join(self.output_dir, "bindings_norm.yaml")
@@ -662,54 +676,139 @@ class PipelineRunner:
             # Align with IR to avoid trivial mismatches
             self._align_bindings_with_ir(bindings_data, ir_data)
 
-            schema_res = self.schema_checker.validate_bindings(bindings_data, gate_mode=self.gate_mode)
-            self._record_validator("bindings_schema", schema_res)
-            if not schema_res["pass"]:
+            tried_det_patch = False
+            tried_llm_patch = False
+            inner_round = 0
+            while True:
+                inner_round += 1
+                schema_res = self.schema_checker.validate_bindings(bindings_data, gate_mode=self.gate_mode)
+                self._record_validator("bindings_schema", schema_res)
+                if schema_res["pass"]:
+                    last_error = ""
+                    last_error_code = ErrorCode.E_UNKNOWN
+                    stagnation_count = 0
+                    stagnation_error = None
+                    break
+
+                failure_hints = _failure_hints_from(schema_res)
+                top_error = schema_res.get("failures", [{}])[0].get("code") if schema_res.get("failures") else ErrorCode.E_SCHEMA_BIND
+                if top_error == stagnation_error:
+                    stagnation_count += 1
+                else:
+                    stagnation_error = top_error
+                    stagnation_count = 0
+
+                # Deterministic patch first
+                if not tried_det_patch:
+                    from autopipeline.repair.deterministic_patch import apply_deterministic_patch
+                    patched, patch_actions = apply_deterministic_patch(bindings_data, ir_data, failure_hints)
+                    patched_path = os.path.join(self.output_dir, f"bindings_patched_attempt{attempt}.yaml")
+                    try:
+                        save_yaml(patched, patched_path)
+                    except Exception:
+                        pass
+                    self.repair_trace.append({
+                        "attempt": attempt,
+                        "strategy": "deterministic_patch",
+                        "top_error_before": top_error,
+                        "patch_actions_count": len(patch_actions),
+                        "used_hints_count": len(failure_hints),
+                        "artifact_written": os.path.relpath(patched_path, self.output_dir),
+                    })
+                    bindings_data = patched
+                    tried_det_patch = True
+                    continue
+
+                # LLM patch if still failing and repair enabled
+                if self.enable_repair and not tried_llm_patch:
+                    from autopipeline.repair.context_pack import build_bindings_repair_context
+                    from autopipeline.repair.llm_patch import llm_patch_bindings
+                    ctx = build_bindings_repair_context(self.output_dir, schema_res.get("failures", []))
+                    repaired_text = llm_patch_bindings(self.llm_client, ctx.get("previous_bindings_text", ""), ctx.get("failure_hints", []),
+                                                       ctx.get("skeleton", {}), self.case_id, self.rules_ctx, self.schema_versions,
+                                                       attempt=attempt)
+                    repaired_path = os.path.join(self.output_dir, f"bindings_repaired_attempt{attempt}.txt")
+                    try:
+                        with open(repaired_path, "w", encoding="utf-8") as f:
+                            f.write(repaired_text)
+                    except Exception:
+                        pass
+                    try:
+                        import yaml
+                        bindings_data = yaml.safe_load(repaired_text) or {}
+                    except Exception as e:
+                        last_error = f"LLM patch parse failed: {e}"
+                        last_error_code = ErrorCode.E_SCHEMA_BIND
+                        tried_llm_patch = True
+                        self.repair_trace.append({
+                            "attempt": attempt,
+                            "strategy": "llm_patch",
+                            "top_error_before": top_error,
+                            "used_hints_count": len(failure_hints),
+                            "artifact_written": os.path.relpath(repaired_path, self.output_dir),
+                            "parse_failed": True,
+                        })
+                        break
+
+                    tried_llm_patch = True
+                    self.repair_trace.append({
+                        "attempt": attempt,
+                        "strategy": "llm_patch",
+                        "top_error_before": top_error,
+                        "used_hints_count": len(failure_hints),
+                        "artifact_written": os.path.relpath(repaired_path, self.output_dir),
+                        "parse_failed": False,
+                    })
+                    # After LLM patch, loop to revalidate
+                    continue
+
+                # Give up this attempt; move to next
                 last_error = self._failure_message(schema_res) or "Bindings schema failed"
                 last_error_code = ErrorCode.E_SCHEMA_BIND
                 self.log(f"Bindings schema validation failed: {last_error}", "WARNING")
-                continue
+                break
 
-            coverage_res = self.coverage_checker.check_coverage(ir_data, bindings_data, gate_mode=self.gate_mode)
-            self._record_validator("coverage", coverage_res)
-            if not coverage_res["pass"]:
-                last_error = self._failure_message(coverage_res) or "Coverage failed"
-                last_error_code = ErrorCode.E_COVERAGE
-                self.log(f"Coverage check failed: {last_error}", "WARNING")
-                continue
-
-            endpoint_res = self.endpoint_checker.check_endpoints(bindings_data, device_info)
-            self._record_validator("endpoint_legality", endpoint_res)
-            if not endpoint_res["pass"]:
-                last_error = self._failure_message(endpoint_res) or "Endpoint legality failed"
-                last_error_code = ErrorCode.E_ENDPOINT_CHECK
-                self.log(f"Endpoint legality check failed: {last_error}", "WARNING")
-                continue
-
-            if self.enable_catalog:
-                ep_match_res = self.endpoint_matching_checker.check(bindings_data, device_info, gate_mode=self.gate_mode)
-                self._record_validator("endpoint_matching", ep_match_res)
-                if not ep_match_res["pass"]:
-                    last_error = self._failure_message(ep_match_res) or "Endpoint matching failed"
-                    last_error_code = ErrorCode.E_ENDPOINT_CHECK
-                    self.log(f"Endpoint matching check failed: {last_error}", "WARNING")
+            if schema_res.get("pass"):
+                coverage_res = self.coverage_checker.check_coverage(ir_data, bindings_data, gate_mode=self.gate_mode)
+                self._record_validator("coverage", coverage_res)
+                if not coverage_res["pass"]:
+                    last_error = self._failure_message(coverage_res) or "Coverage failed"
+                    last_error_code = ErrorCode.E_COVERAGE
+                    self.log(f"Coverage check failed: {last_error}", "WARNING")
                     continue
-            else:
-                self._skip_validator("endpoint_matching", "Skipped catalog validation (--no-catalog)")
 
-            cross_res = self.cross_artifact_checker.check(ir_data, bindings_data)
-            self._record_validator("cross_artifact_consistency", cross_res)
-            if not cross_res["pass"]:
-                last_error = self._failure_message(cross_res) or "Cross artifact consistency failed"
-                last_error_code = ErrorCode.E_CHECKER_FAIL
-                self.log(f"Cross-artifact check failed: {last_error}", "WARNING")
-                continue
+                endpoint_res = self.endpoint_checker.check_endpoints(bindings_data, device_info)
+                self._record_validator("endpoint_legality", endpoint_res)
+                if not endpoint_res["pass"]:
+                    last_error = self._failure_message(endpoint_res) or "Endpoint legality failed"
+                    last_error_code = ErrorCode.E_ENDPOINT_CHECK
+                    self.log(f"Endpoint legality check failed: {last_error}", "WARNING")
+                    continue
 
-            self.log("Bindings validation passed")
-            break
+                if self.enable_catalog:
+                    ep_match_res = self.endpoint_matching_checker.check(bindings_data, device_info, gate_mode=self.gate_mode)
+                    self._record_validator("endpoint_matching", ep_match_res)
+                    if not ep_match_res["pass"]:
+                        last_error = self._failure_message(ep_match_res) or "Endpoint matching failed"
+                        last_error_code = ErrorCode.E_ENDPOINT_CHECK
+                        self.log(f"Endpoint matching check failed: {last_error}", "WARNING")
+                        continue
+                else:
+                    self._skip_validator("endpoint_matching", "Skipped catalog validation (--no-catalog)")
+
+                cross_res = self.cross_artifact_checker.check(ir_data, bindings_data)
+                self._record_validator("cross_artifact_consistency", cross_res)
+                if not cross_res["pass"]:
+                    last_error = self._failure_message(cross_res) or "Cross artifact consistency failed"
+                    last_error_code = ErrorCode.E_CHECKER_FAIL
+                    self.log(f"Cross-artifact check failed: {last_error}", "WARNING")
+                    continue
+
+                self.log("Bindings validation passed")
+                break
 
         else:
-            self.log("Bindings generation failed after 3 attempts", "ERROR")
+            self.log("Bindings generation failed after max attempts", "ERROR")
             raise StageError(last_error or "Failed to generate valid Bindings", stage="bindings", attempts=attempts_used, code=last_error_code)
 
         bindings_file = os.path.join(self.output_dir, "bindings.yaml")
@@ -744,6 +843,7 @@ class PipelineRunner:
                 "config": self._pipeline_config(),
             },
             "llm": self._llm_summary(),
+            "repair_trace": self.repair_trace,
         }
 
         # Carry validators collected during generation

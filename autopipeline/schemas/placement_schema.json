@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PlacementPlan",
+  "type": "object",
+  "required": ["app_name", "version", "nodes", "component_placements"],
+  "properties": {
+    "app_name": { "type": "string" },
+    "version": { "type": "string" },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["node_id", "class"],
+        "properties": {
+          "node_id": { "type": "string" },
+          "class": { "type": "string", "enum": ["cloud", "edge", "device"] },
+          "capabilities": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "component_placements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["component_id", "target_node_id"],
+        "properties": {
+          "component_id": { "type": "string" },
+          "target_node_id": { "type": "string" },
+          "rationale": { "type": "string" },
+          "constraints_used": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "link_placements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["link_id"],
+        "properties": {
+          "link_id": { "type": "string" },
+          "transport_hint": { "type": "string" }
+        }
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

@@ -1,9 +1,0 @@
-[2026-01-05T09:36:41.469235] [INFO] Starting pipeline for case: DEMO-SMARTHOME
-[2026-01-05T09:36:41.471420] [INFO] Step 1: Loading user problem and device info
-[2026-01-05T09:36:41.492028] [INFO] Successfully loaded input files
-[2026-01-05T09:36:41.498476] [INFO] Step 2: Generating Plan (Planner Agent)
-[2026-01-05T09:36:41.508583] [INFO] Saved Plan to .\outputs_matrix_24\DEMO-SMARTHOME\deepseek_deepseek-chat\P0\repair\temp0\DEMO-SMARTHOME\run=20260105_093641_61a953\plan.json
-[2026-01-05T09:36:41.508685] [INFO] Step 3: Generating IR (IR Agent)
-[2026-01-05T09:36:41.508743] [INFO] IR generation attempt 1/3
-[2026-01-05T09:37:19.817298] [INFO] Saved failure evaluation to .\outputs_matrix_24\DEMO-SMARTHOME\deepseek_deepseek-chat\P0\repair\temp0\DEMO-SMARTHOME\run=20260105_093641_61a953\eval.json
-[2026-01-05T09:37:19.817418] [INFO] Step 9: Saving run log

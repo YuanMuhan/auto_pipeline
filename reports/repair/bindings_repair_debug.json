@@ -1,0 +1,14 @@
+{
+  "before_top_error": "E_SCHEMA_BIND",
+  "after_top_error": "",
+  "before_missing_fields_topk": [
+    {
+      "path": "",
+      "missing": [
+        "component_bindings"
+      ],
+      "message": "Bindings missing required fields: component_bindings"
+    }
+  ],
+  "after_failures_topk": []
+}
