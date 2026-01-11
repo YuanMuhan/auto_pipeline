@@ -64,7 +64,7 @@ def replay(run_dir: Path, gate_mode: str = "core", out_subdir: str = "replay_rep
 
     # prepare evaluation dir: copy plan/ir/inputs, and set bindings.yaml to patched norm
     eval_dir = out_dir
-    for name in ["plan.json", "ir.yaml", "run.log", "eval.json"]:
+    for name in ["plan.json", "ir.yaml", "placement_plan.yaml", "run.log", "eval.json"]:
         src = run_dir / name
         if src.exists():
             shutil.copy2(src, eval_dir / name)

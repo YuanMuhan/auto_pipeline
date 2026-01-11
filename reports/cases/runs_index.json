@@ -1,28 +1,28 @@
 [
   {
-    "run_dir": "outputs_temp_fail/DEMO-MONITORING/run=20260107_143222_f87890",
+    "run_dir": "outputs_temp_place/DEMO-MONITORING/run=20260111_222818_863a78",
     "case": "DEMO-MONITORING",
-    "provider": "openai",
+    "provider": "mock",
     "core_status": "FAIL",
     "exec_status": "SKIP",
     "overall_status": "FAIL",
     "top_errors": [
-      "E_SCHEMA_BIND"
+      "E_ARTIFACT_MISSING_BINDINGS"
     ],
-    "warnings_count": 23,
-    "tokens_total": 3492,
-    "calls_total": 2,
-    "total_duration_ms": 8497,
+    "warnings_count": 21,
+    "tokens_total": 0,
+    "calls_total": 1,
+    "total_duration_ms": 28,
     "attempts_total": 4,
     "artifacts": {
       "plan": true,
       "ir": true,
-      "bindings": true,
+      "bindings": false,
       "eval": true
     },
     "eval": {
       "case_id": "DEMO-MONITORING",
-      "timestamp": "2026-01-07T14:32:31.688821",
+      "timestamp": "2026-01-11T22:28:18.701475",
       "overall_status": "FAIL",
       "overall_static_status": "FAIL",
       "overall_runtime_status": "SKIP",
@@ -32,13 +32,13 @@
       ],
       "checks": {},
       "metrics": {
-        "total_duration_ms": 8497,
+        "total_duration_ms": 28,
         "total_attempts": 4,
         "attempts_by_stage": {
           "inputs": 1,
           "plan": 1,
           "ir": 1,
-          "bindings": 1
+          "placement": 1
         }
       },
       "validators": {
@@ -100,27 +100,14 @@
             "alias target not resolved: RuleEngine (candidates=[])",
             "alias target not resolved: RuleEngine (candidates=[])",
             "alias target not resolved: StateTracker (candidates=[])",
-            "normalized component edge_gateway_01 type processor -> RuleEngine",
-            "IR component types not in catalog: data_source, storage (open mode: treated as warning)",
-            "component temp_sensor_01 type 'data_source' has no catalog spec; skip port validation",
-            "component edge_gateway_01 has no explicit ports; skipping port validation",
-            "component cloud_server_01 type 'storage' has no catalog spec; skip port validation",
-            "link sensor_to_gateway missing explicit ports; skipping port validation",
-            "link gateway_to_cloud missing explicit ports; skipping port validation"
+            "normalized component data_processor type Aggregator -> StateTracker",
+            "component sensor_collector has no explicit ports; skipping port validation",
+            "component data_processor has no explicit ports; skipping port validation",
+            "component storage_service has no explicit ports; skipping port validation",
+            "link link_sensor_to_processor missing explicit ports; skipping port validation",
+            "link link_processor_to_storage missing explicit ports; skipping port validation"
           ],
-          "metrics": {
-            "unknown_types": [
-              {
-                "id": "temp_sensor_01",
-                "type": "data_source"
-              },
-              {
-                "id": "cloud_server_01",
-                "type": "storage"
-              }
-            ],
-            "unknown_types_count": 2
-          },
+          "metrics": {},
           "status": "PASS",
           "skipped": false
         },
@@ -132,100 +119,55 @@
             "alias target not resolved: RuleEngine (candidates=[])",
             "alias target not resolved: RuleEngine (candidates=[])",
             "alias target not resolved: StateTracker (candidates=[])",
-            "IR component types not in catalog: data_source, storage (open mode: treated as warning)",
-            "component temp_sensor_01 type 'data_source' has no catalog spec; skip port validation",
-            "component edge_gateway_01 has no explicit ports; skipping port validation",
-            "component cloud_server_01 type 'storage' has no catalog spec; skip port validation",
-            "link sensor_to_gateway missing explicit ports; skipping port validation",
-            "link gateway_to_cloud missing explicit ports; skipping port validation"
+            "component sensor_collector has no explicit ports; skipping port validation",
+            "component data_processor has no explicit ports; skipping port validation",
+            "component storage_service has no explicit ports; skipping port validation",
+            "link link_sensor_to_processor missing explicit ports; skipping port validation",
+            "link link_processor_to_storage missing explicit ports; skipping port validation"
           ],
-          "metrics": {
-            "unknown_types": [
-              {
-                "id": "temp_sensor_01",
-                "type": "data_source"
-              },
-              {
-                "id": "cloud_server_01",
-                "type": "storage"
-              }
-            ],
-            "unknown_types_count": 2
-          },
-          "status": "PASS",
-          "skipped": false
-        },
-        "bindings_schema": {
-          "pass": false,
-          "failures": [
-            {
-              "code": "E_SCHEMA_BIND",
-              "stage": "bindings",
-              "checker": "SchemaChecker",
-              "message": "Bindings missing required fields: component_bindings",
-              "details": {
-                "missing": [
-                  "component_bindings"
-                ]
-              }
-            }
-          ],
-          "warnings": [],
           "metrics": {},
-          "status": "FAIL",
+          "status": "PASS",
           "skipped": false
         }
       },
-      "failures_flat": [
-        {
-          "code": "E_SCHEMA_BIND",
-          "stage": "bindings",
-          "checker": "SchemaChecker",
-          "message": "Bindings missing required fields: component_bindings",
-          "details": {
-            "missing": [
-              "component_bindings"
-            ]
-          }
-        }
-      ],
+      "failures_flat": [],
       "pipeline": {
         "stages": {
           "inputs": {
             "pass": true,
-            "duration_ms": 22,
+            "duration_ms": 5,
             "attempts": 1
           },
           "plan": {
             "pass": true,
-            "duration_ms": 15,
+            "duration_ms": 5,
             "attempts": 1
           },
           "ir": {
             "pass": true,
-            "duration_ms": 4260,
+            "duration_ms": 18,
             "attempts": 1
           },
-          "bindings": {
+          "placement": {
             "pass": false,
-            "duration_ms": 4200,
+            "duration_ms": 0,
             "attempts": 1
           }
         },
         "config": {
-          "provider": "openai",
-          "model": "gpt-4o-mini",
+          "provider": "mock",
+          "model": null,
           "temperature": 0.0,
           "max_tokens": null,
           "cache_enabled": false,
           "prompt_tier": "P0",
           "seed": 0,
-          "enable_repair": false,
+          "enable_repair": true,
           "enable_catalog": true,
           "runtime_check": false,
           "cache_dir": ".cache/llm",
-          "run_id": "run=20260107_143222_f87890",
-          "output_dir": ".\\outputs_temp_fail\\DEMO-MONITORING\\run=20260107_143222_f87890",
+          "run_id": "run=20260111_222818_863a78",
+          "output_dir": ".\\outputs_temp_place\\DEMO-MONITORING\\run=20260111_222818_863a78",
           "inputs": {
             "user_problem_path": "inputs\\user_problem.json",
             "device_info_path": "inputs\\device_info.json"
@@ -235,26 +177,23 @@
         }
       },
       "llm": {
-        "provider": "openai",
-        "model": "gpt-4o-mini",
+        "provider": "mock",
+        "model": null,
         "temperature": 0.0,
         "cache_dir": ".cache/llm",
         "cache_enabled": false,
-        "calls_total": 2,
+        "calls_total": 1,
         "calls_by_stage": {
-          "generate_ir": 1,
-          "generate_bindings": 1
+          "generate_ir": 1
         },
         "cache_hits": 0,
-        "cache_misses": 2,
-        "usage_tokens_total": 3492,
+        "cache_misses": 1,
+        "usage_tokens_total": 0,
         "prompt_template_hashes": {
-          "ir_agent": "3b139c640d31d720bf2f7bb0d8b90fdd86a204c2e47586907d82349103f1816a",
-          "binding_agent": "3dcc279408d3061a13a0a10e5d3a3ad8fc7402989eadfce7dc341e3932a3db8a"
+          "ir_agent": "3b139c640d31d720bf2f7bb0d8b90fdd86a204c2e47586907d82349103f1816a"
         },
         "prompt_resolved_hashes": {
-          "ir_agent": "f0b7b48422f892a9ac42e8bfc7fe4bafb91f2f2c07bfc46f8c9923e9ad8fd4c0",
-          "binding_agent": "fb1b3c4738d14df2b67a00b0f377fc10aa00935f58db5e3b9e49958fbe1957cd"
+          "ir_agent": "f0b7b48422f892a9ac42e8bfc7fe4bafb91f2f2c07bfc46f8c9923e9ad8fd4c0"
         },
         "prompt_injections": {
           "catalog_types_hash": "7c0d7d6f58c2913592087dd9b3df67c63fc952388dc74d0606b92393079423a7",
@@ -266,14 +205,12 @@
         "schema_hashes": {
           "plan_schema": "8d8399a603d1b200692b2f75170ce1bbf742b5051503966cfee3aae1fcedcd9c",
           "ir_schema": "d1b20ea900cec23d6966c056a65ba93f30671c40bfe3737fa7fdaaa48d330fbb",
-          "bindings_schema": "16e635d1178c71dabaf7ed996785e535b597198dbc2545cfa0372db633c0a640"
+          "bindings_schema": "16e635d1178c71dabaf7ed996785e535b597198dbc2545cfa0372db633c0a640",
+          "placement_schema": "1630530d60db83dcbfec700fa12638ab49d58f9669e386a9458b9fdae0633822"
         },
         "raw_paths": {
           "generate_ir": [
-            "outputs_temp_fail\\DEMO-MONITORING\\run=20260107_143222_f87890\\DEMO-MONITORING\\llm_raw\\generate_ir_attempt1.txt"
-          ],
-          "generate_bindings": [
-            "outputs_temp_fail\\DEMO-MONITORING\\run=20260107_143222_f87890\\DEMO-MONITORING\\llm_raw\\generate_bindings_attempt1.txt"
+            "outputs_temp_place\\DEMO-MONITORING\\run=20260111_222818_863a78\\DEMO-MONITORING\\llm_raw\\generate_ir_attempt1.txt"
           ]
         },
         "rules_source": "yaml"
@@ -295,29 +232,31 @@
         "UserProblem warning: UserProblem soft-missing fields: id, title, target"
       ],
       "error": {
-        "stage": "bindings",
-        "message": "Bindings missing required fields: component_bindings",
+        "stage": "placement",
+        "message": "'str' object has no attribute 'get'",
         "attempts": 1,
-        "code": "E_SCHEMA_BIND"
+        "code": "E_UNKNOWN"
       }
     },
-    "artifact_missing_bindings": false,
-    "artifact_missing_bindings_reason": null,
-    "synthetic_errors": []
+    "artifact_missing_bindings": true,
+    "artifact_missing_bindings_reason": "bindings file not found",
+    "synthetic_errors": [
+      "E_ARTIFACT_MISSING_BINDINGS"
+    ]
   },
   {
-    "run_dir": "outputs_temp_fail/DEMO-MONITORING/run=20260107_191352_464575",
+    "run_dir": "outputs_temp_place/DEMO-MONITORING/run=20260111_223006_99346c",
     "case": "DEMO-MONITORING",
-    "provider": "openai",
+    "provider": "mock",
     "core_status": "PASS",
     "exec_status": "PASS",
     "overall_status": "PASS",
     "top_errors": [],
-    "warnings_count": 28,
-    "tokens_total": 3492,
+    "warnings_count": 25,
+    "tokens_total": 0,
     "calls_total": 2,
-    "total_duration_ms": 8211,
-    "attempts_total": 6,
+    "total_duration_ms": 58,
+    "attempts_total": 7,
     "artifacts": {
       "plan": true,
       "ir": true,
@@ -326,7 +265,7 @@
     },
     "eval": {
       "case_id": "DEMO-MONITORING",
-      "timestamp": "2026-01-07T19:14:00.743498",
+      "timestamp": "2026-01-11T22:30:06.898099",
       "checks": {
         "user_problem_schema": {
           "status": "PASS",
@@ -357,6 +296,14 @@
           "message": "OK"
         },
         "ir_interface": {
+          "status": "PASS",
+          "message": "OK"
+        },
+        "placement_schema": {
+          "status": "PASS",
+          "message": "OK"
+        },
+        "placement_checker": {
           "status": "PASS",
           "message": "OK"
         },
@@ -405,14 +352,17 @@
         "num_components": 3,
         "num_entities": 3,
         "num_links": 2,
+        "num_nodes": 3,
+        "num_component_placements": 3,
         "num_placements": 3,
         "num_layers": 3,
-        "total_duration_ms": 8211,
-        "total_attempts": 6,
+        "total_duration_ms": 58,
+        "total_attempts": 7,
         "attempts_by_stage": {
           "inputs": 1,
           "plan": 1,
           "ir": 1,
+          "placement": 1,
           "bindings": 1,
           "codegen": 1,
           "deploy": 1
@@ -424,6 +374,7 @@
       "stages_passed": [
         "plan",
         "ir",
+        "placement",
         "bindings",
         "codegen",
         "deploy",
@@ -438,7 +389,7 @@
         "bindings_forbidden_keywords": 0,
         "rules_source": "yaml"
       },
-      "bindings_hash": "aa9cd3c3e7ecf1f2ceae49c20534128720550846f536e805a768146d5455c67c",
+      "bindings_hash": "595bf0b1660418df506326a36f11f721ccbfe104f0fe6fe1dec5cca224672030",
       "catalog_hashes": {
         "components_index_hash": "ba26c264fb48b9445d957bac399bb436826407143176f3fb0fad1dffd876fe78",
         "endpoint_types_hash": "5f566bd637fe54bc64c37b48c279b10e38490d8ce2a4b152cb5cfb68594be6e2"
@@ -502,27 +453,14 @@
             "alias target not resolved: RuleEngine (candidates=[])",
             "alias target not resolved: RuleEngine (candidates=[])",
             "alias target not resolved: StateTracker (candidates=[])",
-            "normalized component edge_gateway_01 type processor -> RuleEngine",
-            "IR component types not in catalog: data_source, storage (open mode: treated as warning)",
-            "component temp_sensor_01 type 'data_source' has no catalog spec; skip port validation",
-            "component edge_gateway_01 has no explicit ports; skipping port validation",
-            "component cloud_server_01 type 'storage' has no catalog spec; skip port validation",
-            "link sensor_to_gateway missing explicit ports; skipping port validation",
-            "link gateway_to_cloud missing explicit ports; skipping port validation"
+            "normalized component data_processor type Aggregator -> StateTracker",
+            "component sensor_collector has no explicit ports; skipping port validation",
+            "component data_processor has no explicit ports; skipping port validation",
+            "component storage_service has no explicit ports; skipping port validation",
+            "link link_sensor_to_processor missing explicit ports; skipping port validation",
+            "link link_processor_to_storage missing explicit ports; skipping port validation"
           ],
-          "metrics": {
-            "unknown_types": [
-              {
-                "id": "temp_sensor_01",
-                "type": "data_source"
-              },
-              {
-                "id": "cloud_server_01",
-                "type": "storage"
-              }
-            ],
-            "unknown_types_count": 2
-          },
+          "metrics": {},
           "status": "PASS",
           "skipped": false
         },
@@ -534,26 +472,29 @@
             "alias target not resolved: RuleEngine (candidates=[])",
             "alias target not resolved: RuleEngine (candidates=[])",
             "alias target not resolved: StateTracker (candidates=[])",
-            "IR component types not in catalog: data_source, storage (open mode: treated as warning)",
-            "component temp_sensor_01 type 'data_source' has no catalog spec; skip port validation",
-            "component edge_gateway_01 has no explicit ports; skipping port validation",
-            "component cloud_server_01 type 'storage' has no catalog spec; skip port validation",
-            "link sensor_to_gateway missing explicit ports; skipping port validation",
-            "link gateway_to_cloud missing explicit ports; skipping port validation"
+            "component sensor_collector has no explicit ports; skipping port validation",
+            "component data_processor has no explicit ports; skipping port validation",
+            "component storage_service has no explicit ports; skipping port validation",
+            "link link_sensor_to_processor missing explicit ports; skipping port validation",
+            "link link_processor_to_storage missing explicit ports; skipping port validation"
           ],
-          "metrics": {
-            "unknown_types": [
-              {
-                "id": "temp_sensor_01",
-                "type": "data_source"
-              },
-              {
-                "id": "cloud_server_01",
-                "type": "storage"
-              }
-            ],
-            "unknown_types_count": 2
-          },
+          "metrics": {},
+          "status": "PASS",
+          "skipped": false
+        },
+        "placement_schema": {
+          "pass": true,
+          "failures": [],
+          "warnings": [],
+          "metrics": {},
+          "status": "PASS",
+          "skipped": false
+        },
+        "placement_checker": {
+          "pass": true,
+          "failures": [],
+          "warnings": [],
+          "metrics": {},
           "status": "PASS",
           "skipped": false
         },
@@ -682,34 +623,6 @@
               }
             },
             {
-              "code": "W_PLAN_IR_MISMATCH",
-              "stage": "semantic",
-              "checker": "SemanticProxyChecker",
-              "message": "Plan and IR components diverge",
-              "details": {
-                "plan_refs": [
-                  "data_processor",
-                  "sensor_collector",
-                  "storage_service"
-                ],
-                "ir_components": [
-                  "temp_sensor_01",
-                  "edge_gateway_01",
-                  "cloud_server_01"
-                ],
-                "missing_in_ir": [
-                  "data_processor",
-                  "sensor_collector",
-                  "storage_service"
-                ],
-                "unused_in_plan": [
-                  "cloud_server_01",
-                  "edge_gateway_01",
-                  "temp_sensor_01"
-                ]
-              }
-            },
-            {
               "code": "W_MULTI_LAYER_WEAK",
               "stage": "semantic",
               "checker": "SemanticProxyChecker",
@@ -743,1753 +656,32 @@
         "stages": {
           "inputs": {
             "pass": true,
-            "duration_ms": 23,
+            "duration_ms": 6,
             "attempts": 1
           },
           "plan": {
             "pass": true,
-            "duration_ms": 15,
+            "duration_ms": 5,
             "attempts": 1
           },
           "ir": {
-            "pass": true,
-            "duration_ms": 3975,
-            "attempts": 1
-          },
-          "bindings": {
-            "pass": true,
-            "duration_ms": 4194,
-            "attempts": 1
-          },
-          "codegen": {
-            "pass": true,
-            "duration_ms": 4,
-            "attempts": 1
-          },
-          "deploy": {
-            "pass": true,
-            "duration_ms": 0,
-            "attempts": 1
-          },
-          "eval": {
-            "pass": true,
-            "duration_ms": 17,
-            "attempts": 1
-          }
-        },
-        "config": {
-          "provider": "openai",
-          "model": "gpt-4o-mini",
-          "temperature": 0.0,
-          "max_tokens": null,
-          "cache_enabled": false,
-          "prompt_tier": "P0",
-          "seed": 0,
-          "enable_repair": false,
-          "enable_catalog": true,
-          "runtime_check": false,
-          "cache_dir": ".cache/llm",
-          "run_id": "run=20260107_191352_464575",
-          "output_dir": ".\\outputs_temp_fail\\DEMO-MONITORING\\run=20260107_191352_464575",
-          "inputs": {
-            "user_problem_path": "inputs\\user_problem.json",
-            "device_info_path": "inputs\\device_info.json"
-          },
-          "semantic_warnings": true,
-          "gate_mode": "core"
-        }
-      },
-      "llm": {
-        "provider": "openai",
-        "model": "gpt-4o-mini",
-        "temperature": 0.0,
-        "cache_dir": ".cache/llm",
-        "cache_enabled": false,
-        "calls_total": 2,
-        "calls_by_stage": {
-          "generate_ir": 1,
-          "generate_bindings": 1
-        },
-        "cache_hits": 0,
-        "cache_misses": 2,
-        "usage_tokens_total": 3492,
-        "prompt_template_hashes": {
-          "ir_agent": "3b139c640d31d720bf2f7bb0d8b90fdd86a204c2e47586907d82349103f1816a",
-          "binding_agent": "3dcc279408d3061a13a0a10e5d3a3ad8fc7402989eadfce7dc341e3932a3db8a"
-        },
-        "prompt_resolved_hashes": {
-          "ir_agent": "f0b7b48422f892a9ac42e8bfc7fe4bafb91f2f2c07bfc46f8c9923e9ad8fd4c0",
-          "binding_agent": "fb1b3c4738d14df2b67a00b0f377fc10aa00935f58db5e3b9e49958fbe1957cd"
-        },
-        "prompt_injections": {
-          "catalog_types_hash": "7c0d7d6f58c2913592087dd9b3df67c63fc952388dc74d0606b92393079423a7",
-          "endpoint_types_hash": "f7254349ed46bebfcce4f42c6e1ad57cb6d856e1c234d5aa4747451d26b72164",
-          "rules_bundle_hash": "da37953ebf7e85a683b02a6ff8178eab41a34f1fed4ddb1663c9e38e8db5008e",
-          "schema_required_hash": "92f48a7255d950725fa7f42ae07871e07d94b908de5c96001620c102c3db62ad"
-        },
-        "rules_hash": "477af2e4c423e9f8ac2603f6814562cc5efe0d6ddd24c8cfbdac784025672076",
-        "schema_hashes": {
-          "plan_schema": "8d8399a603d1b200692b2f75170ce1bbf742b5051503966cfee3aae1fcedcd9c",
-          "ir_schema": "d1b20ea900cec23d6966c056a65ba93f30671c40bfe3737fa7fdaaa48d330fbb",
-          "bindings_schema": "16e635d1178c71dabaf7ed996785e535b597198dbc2545cfa0372db633c0a640"
-        },
-        "raw_paths": {
-          "generate_ir": [
-            "outputs_temp_fail\\DEMO-MONITORING\\run=20260107_191352_464575\\DEMO-MONITORING\\llm_raw\\generate_ir_attempt1.txt"
-          ],
-          "generate_bindings": [
-            "outputs_temp_fail\\DEMO-MONITORING\\run=20260107_191352_464575\\DEMO-MONITORING\\llm_raw\\generate_bindings_attempt1.txt"
-          ]
-        },
-        "rules_source": "yaml"
-      },
-      "generated_manifest_present": true,
-      "generation_consistency_pass": true,
-      "overall_core_status": "PASS",
-      "overall_exec_status": "PASS",
-      "input_validation": [
-        "UserProblem warning: UserProblem soft-missing fields: id, title, target"
-      ],
-      "unknown_component_types_count": 2,
-      "unknown_component_types": [
-        {
-          "id": "temp_sensor_01",
-          "type": "data_source"
-        },
-        {
-          "id": "cloud_server_01",
-          "type": "storage"
-        }
-      ]
-    },
-    "artifact_missing_bindings": false,
-    "artifact_missing_bindings_reason": null,
-    "synthetic_errors": []
-  },
-  {
-    "run_dir": "outputs_temp_fail/DEMO-MONITORING/run=20260111_105451_496556",
-    "case": "DEMO-MONITORING",
-    "provider": "openai",
-    "core_status": "PASS",
-    "exec_status": "PASS",
-    "overall_status": "PASS",
-    "top_errors": [],
-    "warnings_count": 28,
-    "tokens_total": 3492,
-    "calls_total": 2,
-    "total_duration_ms": 7067,
-    "attempts_total": 6,
-    "artifacts": {
-      "plan": true,
-      "ir": true,
-      "bindings": true,
-      "eval": true
-    },
-    "eval": {
-      "case_id": "DEMO-MONITORING",
-      "timestamp": "2026-01-11T10:54:59.286384",
-      "checks": {
-        "user_problem_schema": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "device_info_schema": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "device_info_catalog": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "plan_schema": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "ir_schema": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "ir_boundary": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "ir_component_catalog": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "ir_interface": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "bindings_schema": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "coverage": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "endpoint_legality": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "endpoint_matching": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "cross_artifact_consistency": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "semantic_proxy": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "code_generated": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "deploy_generated": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "generation_consistency": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "runtime_compose": {
-          "status": "SKIP",
-          "message": "OK"
-        }
-      },
-      "metrics": {
-        "num_components": 3,
-        "num_entities": 3,
-        "num_links": 2,
-        "num_placements": 3,
-        "num_layers": 3,
-        "total_duration_ms": 7067,
-        "total_attempts": 6,
-        "attempts_by_stage": {
-          "inputs": 1,
-          "plan": 1,
-          "ir": 1,
-          "bindings": 1,
-          "codegen": 1,
-          "deploy": 1
-        }
-      },
-      "overall_status": "PASS",
-      "overall_static_status": "PASS",
-      "overall_runtime_status": "SKIP",
-      "stages_passed": [
-        "plan",
-        "ir",
-        "bindings",
-        "codegen",
-        "deploy",
-        "eval"
-      ],
-      "rules_version": {
-        "ir_rules_hash": "047ca0d25ee6a7cd98cdd4e68af932f2f456879fc9ac62b28ebb8d99f1327bda",
-        "bindings_rules_hash": "047ca0d25ee6a7cd98cdd4e68af932f2f456879fc9ac62b28ebb8d99f1327bda",
-        "ir_required_fields": 4,
-        "ir_forbidden_keywords": 12,
-        "bindings_required_fields": 2,
-        "bindings_forbidden_keywords": 0,
-        "rules_source": "yaml"
-      },
-      "bindings_hash": "aa9cd3c3e7ecf1f2ceae49c20534128720550846f536e805a768146d5455c67c",
-      "catalog_hashes": {
-        "components_index_hash": "ba26c264fb48b9445d957bac399bb436826407143176f3fb0fad1dffd876fe78",
-        "endpoint_types_hash": "5f566bd637fe54bc64c37b48c279b10e38490d8ce2a4b152cb5cfb68594be6e2"
-      },
-      "validators": {
-        "user_problem_schema": {
-          "pass": true,
-          "failures": [],
-          "warnings": [
-            "UserProblem soft-missing fields: id, title, target"
-          ],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "device_info_schema": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "device_info_catalog": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "plan_schema": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "ir_schema": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "ir_boundary": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "ir_component_catalog": {
-          "pass": true,
-          "failures": [],
-          "warnings": [
-            "alias target not resolved: RuleEngine (candidates=[])",
-            "alias target not resolved: RuleEngine (candidates=[])",
-            "alias target not resolved: RuleEngine (candidates=[])",
-            "alias target not resolved: StateTracker (candidates=[])",
-            "normalized component edge_gateway_01 type processor -> RuleEngine",
-            "IR component types not in catalog: data_source, storage (open mode: treated as warning)",
-            "component temp_sensor_01 type 'data_source' has no catalog spec; skip port validation",
-            "component edge_gateway_01 has no explicit ports; skipping port validation",
-            "component cloud_server_01 type 'storage' has no catalog spec; skip port validation",
-            "link sensor_to_gateway missing explicit ports; skipping port validation",
-            "link gateway_to_cloud missing explicit ports; skipping port validation"
-          ],
-          "metrics": {
-            "unknown_types": [
-              {
-                "id": "temp_sensor_01",
-                "type": "data_source"
-              },
-              {
-                "id": "cloud_server_01",
-                "type": "storage"
-              }
-            ],
-            "unknown_types_count": 2
-          },
-          "status": "PASS",
-          "skipped": false
-        },
-        "ir_interface": {
-          "pass": true,
-          "failures": [],
-          "warnings": [
-            "alias target not resolved: RuleEngine (candidates=[])",
-            "alias target not resolved: RuleEngine (candidates=[])",
-            "alias target not resolved: RuleEngine (candidates=[])",
-            "alias target not resolved: StateTracker (candidates=[])",
-            "IR component types not in catalog: data_source, storage (open mode: treated as warning)",
-            "component temp_sensor_01 type 'data_source' has no catalog spec; skip port validation",
-            "component edge_gateway_01 has no explicit ports; skipping port validation",
-            "component cloud_server_01 type 'storage' has no catalog spec; skip port validation",
-            "link sensor_to_gateway missing explicit ports; skipping port validation",
-            "link gateway_to_cloud missing explicit ports; skipping port validation"
-          ],
-          "metrics": {
-            "unknown_types": [
-              {
-                "id": "temp_sensor_01",
-                "type": "data_source"
-              },
-              {
-                "id": "cloud_server_01",
-                "type": "storage"
-              }
-            ],
-            "unknown_types_count": 2
-          },
-          "status": "PASS",
-          "skipped": false
-        },
-        "bindings_schema": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "coverage": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {
-            "coverage_ratio": 1.0
-          },
-          "status": "PASS",
-          "skipped": false
-        },
-        "endpoint_legality": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {
-            "referenced": 3,
-            "invalid": 0
-          },
-          "status": "PASS",
-          "skipped": false
-        },
-        "endpoint_matching": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "cross_artifact_consistency": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "code_generated": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "deploy_generated": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "generation_consistency": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "semantic_proxy": {
-          "pass": true,
-          "failures": [],
-          "warnings": [
-            {
-              "code": "W_UP_DI_DEVICE_NOT_FOUND",
-              "stage": "semantic",
-              "checker": "SemanticProxyChecker",
-              "message": "User problem mentions devices not found in device_info",
-              "details": {
-                "up_terms": [
-                  "analytics",
-                  "cloud",
-                  "high frequency sensor readings",
-                  "home",
-                  "monitoring",
-                  "real-time for alerts, periodic for storage",
-                  "smart",
-                  "system",
-                  "temperature",
-                  "with"
-                ],
-                "di_devices": [
-                  "cloud analytics server",
-                  "cloud_server_01",
-                  "edge gateway",
-                  "edge_gateway_01",
-                  "temp_sensor_01",
-                  "temperature sensor device"
-                ],
-                "unmatched": [
-                  "analytics",
-                  "cloud",
-                  "high frequency sensor readings",
-                  "home",
-                  "monitoring",
-                  "real-time for alerts, periodic for storage",
-                  "smart",
-                  "system",
-                  "temperature",
-                  "with"
-                ]
-              }
-            },
-            {
-              "code": "W_DI_UNUSED_ENDPOINTS",
-              "stage": "semantic",
-              "checker": "SemanticProxyChecker",
-              "message": "Most device_info endpoints are unused in bindings",
-              "details": {
-                "di_endpoints": 3,
-                "used_endpoints": 0,
-                "ratio": 0.0
-              }
-            },
-            {
-              "code": "W_PLAN_IR_MISMATCH",
-              "stage": "semantic",
-              "checker": "SemanticProxyChecker",
-              "message": "Plan and IR components diverge",
-              "details": {
-                "plan_refs": [
-                  "data_processor",
-                  "sensor_collector",
-                  "storage_service"
-                ],
-                "ir_components": [
-                  "temp_sensor_01",
-                  "edge_gateway_01",
-                  "cloud_server_01"
-                ],
-                "missing_in_ir": [
-                  "data_processor",
-                  "sensor_collector",
-                  "storage_service"
-                ],
-                "unused_in_plan": [
-                  "cloud_server_01",
-                  "edge_gateway_01",
-                  "temp_sensor_01"
-                ]
-              }
-            },
-            {
-              "code": "W_MULTI_LAYER_WEAK",
-              "stage": "semantic",
-              "checker": "SemanticProxyChecker",
-              "message": "Hints suggest multi-layer but artifacts show single/unknown layer",
-              "details": {
-                "hint_sources": [
-                  "up",
-                  "di"
-                ],
-                "observed_layers": []
-              }
-            }
-          ],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "runtime_compose": {
-          "pass": true,
-          "failures": [],
-          "warnings": [
-            "Runtime check disabled"
-          ],
-          "metrics": {},
-          "status": "SKIP",
-          "skipped": true
-        }
-      },
-      "failures_flat": [],
-      "pipeline": {
-        "stages": {
-          "inputs": {
-            "pass": true,
-            "duration_ms": 24,
-            "attempts": 1
-          },
-          "plan": {
-            "pass": true,
-            "duration_ms": 15,
-            "attempts": 1
-          },
-          "ir": {
-            "pass": true,
-            "duration_ms": 3516,
-            "attempts": 1
-          },
-          "bindings": {
-            "pass": true,
-            "duration_ms": 3508,
-            "attempts": 1
-          },
-          "codegen": {
-            "pass": true,
-            "duration_ms": 4,
-            "attempts": 1
-          },
-          "deploy": {
-            "pass": true,
-            "duration_ms": 0,
-            "attempts": 1
-          },
-          "eval": {
-            "pass": true,
-            "duration_ms": 19,
-            "attempts": 1
-          }
-        },
-        "config": {
-          "provider": "openai",
-          "model": "gpt-4o-mini",
-          "temperature": 0.0,
-          "max_tokens": null,
-          "cache_enabled": false,
-          "prompt_tier": "P0",
-          "seed": 0,
-          "enable_repair": false,
-          "enable_catalog": true,
-          "runtime_check": false,
-          "cache_dir": ".cache/llm",
-          "run_id": "run=20260111_105451_496556",
-          "output_dir": ".\\outputs_temp_fail\\DEMO-MONITORING\\run=20260111_105451_496556",
-          "inputs": {
-            "user_problem_path": "inputs\\user_problem.json",
-            "device_info_path": "inputs\\device_info.json"
-          },
-          "semantic_warnings": true,
-          "gate_mode": "core"
-        }
-      },
-      "llm": {
-        "provider": "openai",
-        "model": "gpt-4o-mini",
-        "temperature": 0.0,
-        "cache_dir": ".cache/llm",
-        "cache_enabled": false,
-        "calls_total": 2,
-        "calls_by_stage": {
-          "generate_ir": 1,
-          "generate_bindings": 1
-        },
-        "cache_hits": 0,
-        "cache_misses": 2,
-        "usage_tokens_total": 3492,
-        "prompt_template_hashes": {
-          "ir_agent": "3b139c640d31d720bf2f7bb0d8b90fdd86a204c2e47586907d82349103f1816a",
-          "binding_agent": "3dcc279408d3061a13a0a10e5d3a3ad8fc7402989eadfce7dc341e3932a3db8a"
-        },
-        "prompt_resolved_hashes": {
-          "ir_agent": "f0b7b48422f892a9ac42e8bfc7fe4bafb91f2f2c07bfc46f8c9923e9ad8fd4c0",
-          "binding_agent": "fb1b3c4738d14df2b67a00b0f377fc10aa00935f58db5e3b9e49958fbe1957cd"
-        },
-        "prompt_injections": {
-          "catalog_types_hash": "7c0d7d6f58c2913592087dd9b3df67c63fc952388dc74d0606b92393079423a7",
-          "endpoint_types_hash": "f7254349ed46bebfcce4f42c6e1ad57cb6d856e1c234d5aa4747451d26b72164",
-          "rules_bundle_hash": "da37953ebf7e85a683b02a6ff8178eab41a34f1fed4ddb1663c9e38e8db5008e",
-          "schema_required_hash": "92f48a7255d950725fa7f42ae07871e07d94b908de5c96001620c102c3db62ad"
-        },
-        "rules_hash": "477af2e4c423e9f8ac2603f6814562cc5efe0d6ddd24c8cfbdac784025672076",
-        "schema_hashes": {
-          "plan_schema": "8d8399a603d1b200692b2f75170ce1bbf742b5051503966cfee3aae1fcedcd9c",
-          "ir_schema": "d1b20ea900cec23d6966c056a65ba93f30671c40bfe3737fa7fdaaa48d330fbb",
-          "bindings_schema": "16e635d1178c71dabaf7ed996785e535b597198dbc2545cfa0372db633c0a640"
-        },
-        "raw_paths": {
-          "generate_ir": [
-            "outputs_temp_fail\\DEMO-MONITORING\\run=20260111_105451_496556\\DEMO-MONITORING\\llm_raw\\generate_ir_attempt1.txt"
-          ],
-          "generate_bindings": [
-            "outputs_temp_fail\\DEMO-MONITORING\\run=20260111_105451_496556\\DEMO-MONITORING\\llm_raw\\generate_bindings_attempt1.txt"
-          ]
-        },
-        "rules_source": "yaml"
-      },
-      "generated_manifest_present": true,
-      "generation_consistency_pass": true,
-      "overall_core_status": "PASS",
-      "overall_exec_status": "PASS",
-      "input_validation": [
-        "UserProblem warning: UserProblem soft-missing fields: id, title, target"
-      ],
-      "unknown_component_types_count": 2,
-      "unknown_component_types": [
-        {
-          "id": "temp_sensor_01",
-          "type": "data_source"
-        },
-        {
-          "id": "cloud_server_01",
-          "type": "storage"
-        }
-      ]
-    },
-    "artifact_missing_bindings": false,
-    "artifact_missing_bindings_reason": null,
-    "synthetic_errors": []
-  },
-  {
-    "run_dir": "outputs_temp_repair/DEMO-MONITORING/run=20260111_190815_b6071d",
-    "case": "DEMO-MONITORING",
-    "provider": "openai",
-    "core_status": "PASS",
-    "exec_status": "PASS",
-    "overall_status": "PASS",
-    "top_errors": [],
-    "warnings_count": 28,
-    "tokens_total": 3492,
-    "calls_total": 2,
-    "total_duration_ms": 7141,
-    "attempts_total": 6,
-    "artifacts": {
-      "plan": true,
-      "ir": true,
-      "bindings": true,
-      "eval": true
-    },
-    "eval": {
-      "case_id": "DEMO-MONITORING",
-      "timestamp": "2026-01-11T19:08:23.199383",
-      "checks": {
-        "user_problem_schema": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "device_info_schema": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "device_info_catalog": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "plan_schema": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "ir_schema": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "ir_boundary": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "ir_component_catalog": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "ir_interface": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "bindings_schema": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "coverage": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "endpoint_legality": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "endpoint_matching": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "cross_artifact_consistency": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "semantic_proxy": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "code_generated": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "deploy_generated": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "generation_consistency": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "runtime_compose": {
-          "status": "SKIP",
-          "message": "OK"
-        }
-      },
-      "metrics": {
-        "num_components": 3,
-        "num_entities": 3,
-        "num_links": 2,
-        "num_placements": 3,
-        "num_layers": 3,
-        "total_duration_ms": 7141,
-        "total_attempts": 6,
-        "attempts_by_stage": {
-          "inputs": 1,
-          "plan": 1,
-          "ir": 1,
-          "bindings": 1,
-          "codegen": 1,
-          "deploy": 1
-        }
-      },
-      "overall_status": "PASS",
-      "overall_static_status": "PASS",
-      "overall_runtime_status": "SKIP",
-      "stages_passed": [
-        "plan",
-        "ir",
-        "bindings",
-        "codegen",
-        "deploy",
-        "eval"
-      ],
-      "rules_version": {
-        "ir_rules_hash": "047ca0d25ee6a7cd98cdd4e68af932f2f456879fc9ac62b28ebb8d99f1327bda",
-        "bindings_rules_hash": "047ca0d25ee6a7cd98cdd4e68af932f2f456879fc9ac62b28ebb8d99f1327bda",
-        "ir_required_fields": 4,
-        "ir_forbidden_keywords": 12,
-        "bindings_required_fields": 2,
-        "bindings_forbidden_keywords": 0,
-        "rules_source": "yaml"
-      },
-      "bindings_hash": "aa9cd3c3e7ecf1f2ceae49c20534128720550846f536e805a768146d5455c67c",
-      "catalog_hashes": {
-        "components_index_hash": "ba26c264fb48b9445d957bac399bb436826407143176f3fb0fad1dffd876fe78",
-        "endpoint_types_hash": "5f566bd637fe54bc64c37b48c279b10e38490d8ce2a4b152cb5cfb68594be6e2"
-      },
-      "validators": {
-        "user_problem_schema": {
-          "pass": true,
-          "failures": [],
-          "warnings": [
-            "UserProblem soft-missing fields: id, title, target"
-          ],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "device_info_schema": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "device_info_catalog": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "plan_schema": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "ir_schema": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "ir_boundary": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "ir_component_catalog": {
-          "pass": true,
-          "failures": [],
-          "warnings": [
-            "alias target not resolved: RuleEngine (candidates=[])",
-            "alias target not resolved: RuleEngine (candidates=[])",
-            "alias target not resolved: RuleEngine (candidates=[])",
-            "alias target not resolved: StateTracker (candidates=[])",
-            "normalized component edge_gateway_01 type processor -> RuleEngine",
-            "IR component types not in catalog: data_source, storage (open mode: treated as warning)",
-            "component temp_sensor_01 type 'data_source' has no catalog spec; skip port validation",
-            "component edge_gateway_01 has no explicit ports; skipping port validation",
-            "component cloud_server_01 type 'storage' has no catalog spec; skip port validation",
-            "link sensor_to_gateway missing explicit ports; skipping port validation",
-            "link gateway_to_cloud missing explicit ports; skipping port validation"
-          ],
-          "metrics": {
-            "unknown_types": [
-              {
-                "id": "temp_sensor_01",
-                "type": "data_source"
-              },
-              {
-                "id": "cloud_server_01",
-                "type": "storage"
-              }
-            ],
-            "unknown_types_count": 2
-          },
-          "status": "PASS",
-          "skipped": false
-        },
-        "ir_interface": {
-          "pass": true,
-          "failures": [],
-          "warnings": [
-            "alias target not resolved: RuleEngine (candidates=[])",
-            "alias target not resolved: RuleEngine (candidates=[])",
-            "alias target not resolved: RuleEngine (candidates=[])",
-            "alias target not resolved: StateTracker (candidates=[])",
-            "IR component types not in catalog: data_source, storage (open mode: treated as warning)",
-            "component temp_sensor_01 type 'data_source' has no catalog spec; skip port validation",
-            "component edge_gateway_01 has no explicit ports; skipping port validation",
-            "component cloud_server_01 type 'storage' has no catalog spec; skip port validation",
-            "link sensor_to_gateway missing explicit ports; skipping port validation",
-            "link gateway_to_cloud missing explicit ports; skipping port validation"
-          ],
-          "metrics": {
-            "unknown_types": [
-              {
-                "id": "temp_sensor_01",
-                "type": "data_source"
-              },
-              {
-                "id": "cloud_server_01",
-                "type": "storage"
-              }
-            ],
-            "unknown_types_count": 2
-          },
-          "status": "PASS",
-          "skipped": false
-        },
-        "bindings_schema": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "coverage": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {
-            "coverage_ratio": 1.0
-          },
-          "status": "PASS",
-          "skipped": false
-        },
-        "endpoint_legality": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {
-            "referenced": 3,
-            "invalid": 0
-          },
-          "status": "PASS",
-          "skipped": false
-        },
-        "endpoint_matching": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "cross_artifact_consistency": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "code_generated": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "deploy_generated": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "generation_consistency": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "semantic_proxy": {
-          "pass": true,
-          "failures": [],
-          "warnings": [
-            {
-              "code": "W_UP_DI_DEVICE_NOT_FOUND",
-              "stage": "semantic",
-              "checker": "SemanticProxyChecker",
-              "message": "User problem mentions devices not found in device_info",
-              "details": {
-                "up_terms": [
-                  "analytics",
-                  "cloud",
-                  "high frequency sensor readings",
-                  "home",
-                  "monitoring",
-                  "real-time for alerts, periodic for storage",
-                  "smart",
-                  "system",
-                  "temperature",
-                  "with"
-                ],
-                "di_devices": [
-                  "cloud analytics server",
-                  "cloud_server_01",
-                  "edge gateway",
-                  "edge_gateway_01",
-                  "temp_sensor_01",
-                  "temperature sensor device"
-                ],
-                "unmatched": [
-                  "analytics",
-                  "cloud",
-                  "high frequency sensor readings",
-                  "home",
-                  "monitoring",
-                  "real-time for alerts, periodic for storage",
-                  "smart",
-                  "system",
-                  "temperature",
-                  "with"
-                ]
-              }
-            },
-            {
-              "code": "W_DI_UNUSED_ENDPOINTS",
-              "stage": "semantic",
-              "checker": "SemanticProxyChecker",
-              "message": "Most device_info endpoints are unused in bindings",
-              "details": {
-                "di_endpoints": 3,
-                "used_endpoints": 0,
-                "ratio": 0.0
-              }
-            },
-            {
-              "code": "W_PLAN_IR_MISMATCH",
-              "stage": "semantic",
-              "checker": "SemanticProxyChecker",
-              "message": "Plan and IR components diverge",
-              "details": {
-                "plan_refs": [
-                  "data_processor",
-                  "sensor_collector",
-                  "storage_service"
-                ],
-                "ir_components": [
-                  "temp_sensor_01",
-                  "edge_gateway_01",
-                  "cloud_server_01"
-                ],
-                "missing_in_ir": [
-                  "data_processor",
-                  "sensor_collector",
-                  "storage_service"
-                ],
-                "unused_in_plan": [
-                  "cloud_server_01",
-                  "edge_gateway_01",
-                  "temp_sensor_01"
-                ]
-              }
-            },
-            {
-              "code": "W_MULTI_LAYER_WEAK",
-              "stage": "semantic",
-              "checker": "SemanticProxyChecker",
-              "message": "Hints suggest multi-layer but artifacts show single/unknown layer",
-              "details": {
-                "hint_sources": [
-                  "up",
-                  "di"
-                ],
-                "observed_layers": []
-              }
-            }
-          ],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "runtime_compose": {
-          "pass": true,
-          "failures": [],
-          "warnings": [
-            "Runtime check disabled"
-          ],
-          "metrics": {},
-          "status": "SKIP",
-          "skipped": true
-        }
-      },
-      "failures_flat": [],
-      "pipeline": {
-        "stages": {
-          "inputs": {
-            "pass": true,
-            "duration_ms": 27,
-            "attempts": 1
-          },
-          "plan": {
             "pass": true,
             "duration_ms": 18,
             "attempts": 1
           },
-          "ir": {
+          "placement": {
             "pass": true,
-            "duration_ms": 3713,
+            "duration_ms": 3,
             "attempts": 1
           },
           "bindings": {
             "pass": true,
-            "duration_ms": 3379,
+            "duration_ms": 22,
             "attempts": 1
           },
           "codegen": {
             "pass": true,
             "duration_ms": 4,
-            "attempts": 1
-          },
-          "deploy": {
-            "pass": true,
-            "duration_ms": 0,
-            "attempts": 1
-          },
-          "eval": {
-            "pass": true,
-            "duration_ms": 16,
-            "attempts": 1
-          }
-        },
-        "config": {
-          "provider": "openai",
-          "model": "gpt-4o-mini",
-          "temperature": 0.0,
-          "max_tokens": null,
-          "cache_enabled": false,
-          "prompt_tier": "P0",
-          "seed": 0,
-          "enable_repair": true,
-          "enable_catalog": true,
-          "runtime_check": false,
-          "cache_dir": ".cache/llm",
-          "run_id": "run=20260111_190815_b6071d",
-          "output_dir": ".\\outputs_temp_repair\\DEMO-MONITORING\\run=20260111_190815_b6071d",
-          "inputs": {
-            "user_problem_path": "inputs\\user_problem.json",
-            "device_info_path": "inputs\\device_info.json"
-          },
-          "semantic_warnings": true,
-          "gate_mode": "core"
-        }
-      },
-      "llm": {
-        "provider": "openai",
-        "model": "gpt-4o-mini",
-        "temperature": 0.0,
-        "cache_dir": ".cache/llm",
-        "cache_enabled": false,
-        "calls_total": 2,
-        "calls_by_stage": {
-          "generate_ir": 1,
-          "generate_bindings": 1
-        },
-        "cache_hits": 0,
-        "cache_misses": 2,
-        "usage_tokens_total": 3492,
-        "prompt_template_hashes": {
-          "ir_agent": "3b139c640d31d720bf2f7bb0d8b90fdd86a204c2e47586907d82349103f1816a",
-          "binding_agent": "3dcc279408d3061a13a0a10e5d3a3ad8fc7402989eadfce7dc341e3932a3db8a"
-        },
-        "prompt_resolved_hashes": {
-          "ir_agent": "f0b7b48422f892a9ac42e8bfc7fe4bafb91f2f2c07bfc46f8c9923e9ad8fd4c0",
-          "binding_agent": "fb1b3c4738d14df2b67a00b0f377fc10aa00935f58db5e3b9e49958fbe1957cd"
-        },
-        "prompt_injections": {
-          "catalog_types_hash": "7c0d7d6f58c2913592087dd9b3df67c63fc952388dc74d0606b92393079423a7",
-          "endpoint_types_hash": "f7254349ed46bebfcce4f42c6e1ad57cb6d856e1c234d5aa4747451d26b72164",
-          "rules_bundle_hash": "da37953ebf7e85a683b02a6ff8178eab41a34f1fed4ddb1663c9e38e8db5008e",
-          "schema_required_hash": "92f48a7255d950725fa7f42ae07871e07d94b908de5c96001620c102c3db62ad"
-        },
-        "rules_hash": "477af2e4c423e9f8ac2603f6814562cc5efe0d6ddd24c8cfbdac784025672076",
-        "schema_hashes": {
-          "plan_schema": "8d8399a603d1b200692b2f75170ce1bbf742b5051503966cfee3aae1fcedcd9c",
-          "ir_schema": "d1b20ea900cec23d6966c056a65ba93f30671c40bfe3737fa7fdaaa48d330fbb",
-          "bindings_schema": "16e635d1178c71dabaf7ed996785e535b597198dbc2545cfa0372db633c0a640"
-        },
-        "raw_paths": {
-          "generate_ir": [
-            "outputs_temp_repair\\DEMO-MONITORING\\run=20260111_190815_b6071d\\DEMO-MONITORING\\llm_raw\\generate_ir_attempt1.txt"
-          ],
-          "generate_bindings": [
-            "outputs_temp_repair\\DEMO-MONITORING\\run=20260111_190815_b6071d\\DEMO-MONITORING\\llm_raw\\generate_bindings_attempt1.txt"
-          ]
-        },
-        "rules_source": "yaml"
-      },
-      "repair_trace": [],
-      "generated_manifest_present": true,
-      "generation_consistency_pass": true,
-      "overall_core_status": "PASS",
-      "overall_exec_status": "PASS",
-      "input_validation": [
-        "UserProblem warning: UserProblem soft-missing fields: id, title, target"
-      ],
-      "unknown_component_types_count": 2,
-      "unknown_component_types": [
-        {
-          "id": "temp_sensor_01",
-          "type": "data_source"
-        },
-        {
-          "id": "cloud_server_01",
-          "type": "storage"
-        }
-      ]
-    },
-    "artifact_missing_bindings": false,
-    "artifact_missing_bindings_reason": null,
-    "synthetic_errors": []
-  },
-  {
-    "run_dir": "outputs_temp_repair/DEMO-SMARTHOME/run=20260111_190832_1f76fd",
-    "case": "DEMO-SMARTHOME",
-    "provider": "openai",
-    "core_status": "PASS",
-    "exec_status": "PASS",
-    "overall_status": "PASS",
-    "top_errors": [],
-    "warnings_count": 46,
-    "tokens_total": 7008,
-    "calls_total": 2,
-    "total_duration_ms": 12869,
-    "attempts_total": 6,
-    "artifacts": {
-      "plan": true,
-      "ir": true,
-      "bindings": true,
-      "eval": true
-    },
-    "eval": {
-      "case_id": "DEMO-SMARTHOME",
-      "timestamp": "2026-01-11T19:08:45.682258",
-      "checks": {
-        "user_problem_schema": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "device_info_schema": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "device_info_catalog": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "plan_schema": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "ir_schema": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "ir_boundary": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "ir_component_catalog": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "ir_interface": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "bindings_schema": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "coverage": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "endpoint_legality": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "endpoint_matching": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "cross_artifact_consistency": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "semantic_proxy": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "code_generated": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "deploy_generated": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "generation_consistency": {
-          "status": "PASS",
-          "message": "OK"
-        },
-        "runtime_compose": {
-          "status": "SKIP",
-          "message": "OK"
-        }
-      },
-      "metrics": {
-        "num_components": 6,
-        "num_entities": 6,
-        "num_links": 5,
-        "num_placements": 6,
-        "num_layers": 3,
-        "total_duration_ms": 12869,
-        "total_attempts": 6,
-        "attempts_by_stage": {
-          "inputs": 1,
-          "plan": 1,
-          "ir": 1,
-          "bindings": 1,
-          "codegen": 1,
-          "deploy": 1
-        }
-      },
-      "overall_status": "PASS",
-      "overall_static_status": "PASS",
-      "overall_runtime_status": "SKIP",
-      "stages_passed": [
-        "plan",
-        "ir",
-        "bindings",
-        "codegen",
-        "deploy",
-        "eval"
-      ],
-      "rules_version": {
-        "ir_rules_hash": "047ca0d25ee6a7cd98cdd4e68af932f2f456879fc9ac62b28ebb8d99f1327bda",
-        "bindings_rules_hash": "047ca0d25ee6a7cd98cdd4e68af932f2f456879fc9ac62b28ebb8d99f1327bda",
-        "ir_required_fields": 4,
-        "ir_forbidden_keywords": 12,
-        "bindings_required_fields": 2,
-        "bindings_forbidden_keywords": 0,
-        "rules_source": "yaml"
-      },
-      "bindings_hash": "dfe38218e23782ae84a72d991ed046bcbb1efda2b4c2123a5176c6832ed7ac0d",
-      "catalog_hashes": {
-        "components_index_hash": "ba26c264fb48b9445d957bac399bb436826407143176f3fb0fad1dffd876fe78",
-        "endpoint_types_hash": "5f566bd637fe54bc64c37b48c279b10e38490d8ce2a4b152cb5cfb68594be6e2"
-      },
-      "validators": {
-        "user_problem_schema": {
-          "pass": true,
-          "failures": [],
-          "warnings": [
-            "UserProblem soft-missing fields: id, title, target"
-          ],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "device_info_schema": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "device_info_catalog": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "plan_schema": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "ir_schema": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "ir_boundary": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "ir_component_catalog": {
-          "pass": true,
-          "failures": [],
-          "warnings": [
-            "alias target not resolved: RuleEngine (candidates=[])",
-            "alias target not resolved: RuleEngine (candidates=[])",
-            "alias target not resolved: RuleEngine (candidates=[])",
-            "alias target not resolved: StateTracker (candidates=[])",
-            "normalized component edge_gateway_ha type controller -> RuleEngine",
-            "normalized component cloud_automation_service type processor -> RuleEngine",
-            "IR component types not in catalog: data_source, data_source, actuator, storage (open mode: treated as warning)",
-            "component door_sensor_main type 'data_source' has no catalog spec; skip port validation",
-            "component motion_sensor_living type 'data_source' has no catalog spec; skip port validation",
-            "component smart_light_living type 'actuator' has no catalog spec; skip port validation",
-            "component edge_gateway_ha has no explicit ports; skipping port validation",
-            "component cloud_automation_service has no explicit ports; skipping port validation",
-            "component cloud_storage_service type 'storage' has no catalog spec; skip port validation",
-            "link door_sensor_to_gateway missing explicit ports; skipping port validation",
-            "link motion_sensor_to_gateway missing explicit ports; skipping port validation",
-            "link gateway_to_cloud_service missing explicit ports; skipping port validation",
-            "link cloud_service_to_storage missing explicit ports; skipping port validation",
-            "link cloud_service_to_light missing explicit ports; skipping port validation"
-          ],
-          "metrics": {
-            "unknown_types": [
-              {
-                "id": "door_sensor_main",
-                "type": "data_source"
-              },
-              {
-                "id": "motion_sensor_living",
-                "type": "data_source"
-              },
-              {
-                "id": "smart_light_living",
-                "type": "actuator"
-              },
-              {
-                "id": "cloud_storage_service",
-                "type": "storage"
-              }
-            ],
-            "unknown_types_count": 4
-          },
-          "status": "PASS",
-          "skipped": false
-        },
-        "ir_interface": {
-          "pass": true,
-          "failures": [],
-          "warnings": [
-            "alias target not resolved: RuleEngine (candidates=[])",
-            "alias target not resolved: RuleEngine (candidates=[])",
-            "alias target not resolved: RuleEngine (candidates=[])",
-            "alias target not resolved: StateTracker (candidates=[])",
-            "IR component types not in catalog: data_source, data_source, actuator, storage (open mode: treated as warning)",
-            "component door_sensor_main type 'data_source' has no catalog spec; skip port validation",
-            "component motion_sensor_living type 'data_source' has no catalog spec; skip port validation",
-            "component smart_light_living type 'actuator' has no catalog spec; skip port validation",
-            "component edge_gateway_ha has no explicit ports; skipping port validation",
-            "component cloud_automation_service has no explicit ports; skipping port validation",
-            "component cloud_storage_service type 'storage' has no catalog spec; skip port validation",
-            "link door_sensor_to_gateway missing explicit ports; skipping port validation",
-            "link motion_sensor_to_gateway missing explicit ports; skipping port validation",
-            "link gateway_to_cloud_service missing explicit ports; skipping port validation",
-            "link cloud_service_to_storage missing explicit ports; skipping port validation",
-            "link cloud_service_to_light missing explicit ports; skipping port validation"
-          ],
-          "metrics": {
-            "unknown_types": [
-              {
-                "id": "door_sensor_main",
-                "type": "data_source"
-              },
-              {
-                "id": "motion_sensor_living",
-                "type": "data_source"
-              },
-              {
-                "id": "smart_light_living",
-                "type": "actuator"
-              },
-              {
-                "id": "cloud_storage_service",
-                "type": "storage"
-              }
-            ],
-            "unknown_types_count": 4
-          },
-          "status": "PASS",
-          "skipped": false
-        },
-        "bindings_schema": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "coverage": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {
-            "coverage_ratio": 1.0
-          },
-          "status": "PASS",
-          "skipped": false
-        },
-        "endpoint_legality": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {
-            "referenced": 5,
-            "invalid": 0
-          },
-          "status": "PASS",
-          "skipped": false
-        },
-        "endpoint_matching": {
-          "pass": true,
-          "failures": [],
-          "warnings": [
-            "link door_sensor_to_gateway: endpoint ha://local type 'ha_state' uncommon as source",
-            "link door_sensor_to_gateway: endpoint mqtt://ha_broker/homeassistant/commands type 'mqtt_pub' uncommon as sink",
-            "link motion_sensor_to_gateway: endpoint ha://local type 'ha_state' uncommon as source",
-            "link motion_sensor_to_gateway: endpoint mqtt://ha_broker/homeassistant/commands type 'mqtt_pub' uncommon as sink",
-            "link cloud_service_to_light: endpoint http://<SECRET_HA_HOST>:8123/api/services/light/turn_on type 'ha_service' uncommon as sink"
-          ],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "cross_artifact_consistency": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "code_generated": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "deploy_generated": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "generation_consistency": {
-          "pass": true,
-          "failures": [],
-          "warnings": [],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "semantic_proxy": {
-          "pass": true,
-          "failures": [],
-          "warnings": [
-            {
-              "code": "W_UP_DI_DEVICE_NOT_FOUND",
-              "stage": "semantic",
-              "checker": "SemanticProxyChecker",
-              "message": "User problem mentions devices not found in device_info",
-              "details": {
-                "up_terms": [
-                  "\u4f20\u611f\u5668\u4e8b\u4ef6\u5b9e\u65f6\u54cd\u5e94\uff08<500ms\uff09\uff0c\u901a\u77e5\u63a8\u9001\uff08<2s\uff09",
-                  "\u4f20\u611f\u5668\u4e8b\u4ef6\u6d41\uff1a10-50 events/min\uff0c\u72b6\u6001\u67e5\u8be2\uff1a\u4f4e\u9891",
-                  "\u667a\u80fd\u5bb6\u5c45\u5b89\u9632\u81ea\u52a8\u5316\u7cfb\u7edf\uff1a\u95e8\u78c1\u548c\u4eba\u4f53\u4f20\u611f\u5668\u8054\u52a8\u591c\u95f4\u7167\u660e\uff0c\u5f02\u5e38\u60c5\u51b5\u5b9e\u65f6\u901a\u77e5\uff0c\u652f\u6301\u79bb\u5bb6\u6a21\u5f0f\u548c\u5b89\u9632\u7b56\u7565",
-                  "\u79bb\u5bb6\u6a21\u5f0f\u9700\u8981\u8ba4\u8bc1\uff0c\u654f\u611f\u6570\u636e\u52a0\u5bc6\u4f20\u8f93",
-                  "\u9ad8\u53ef\u7528\u6027\uff0c\u652f\u6301\u4f20\u611f\u5668\u6545\u969c\u964d\u7ea7"
-                ],
-                "di_devices": [
-                  "cloud_automation_service",
-                  "cloud_storage_service",
-                  "door_sensor_main",
-                  "edge_gateway_ha",
-                  "home assistant \u8fb9\u7f18\u7f51\u5173",
-                  "motion_sensor_living",
-                  "smart_light_living",
-                  "\u4e3b\u5367\u95e8\u78c1\u4f20\u611f\u5668",
-                  "\u4e91\u7aef\u5b58\u50a8\u670d\u52a1",
-                  "\u4e91\u7aef\u81ea\u52a8\u5316\u670d\u52a1",
-                  "\u5ba2\u5385\u4eba\u4f53\u4f20\u611f\u5668",
-                  "\u5ba2\u5385\u667a\u80fd\u706f"
-                ],
-                "unmatched": [
-                  "\u4f20\u611f\u5668\u4e8b\u4ef6\u5b9e\u65f6\u54cd\u5e94\uff08<500ms\uff09\uff0c\u901a\u77e5\u63a8\u9001\uff08<2s\uff09",
-                  "\u4f20\u611f\u5668\u4e8b\u4ef6\u6d41\uff1a10-50 events/min\uff0c\u72b6\u6001\u67e5\u8be2\uff1a\u4f4e\u9891",
-                  "\u667a\u80fd\u5bb6\u5c45\u5b89\u9632\u81ea\u52a8\u5316\u7cfb\u7edf\uff1a\u95e8\u78c1\u548c\u4eba\u4f53\u4f20\u611f\u5668\u8054\u52a8\u591c\u95f4\u7167\u660e\uff0c\u5f02\u5e38\u60c5\u51b5\u5b9e\u65f6\u901a\u77e5\uff0c\u652f\u6301\u79bb\u5bb6\u6a21\u5f0f\u548c\u5b89\u9632\u7b56\u7565",
-                  "\u79bb\u5bb6\u6a21\u5f0f\u9700\u8981\u8ba4\u8bc1\uff0c\u654f\u611f\u6570\u636e\u52a0\u5bc6\u4f20\u8f93",
-                  "\u9ad8\u53ef\u7528\u6027\uff0c\u652f\u6301\u4f20\u611f\u5668\u6545\u969c\u964d\u7ea7"
-                ]
-              }
-            },
-            {
-              "code": "W_DI_UNUSED_ENDPOINTS",
-              "stage": "semantic",
-              "checker": "SemanticProxyChecker",
-              "message": "Most device_info endpoints are unused in bindings",
-              "details": {
-                "di_endpoints": 6,
-                "used_endpoints": 0,
-                "ratio": 0.0
-              }
-            },
-            {
-              "code": "W_PLAN_IR_MISMATCH",
-              "stage": "semantic",
-              "checker": "SemanticProxyChecker",
-              "message": "Plan and IR components diverge",
-              "details": {
-                "plan_refs": [
-                  "automation_engine",
-                  "data_recorder",
-                  "door_monitor",
-                  "lighting_controller",
-                  "motion_detector",
-                  "notification_service"
-                ],
-                "ir_components": [
-                  "door_sensor_main",
-                  "motion_sensor_living",
-                  "smart_light_living",
-                  "edge_gateway_ha",
-                  "cloud_automation_service",
-                  "cloud_storage_service"
-                ],
-                "missing_in_ir": [
-                  "automation_engine",
-                  "data_recorder",
-                  "door_monitor",
-                  "lighting_controller",
-                  "motion_detector",
-                  "notification_service"
-                ],
-                "unused_in_plan": [
-                  "cloud_automation_service",
-                  "cloud_storage_service",
-                  "door_sensor_main",
-                  "edge_gateway_ha",
-                  "motion_sensor_living",
-                  "smart_light_living"
-                ]
-              }
-            },
-            {
-              "code": "W_MULTI_LAYER_WEAK",
-              "stage": "semantic",
-              "checker": "SemanticProxyChecker",
-              "message": "Hints suggest multi-layer but artifacts show single/unknown layer",
-              "details": {
-                "hint_sources": [
-                  "di"
-                ],
-                "observed_layers": []
-              }
-            }
-          ],
-          "metrics": {},
-          "status": "PASS",
-          "skipped": false
-        },
-        "runtime_compose": {
-          "pass": true,
-          "failures": [],
-          "warnings": [
-            "Runtime check disabled"
-          ],
-          "metrics": {},
-          "status": "SKIP",
-          "skipped": true
-        }
-      },
-      "failures_flat": [],
-      "pipeline": {
-        "stages": {
-          "inputs": {
-            "pass": true,
-            "duration_ms": 29,
-            "attempts": 1
-          },
-          "plan": {
-            "pass": true,
-            "duration_ms": 9,
-            "attempts": 1
-          },
-          "ir": {
-            "pass": true,
-            "duration_ms": 6625,
-            "attempts": 1
-          },
-          "bindings": {
-            "pass": true,
-            "duration_ms": 6201,
-            "attempts": 1
-          },
-          "codegen": {
-            "pass": true,
-            "duration_ms": 5,
             "attempts": 1
           },
           "deploy": {
@@ -2504,19 +696,19 @@
           }
         },
         "config": {
-          "provider": "openai",
-          "model": "gpt-4o-mini",
+          "provider": "mock",
+          "model": null,
           "temperature": 0.0,
           "max_tokens": null,
           "cache_enabled": false,
-          "prompt_tier": "P1",
+          "prompt_tier": "P0",
           "seed": 0,
           "enable_repair": true,
           "enable_catalog": true,
           "runtime_check": false,
           "cache_dir": ".cache/llm",
-          "run_id": "run=20260111_190832_1f76fd",
-          "output_dir": ".\\outputs_temp_repair\\DEMO-SMARTHOME\\run=20260111_190832_1f76fd",
+          "run_id": "run=20260111_223006_99346c",
+          "output_dir": ".\\outputs_temp_place\\DEMO-MONITORING\\run=20260111_223006_99346c",
           "inputs": {
             "user_problem_path": "inputs\\user_problem.json",
             "device_info_path": "inputs\\device_info.json"
@@ -2526,8 +718,8 @@
         }
       },
       "llm": {
-        "provider": "openai",
-        "model": "gpt-4o-mini",
+        "provider": "mock",
+        "model": null,
         "temperature": 0.0,
         "cache_dir": ".cache/llm",
         "cache_enabled": false,
@@ -2538,14 +730,14 @@
         },
         "cache_hits": 0,
         "cache_misses": 2,
-        "usage_tokens_total": 7008,
+        "usage_tokens_total": 0,
         "prompt_template_hashes": {
-          "ir_agent": "e988f6f5eb10fce607fe03bd6543800fe7e096c1f4214b32812195d5dcc40a02",
-          "binding_agent": "2e74f8041aef97687739748f6c25be75b4a4268e32d68ac268ee49306d7f944e"
+          "ir_agent": "3b139c640d31d720bf2f7bb0d8b90fdd86a204c2e47586907d82349103f1816a",
+          "binding_agent": "3dcc279408d3061a13a0a10e5d3a3ad8fc7402989eadfce7dc341e3932a3db8a"
         },
         "prompt_resolved_hashes": {
-          "ir_agent": "229d4321d22c9d4f4f7815594097e9e4b7839a20ba1dd6109c9d06b15bb347cf",
-          "binding_agent": "3f1e0ffb81d09105623403cf24d3bb5f13d9b4e949cbcfc0f3a92de1ebe08247"
+          "ir_agent": "f0b7b48422f892a9ac42e8bfc7fe4bafb91f2f2c07bfc46f8c9923e9ad8fd4c0",
+          "binding_agent": "4f4162f2a5ef2fa2727a3e089bb4102200b5b6b744f7f09e32fd62a1027b7872"
         },
         "prompt_injections": {
           "catalog_types_hash": "7c0d7d6f58c2913592087dd9b3df67c63fc952388dc74d0606b92393079423a7",
@@ -2557,14 +749,15 @@
         "schema_hashes": {
           "plan_schema": "8d8399a603d1b200692b2f75170ce1bbf742b5051503966cfee3aae1fcedcd9c",
           "ir_schema": "d1b20ea900cec23d6966c056a65ba93f30671c40bfe3737fa7fdaaa48d330fbb",
-          "bindings_schema": "16e635d1178c71dabaf7ed996785e535b597198dbc2545cfa0372db633c0a640"
+          "bindings_schema": "16e635d1178c71dabaf7ed996785e535b597198dbc2545cfa0372db633c0a640",
+          "placement_schema": "1630530d60db83dcbfec700fa12638ab49d58f9669e386a9458b9fdae0633822"
         },
         "raw_paths": {
           "generate_ir": [
-            "outputs_temp_repair\\DEMO-SMARTHOME\\run=20260111_190832_1f76fd\\DEMO-SMARTHOME\\llm_raw\\generate_ir_attempt1.txt"
+            "outputs_temp_place\\DEMO-MONITORING\\run=20260111_223006_99346c\\DEMO-MONITORING\\llm_raw\\generate_ir_attempt1.txt"
           ],
           "generate_bindings": [
-            "outputs_temp_repair\\DEMO-SMARTHOME\\run=20260111_190832_1f76fd\\DEMO-SMARTHOME\\llm_raw\\generate_bindings_attempt1.txt"
+            "outputs_temp_place\\DEMO-MONITORING\\run=20260111_223006_99346c\\DEMO-MONITORING\\llm_raw\\generate_bindings_attempt1.txt"
           ]
         },
         "rules_source": "yaml"
@@ -2576,25 +769,6 @@
       "overall_exec_status": "PASS",
       "input_validation": [
         "UserProblem warning: UserProblem soft-missing fields: id, title, target"
-      ],
-      "unknown_component_types_count": 4,
-      "unknown_component_types": [
-        {
-          "id": "door_sensor_main",
-          "type": "data_source"
-        },
-        {
-          "id": "motion_sensor_living",
-          "type": "data_source"
-        },
-        {
-          "id": "smart_light_living",
-          "type": "actuator"
-        },
-        {
-          "id": "cloud_storage_service",
-          "type": "storage"
-        }
       ]
     },
     "artifact_missing_bindings": false,

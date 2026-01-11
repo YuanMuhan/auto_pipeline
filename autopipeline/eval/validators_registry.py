@@ -16,6 +16,7 @@ from autopipeline.verifier.generation_checker import GenerationConsistencyChecke
 from autopipeline.verifier.cross_artifact_checker import CrossArtifactChecker
 from autopipeline.catalog.render import load_endpoint_types, catalog_hashes
 from autopipeline.checkers.semantic_proxy_checker import SemanticProxyChecker
+from autopipeline.eval.checkers.placement_checker import PlacementChecker
 
 
 def build_validators(base_dir: str, enable_catalog: bool = True, enable_semantic: bool = True,
@@ -41,6 +42,7 @@ def build_validators(base_dir: str, enable_catalog: bool = True, enable_semantic
     gen_checker = GenerationConsistencyChecker
     cat_hash = catalog_hashes(base_dir)
     semantic_checker = SemanticProxyChecker(base_dir) if enable_semantic else None
+    placement_checker = PlacementChecker()
 
     return {
         "rules_bundle": rules_bundle,
@@ -56,4 +58,5 @@ def build_validators(base_dir: str, enable_catalog: bool = True, enable_semantic
         "generation_checker_cls": gen_checker,
         "catalog_hash": cat_hash,
         "semantic_checker": semantic_checker,
+        "placement_checker": placement_checker,
     }

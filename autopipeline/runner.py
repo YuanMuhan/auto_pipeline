@@ -19,6 +19,7 @@ from autopipeline.catalog.render import catalog_hashes, component_types_summary,
 from autopipeline.eval.validators_registry import build_validators
 from autopipeline.verifier.generation_checker import GenerationConsistencyChecker
 from autopipeline.verifier.cross_artifact_checker import CrossArtifactChecker
+from autopipeline.placement.placement_agent import PlacementAgent
 from autopipeline.llm.llm_client import LLMClient
 from autopipeline.llm.decode import LLMOutputFormatError
 from autopipeline.llm.types import LLMConfig
@@ -77,6 +78,7 @@ class PipelineRunner:
         self.ir_agent = IRAgent(self.llm_client)
         self.bindings_agent = BindingsAgent(self.llm_client)
         self.repair_agent = RepairAgent(self.llm_client)
+        self.placement_agent = PlacementAgent()
         self.codegen = CodeGenAgent()
         self.deploy = DeployAgent()
 
@@ -94,6 +96,7 @@ class PipelineRunner:
         self.cross_artifact_checker = v["cross_artifact_checker"]
         self.catalog_hash = v["catalog_hash"]
         self.semantic_checker = v.get("semantic_checker")
+        self.placement_checker = v["placement_checker"]
 
         combined_rules_hash = self.rules_bundle.get("hash") or stable_hash({
             "ir": self.rules_bundle["ir"]["hash"],
@@ -109,6 +112,7 @@ class PipelineRunner:
             "plan_schema": sha256_of_file(os.path.join(schemas_dir, "plan_schema.json")),
             "ir_schema": sha256_of_file(os.path.join(schemas_dir, "ir_schema.json")),
             "bindings_schema": sha256_of_file(os.path.join(schemas_dir, "bindings_schema.json")),
+            "placement_schema": sha256_of_file(os.path.join(schemas_dir, "placement_schema.json")),
         }
         self.catalog_hash = catalog_hashes(base_dir)
 
@@ -391,11 +395,24 @@ class PipelineRunner:
                 self._record_stage("ir", ir_start, attempts=1, passed=False)
                 raise StageError(str(e), stage="ir", attempts=1) from e
 
-            # Step 4: Generate Bindings
-            self.log("Step 4: Generating Bindings (Bindings Agent)")
+            # Step 4: Generate Placement Plan
+            self.log("Step 4: Generating Placement Plan")
+            place_start = time.time()
+            try:
+                placement_data = self._generate_and_validate_placement(plan_data, ir_data, device_info)
+                self._record_stage("placement", place_start, attempts=1, passed=True)
+            except StageError as e:
+                self._record_stage("placement", place_start, attempts=e.attempts or 0, passed=False)
+                raise
+            except Exception as e:
+                self._record_stage("placement", place_start, attempts=1, passed=False)
+                raise StageError(str(e), stage="placement", attempts=1) from e
+
+            # Step 5: Generate Bindings
+            self.log("Step 5: Generating Bindings (Bindings Agent)")
             bind_start = time.time()
             try:
-                bindings_data, bind_attempts = self._generate_and_validate_bindings(ir_data, device_info)
+                bindings_data, bind_attempts = self._generate_and_validate_bindings(ir_data, device_info, placement_data)
                 self._record_stage("bindings", bind_start, attempts=bind_attempts, passed=True)
             except StageError as e:
                 self._record_stage("bindings", bind_start, attempts=e.attempts or 0, passed=False)
@@ -406,8 +423,8 @@ class PipelineRunner:
             bindings_file = os.path.join(self.output_dir, "bindings.yaml")
             bindings_hash = sha256_of_file(bindings_file)
 
-            # Step 5: Generate Code
-            self.log("Step 5: Generating code skeletons (CodeGen)")
+            # Step 6: Generate Code
+            self.log("Step 6: Generating code skeletons (CodeGen)")
             codegen_start = time.time()
             codegen_result = self.codegen.generate_code(bindings_data, ir_data, self.output_dir,
                                                         bindings_hash, self.case_id)
@@ -416,19 +433,19 @@ class PipelineRunner:
             codegen_validator = self._validate_codegen(codegen_result)
             self._record_validator("code_generated", codegen_validator)
 
-            # Step 6: Generate Deployment
-            self.log("Step 6: Generating docker-compose.yml (Deploy)")
+            # Step 7: Generate Deployment
+            self.log("Step 7: Generating docker-compose.yml (Deploy)")
             deploy_start = time.time()
             deploy_file = self.deploy.generate_deployment(bindings_data, self.output_dir, bindings_hash)
             self.stages_passed.append("deploy")
             self._record_stage("deploy", deploy_start, attempts=1, passed=True)
 
-            # Step 7: Run evaluation
-            self.log("Step 7: Running evaluation")
+            # Step 8: Run evaluation
+            self.log("Step 8: Running evaluation")
             eval_start = time.time()
-            eval_result = self._run_evaluation(plan_data, ir_data, device_info, bindings_data, codegen_result, deploy_file, bindings_hash, eval_start, user_problem)
+            eval_result = self._run_evaluation(plan_data, ir_data, placement_data, device_info, bindings_data, codegen_result, deploy_file, bindings_hash, eval_start, user_problem)
 
-            # Step 8: Generate report
+            # Step 9: Generate report
             from autopipeline.eval.report import generate_report
             report_path = generate_report(eval_result, self.output_dir)
             self.log(f"Saved report to {report_path}")
@@ -602,8 +619,33 @@ class PipelineRunner:
             bindings_data["app_name"] = ir_data.get("app_name")
         if ir_data.get("version"):
             bindings_data["version"] = ir_data.get("version")
+    def _generate_and_validate_placement(self, plan_data: Dict[str, Any], ir_data: Dict[str, Any],
+                                         device_info: Dict[str, Any]) -> Dict[str, Any]:
+        """Generate placement plan using deterministic heuristic and validate."""
+        placement = self.placement_agent.generate_placement_plan(plan_data, ir_data, device_info)
+        placement_path = os.path.join(self.output_dir, "placement_plan.yaml")
+        save_yaml(placement, placement_path)
+        self.log(f"Saved Placement plan to {placement_path}")
+
+        # schema check
+        place_schema_res = self.schema_checker.validate_placement(placement)
+        self._record_validator("placement_schema", place_schema_res)
+        if not place_schema_res["pass"]:
+            msg = self._failure_message(place_schema_res) or "Placement schema failed"
+            raise StageError(msg, stage="placement", attempts=1, code=ErrorCode.E_SCHEMA_PLACE)
+
+        # placement checker
+        place_check_res = self.placement_checker.check(placement, ir_data)
+        self._record_validator("placement_checker", place_check_res)
+        if not place_check_res["pass"]:
+            msg = self._failure_message(place_check_res) or "Placement check failed"
+            raise StageError(msg, stage="placement", attempts=1, code=ErrorCode.E_PLACEMENT_INVALID)
+
+        self.stages_passed.append("placement")
+        return placement
     def _generate_and_validate_bindings(self, ir_data: Dict[str, Any],
-                                        device_info: Dict[str, Any]) -> Tuple[Dict[str, Any], int]:
+                                        device_info: Dict[str, Any],
+                                        placement_data: Dict[str, Any]) -> Tuple[Dict[str, Any], int]:
         """Generate Bindings with error-aware repair loop (max 3 attempts)"""
 
         bindings_data = None
@@ -665,7 +707,7 @@ class PipelineRunner:
 
             # Normalize and persist raw/norm
             from autopipeline.normalize.bindings_normalizer import normalize_bindings
-            bindings_norm, norm_actions = normalize_bindings(bindings_data, ir_data, device_info, gate_mode=self.gate_mode)
+            bindings_norm, norm_actions = normalize_bindings(bindings_data, ir_data, device_info, gate_mode=self.gate_mode, placement=placement_data)
             norm_path = os.path.join(self.output_dir, "bindings_norm.yaml")
             try:
                 save_yaml(bindings_norm, norm_path)
@@ -818,8 +860,8 @@ class PipelineRunner:
 
         return bindings_data, attempts_used
 
-    def _run_evaluation(self, plan_data: Dict[str, Any], ir_data: Dict[str, Any], device_info: Dict[str, Any],
-                        bindings_data: Dict[str, Any], codegen_result: Dict[str, Any],
+    def _run_evaluation(self, plan_data: Dict[str, Any], ir_data: Dict[str, Any], placement_data: Dict[str, Any],
+                        device_info: Dict[str, Any], bindings_data: Dict[str, Any], codegen_result: Dict[str, Any],
                         deploy_file: str, bindings_hash: str, eval_start: float, user_problem: Dict[str, Any]) -> Dict[str, Any]:
         """Run deterministic evaluation"""
 
@@ -906,6 +948,8 @@ class PipelineRunner:
         eval_result["metrics"]["num_components"] = len(components)
         eval_result["metrics"]["num_entities"] = len(components)
         eval_result["metrics"]["num_links"] = len(ir_data.get("links", []))
+        eval_result["metrics"]["num_nodes"] = len(placement_data.get("nodes", [])) if placement_data else 0
+        eval_result["metrics"]["num_component_placements"] = len(placement_data.get("component_placements", [])) if placement_data else 0
         eval_result["metrics"]["num_placements"] = len(bindings_data.get("placements", []))
         eval_result["metrics"]["num_layers"] = len(codegen_result["generated_files"])
         # pipeline metrics
@@ -917,6 +961,7 @@ class PipelineRunner:
         # Simplified checks (backward compatibility)
         for name in ["user_problem_schema", "device_info_schema", "device_info_catalog",
                      "plan_schema", "ir_schema", "ir_boundary", "ir_component_catalog", "ir_interface",
+                     "placement_schema", "placement_checker",
                      "bindings_schema", "coverage", "endpoint_legality", "endpoint_matching", "cross_artifact_consistency",
                      "semantic_proxy", "code_generated", "deploy_generated", "generation_consistency", "runtime_compose"]:
             res = self.validator_results.get(name, {"pass": True, "failures": [], "warnings": [], "status": "PASS"})
@@ -926,6 +971,7 @@ class PipelineRunner:
         core_checks = {
             "user_problem_schema", "device_info_schema", "device_info_catalog",
             "plan_schema", "ir_schema", "ir_boundary", "ir_component_catalog", "ir_interface",
+            "placement_schema", "placement_checker",
             "bindings_schema", "coverage", "endpoint_legality", "endpoint_matching", "cross_artifact_consistency"
         }
         exec_checks = {"code_generated", "deploy_generated", "generation_consistency", "runtime_compose"}

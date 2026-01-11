@@ -5,7 +5,7 @@ import yaml
 
 
 def normalize_bindings(bindings_raw: Any, ir: Dict[str, Any], device_info: Dict[str, Any],
-                       gate_mode: str = "core") -> Tuple[Dict[str, Any], List[str]]:
+                       gate_mode: str = "core", placement: Dict[str, Any] = None) -> Tuple[Dict[str, Any], List[str]]:
     actions: List[str] = []
     # if raw is text, try parse
     if isinstance(bindings_raw, str):
@@ -72,5 +72,19 @@ def normalize_bindings(bindings_raw: Any, ir: Dict[str, Any], device_info: Dict[
             })
         bindings["component_bindings"] = stub_list
         actions.append("generate_stub_component_bindings")
+
+    # backfill placement_node_id from placement plan if available
+    placement_map = {}
+    if placement:
+        for cp in placement.get("component_placements", []) or []:
+            cid = cp.get("component_id")
+            if cid:
+                placement_map[cid] = cp.get("target_node_id")
+    for entry in bindings["component_bindings"]:
+        cid = entry.get("component") or entry.get("component_id")
+        if "placement_node_id" not in entry or not entry.get("placement_node_id"):
+            if cid in placement_map:
+                entry["placement_node_id"] = placement_map[cid]
+                actions.append(f"fill_placement_for_{cid}")
 
     return bindings, actions

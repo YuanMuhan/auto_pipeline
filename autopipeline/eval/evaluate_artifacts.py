@@ -41,6 +41,7 @@ class ArtifactEvaluator:
         self.catalog_hash = v["catalog_hash"]
         self.gen_checker_cls = v["generation_checker_cls"]
         self.semantic_checker = v.get("semantic_checker")
+        self.placement_checker = v["placement_checker"]
 
     def _record_validator(self, name: str, result: Dict[str, Any]):
         failures = []
@@ -68,6 +69,13 @@ class ArtifactEvaluator:
         # Load artifacts
         plan = load_json(run_dir / "plan.json")
         ir = yaml.safe_load((run_dir / "ir.yaml").read_text(encoding="utf-8"))
+        placement = {}
+        placement_path = run_dir / "placement_plan.yaml"
+        if placement_path.exists():
+            try:
+                placement = yaml.safe_load(placement_path.read_text(encoding="utf-8")) or {}
+            except Exception:
+                placement = {}
         # prefer normalized/official bindings
         bindings = None
         for name in ["bindings.yaml", "bindings_norm.yaml", "bindings_raw.yaml", "bindings_raw.txt"]:
@@ -139,6 +147,11 @@ class ArtifactEvaluator:
             self._record_validator("ir_component_catalog", {"pass": True, "failures": [], "warnings": ["catalog skipped"], "status": "SKIP", "skipped": True})
             self._record_validator("ir_interface", {"pass": True, "failures": [], "warnings": ["catalog skipped"], "status": "SKIP", "skipped": True})
 
+        place_res = self.schema_checker.validate_placement(placement)
+        self._check_and_record("placement_schema", place_res)
+        place_check_res = self.placement_checker.check(placement, ir)
+        self._check_and_record("placement_checker", place_check_res)
+
         bind_res = self.schema_checker.validate_bindings(bindings, gate_mode=self.gate_mode)
         self._check_and_record("bindings_schema", bind_res)
         cov_res = self.coverage_checker.check_coverage(ir, bindings, gate_mode=self.gate_mode)
@@ -190,6 +203,7 @@ class ArtifactEvaluator:
         core_checks = {
             "user_problem_schema", "device_info_schema", "device_info_catalog",
             "plan_schema", "ir_schema", "ir_boundary", "ir_component_catalog", "ir_interface",
+            "placement_schema", "placement_checker",
             "bindings_schema", "coverage", "endpoint_legality", "endpoint_matching", "cross_artifact_consistency"
         }
         exec_checks = {"code_generated", "deploy_generated", "generation_consistency", "runtime_compose"}

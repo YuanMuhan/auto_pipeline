@@ -1,0 +1,41 @@
+app_name: monitoring_app
+component_placements:
+- component_id: sensor_collector
+  constraints_used: []
+  rationale: 'heuristic: TemperatureSensor -> device'
+  target_node_id: temp_sensor_01
+- component_id: data_processor
+  constraints_used: []
+  rationale: 'heuristic: StateTracker -> edge'
+  target_node_id: edge_gateway_01
+- component_id: storage_service
+  constraints_used: []
+  rationale: 'heuristic: DataStore -> edge'
+  target_node_id: edge_gateway_01
+link_placements:
+- link_id: link_sensor_to_processor
+  transport_hint: http
+- link_id: link_processor_to_storage
+  transport_hint: local
+nodes:
+- capabilities:
+  - temperature_sensing
+  - data_collection
+  class: device
+  node_id: temp_sensor_01
+- capabilities:
+  - data_processing
+  - filtering
+  - aggregation
+  - local_storage
+  class: edge
+  node_id: edge_gateway_01
+- capabilities:
+  - data_storage
+  - analytics
+  - visualization
+  - alerting
+  class: cloud
+  node_id: cloud_server_01
+version: 0.1.0
+warnings: []

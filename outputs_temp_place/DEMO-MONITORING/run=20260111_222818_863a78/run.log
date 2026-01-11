@@ -1,0 +1,14 @@
+[2026-01-11T22:28:18.670660] [INFO] Starting pipeline for case: DEMO-MONITORING
+[2026-01-11T22:28:18.671597] [INFO] Step 1: Loading user problem and device info
+[2026-01-11T22:28:18.671922] [INFO] Successfully loaded input files
+[2026-01-11T22:28:18.677313] [INFO] Step 2: Generating Plan (Planner Agent)
+[2026-01-11T22:28:18.683039] [INFO] Saved Plan to .\outputs_temp_place\DEMO-MONITORING\run=20260111_222818_863a78\plan.json
+[2026-01-11T22:28:18.683059] [INFO] Step 3: Generating IR (IR Agent)
+[2026-01-11T22:28:18.683069] [INFO] IR generation attempt 1/3
+[2026-01-11T22:28:18.688807] [INFO] [LLM] stage=generate_ir cache=MISS key=30c60583 time=0.000s
+[2026-01-11T22:28:18.698404] [INFO] IR validation passed
+[2026-01-11T22:28:18.701203] [INFO] Saved IR to .\outputs_temp_place\DEMO-MONITORING\run=20260111_222818_863a78\ir.yaml
+[2026-01-11T22:28:18.701269] [INFO] Step 4: Generating Placement Plan
+[2026-01-11T22:28:18.701432] [ERROR] Pipeline failed at stage placement: 'str' object has no attribute 'get'
+[2026-01-11T22:28:18.703148] [INFO] Saved failure evaluation to .\outputs_temp_place\DEMO-MONITORING\run=20260111_222818_863a78\eval.json
+[2026-01-11T22:28:18.703172] [INFO] Step 9: Saving run log
