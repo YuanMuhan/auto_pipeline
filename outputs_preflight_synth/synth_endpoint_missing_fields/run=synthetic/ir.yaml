@@ -1,9 +1,0 @@
-app_name: synth_endpoint_missing
-version: "1.0"
-components:
-  - id: c1
-    type: rule_engine
-links:
-  - id: l1
-    from: c1
-    to: c1
